@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Subject, ErrorBookItem, SpecialImportanceItem } from '../types';
 import { Trash2, AlertCircle, BookOpen, Star, Sparkles, Filter, Plus, Check } from 'lucide-react';
 
@@ -244,45 +245,55 @@ export default function NotesAndErrors({
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[380px] overflow-y-auto pr-1">
-              {filteredErrors.map((item) => (
-                <div key={item.id} className="border border-border bg-card hover:border-rose-400/20 active-scale-99.5 p-4 rounded-2xl space-y-3 relative group">
-                  <button
-                    onClick={() => onDeleteErrorItem(item.id)}
-                    className="absolute top-4 right-4 text-muted-foreground hover:text-rose-500 p-1.5 hover:bg-rose-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer duration-200"
-                    title="Delete record"
+              <AnimatePresence mode="popLayout">
+                {filteredErrors.map((item) => (
+                  <motion.div
+                    key={item.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.95, y: 12 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: -12 }}
+                    transition={{ type: 'spring', stiffness: 350, damping: 26 }}
+                    className="border border-border bg-card hover:border-rose-400/20 active-scale-99.5 p-4 rounded-2xl space-y-3 relative group"
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
+                    <button
+                      onClick={() => onDeleteErrorItem(item.id)}
+                      className="absolute top-4 right-4 text-muted-foreground hover:text-rose-500 p-1.5 hover:bg-rose-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer duration-200"
+                      title="Delete record"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
 
-                  <div className="space-y-1">
-                    <div className="flex gap-2 items-center">
-                      <span className={`text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded ${
-                        item.subject === 'physics' ? 'bg-indigo-500/10 text-indigo-500' :
-                        item.subject === 'chemistry' ? 'bg-emerald-500/10 text-emerald-500' :
-                        'bg-purple-500/10 text-purple-500'
-                      }`}>
-                        {item.subject}
-                      </span>
-                      <span className="text-[10px] font-mono text-muted-foreground">
-                        {new Date(item.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                    </div>
-                    <h5 className="text-xs font-bold text-foreground pr-6 leading-tight">{item.chapter}</h5>
-                  </div>
-
-                  <div className="grid grid-cols-1 gap-2 border-t border-border/50 pt-2.5 text-xs">
-                    <div className="bg-rose-500/5 border border-rose-500/10 p-2 rounded-xl">
-                      <span className="block text-[9px] font-bold text-rose-500 uppercase tracking-wider mb-0.5">⚠️ The Mistake</span>
-                      <p className="text-muted-foreground font-medium leading-relaxed">{item.mistake}</p>
+                    <div className="space-y-1">
+                      <div className="flex gap-2 items-center">
+                        <span className={`text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded ${
+                          item.subject === 'physics' ? 'bg-indigo-500/10 text-indigo-500' :
+                          item.subject === 'chemistry' ? 'bg-emerald-500/10 text-emerald-500' :
+                          'bg-purple-500/10 text-purple-500'
+                        }`}>
+                          {item.subject}
+                        </span>
+                        <span className="text-[10px] font-mono text-muted-foreground">
+                          {new Date(item.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      </div>
+                      <h5 className="text-xs font-bold text-foreground pr-6 leading-tight">{item.chapter}</h5>
                     </div>
 
-                    <div className="bg-emerald-500/5 border border-emerald-500/10 p-2 rounded-xl">
-                      <span className="block text-[9px] font-bold text-emerald-500 uppercase tracking-wider mb-0.5">✅ Corrective Formula / Crux</span>
-                      <p className="text-muted-foreground font-medium leading-relaxed">{item.correction}</p>
+                    <div className="grid grid-cols-1 gap-2 border-t border-border/50 pt-2.5 text-xs">
+                      <div className="bg-rose-500/5 border border-rose-500/10 p-2 rounded-xl">
+                        <span className="block text-[9px] font-bold text-rose-500 uppercase tracking-wider mb-0.5">⚠️ The Mistake</span>
+                        <p className="text-muted-foreground font-medium leading-relaxed">{item.mistake}</p>
+                      </div>
+
+                      <div className="bg-emerald-500/5 border border-emerald-500/10 p-2 rounded-xl">
+                        <span className="block text-[9px] font-bold text-emerald-500 uppercase tracking-wider mb-0.5">✅ Corrective Formula / Crux</span>
+                        <p className="text-muted-foreground font-medium leading-relaxed">{item.correction}</p>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              ))}
+                  </motion.div>
+                ))}
+              </AnimatePresence>
             </div>
           )}
         </div>
@@ -389,43 +400,53 @@ export default function NotesAndErrors({
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[380px] overflow-y-auto pr-1">
-              {filteredImportance.map((item) => (
-                <div key={item.id} className="border border-border bg-card hover:border-amber-400/20 active-scale-99.5 p-4 rounded-2xl relative group flex flex-col justify-between">
-                  <div>
-                    <button
-                      onClick={() => onDeleteImportanceItem(item.id)}
-                      className="absolute top-4 right-4 text-muted-foreground hover:text-rose-500 p-1.5 hover:bg-rose-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer duration-200"
-                      title="Delete record"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+              <AnimatePresence mode="popLayout">
+                {filteredImportance.map((item) => (
+                  <motion.div
+                    key={item.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.95, y: 12 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: -12 }}
+                    transition={{ type: 'spring', stiffness: 350, damping: 26 }}
+                    className="border border-border bg-card hover:border-amber-400/20 active-scale-99.5 p-4 rounded-2xl relative group flex flex-col justify-between"
+                  >
+                    <div>
+                      <button
+                        onClick={() => onDeleteImportanceItem(item.id)}
+                        className="absolute top-4 right-4 text-muted-foreground hover:text-rose-500 p-1.5 hover:bg-rose-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer duration-200"
+                        title="Delete record"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
 
-                    <div className="space-y-1.5">
-                      <div className="flex gap-2 items-center">
-                        <span className={`text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded ${
-                          item.subject === 'physics' ? 'bg-indigo-500/10 text-indigo-500' :
-                          item.subject === 'chemistry' ? 'bg-emerald-500/10 text-emerald-500' :
-                          'bg-purple-500/10 text-purple-500'
-                        }`}>
-                          {item.subject}
-                        </span>
-                        <span className="text-[9px] font-mono text-muted-foreground">{item.topic}</span>
+                      <div className="space-y-1.5">
+                        <div className="flex gap-2 items-center">
+                          <span className={`text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded ${
+                            item.subject === 'physics' ? 'bg-indigo-500/10 text-indigo-500' :
+                            item.subject === 'chemistry' ? 'bg-emerald-500/10 text-emerald-500' :
+                            'bg-purple-500/10 text-purple-500'
+                          }`}>
+                            {item.subject}
+                          </span>
+                          <span className="text-[9px] font-mono text-muted-foreground">{item.topic}</span>
+                        </div>
+                        <h5 className="text-xs font-bold text-foreground pr-6 leading-tight flex items-center gap-1.5">
+                          <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" /> {item.title}
+                        </h5>
                       </div>
-                      <h5 className="text-xs font-bold text-foreground pr-6 leading-tight flex items-center gap-1.5">
-                        <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" /> {item.title}
-                      </h5>
+
+                      <div className="mt-3 bg-amber-500/5 border border-amber-500/10 p-3 rounded-xl text-xs">
+                        <p className="text-muted-foreground font-medium leading-relaxed whitespace-pre-line">{item.content}</p>
+                      </div>
                     </div>
 
-                    <div className="mt-3 bg-amber-500/5 border border-amber-500/10 p-3 rounded-xl text-xs">
-                      <p className="text-muted-foreground font-medium leading-relaxed whitespace-pre-line">{item.content}</p>
+                    <div className="mt-3 text-[9px] font-mono text-muted-foreground text-right">
+                      {new Date(item.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                     </div>
-                  </div>
-
-                  <div className="mt-3 text-[9px] font-mono text-muted-foreground text-right">
-                    {new Date(item.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                  </div>
-                </div>
-              ))}
+                  </motion.div>
+                ))}
+              </AnimatePresence>
             </div>
           )}
         </div>

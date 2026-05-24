@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { motion } from 'motion/react';
 import { StudySession, DailyQuestions } from '../types';
 import { BarChart, Clock, Hash, BookOpen } from 'lucide-react';
 
@@ -261,17 +262,19 @@ export default function AnalyticsCharts({ sessions, questions }: AnalyticsCharts
                 </div>
 
                 {/* Animated Bar */}
-                <div className="w-full bg-accent/40 rounded-t-lg overflow-hidden flex flex-col justify-end h-full">
-                  <div
-                    className="w-full bg-gradient-to-t from-indigo-600 to-violet-500 rounded-t-lg transition-all duration-700 ease-out flex items-center justify-center group-hover:scale-y-102 origin-bottom shadow-inner"
-                    style={{ height: `${pct}%` }}
+                <div className="w-full bg-accent/10 rounded-t-lg overflow-hidden flex flex-col justify-end h-full relative">
+                  <motion.div
+                    initial={{ height: 0 }}
+                    animate={{ height: `${pct}%` }}
+                    transition={{ type: 'spring', stiffness: 80, damping: 15 }}
+                    className="w-full bg-gradient-to-t from-indigo-600 to-violet-500 rounded-t-lg flex items-center justify-center group-hover:brightness-110 origin-bottom shadow-md relative"
                   >
                     {d.value > 0.3 && (
                       <span className="text-[9px] font-mono font-bold text-white mb-1 select-none pointer-events-none opacity-80 group-hover:opacity-100 transition-opacity">
                         {d.value.toFixed(1)}h
                       </span>
                     )}
-                  </div>
+                  </motion.div>
                 </div>
 
                 {/* X-Axis string label */}
@@ -347,11 +350,13 @@ export default function AnalyticsCharts({ sessions, questions }: AnalyticsCharts
                 </div>
 
                 {/* Animated Stacked Bar */}
-                <div className="w-full bg-accent/40 rounded-t-lg overflow-hidden flex flex-col justify-end h-full">
+                <div className="w-full bg-accent/10 rounded-t-lg overflow-hidden flex flex-col justify-end h-full relative">
                   {total > 0 ? (
-                    <div
-                      className="w-full rounded-t-lg transition-all duration-700 ease-out flex flex-col origin-bottom shadow-inner"
-                      style={{ height: `${totalPct}%` }}
+                    <motion.div
+                      initial={{ height: 0 }}
+                      animate={{ height: `${totalPct}%` }}
+                      transition={{ type: 'spring', stiffness: 80, damping: 15 }}
+                      className="w-full rounded-t-lg flex flex-col origin-bottom shadow-md overflow-hidden h-full"
                     >
                       {/* Normal Questions (Top of stack) */}
                       <div
@@ -361,11 +366,11 @@ export default function AnalyticsCharts({ sessions, questions }: AnalyticsCharts
                       />
                       {/* PYQs (Bottom of stack) */}
                       <div
-                        className="w-full bg-emerald-500 hover:brightness-110 transition-all rounded-b"
+                        className="w-full bg-emerald-500 hover:brightness-110 transition-all"
                         style={{ height: `${pyqSplitPct}%` }}
                         title={`PYQs Solved: ${pyq}`}
                       />
-                    </div>
+                    </motion.div>
                   ) : null}
                 </div>
 

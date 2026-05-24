@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Chapter, Subject } from '../types';
 import { CLASS_11_SYLLABUS, CLASS_12_SYLLABUS } from '../data/syllabus';
 import { CheckSquare, Square, Search, BookOpen, Download, Trash2, ArrowUpRight, HelpCircle } from 'lucide-react';
@@ -172,62 +173,69 @@ export default function SyllabusTracker({ completions, onToggleChapter, onClearA
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-[380px] overflow-y-auto pr-1">
-          {filteredChapters.map((ch) => {
-            const isCompleted = completions[ch.id] || false;
-            
-            // Exquisite theme-adaptive color specs for each subject type
-            const subjectStyles = {
-              physics: {
-                stroke: isCompleted ? 'border-l-emerald-500' : 'border-l-indigo-500',
-                text: 'text-indigo-500 dark:text-indigo-400',
-                badgeBg: 'bg-indigo-500/10 text-indigo-500'
-              },
-              chemistry: {
-                stroke: isCompleted ? 'border-l-emerald-500' : 'border-l-emerald-500',
-                text: 'text-emerald-500 dark:text-emerald-400',
-                badgeBg: 'bg-emerald-500/10 text-emerald-500'
-              },
-              math: {
-                stroke: isCompleted ? 'border-l-emerald-500' : 'border-l-purple-500',
-                text: 'text-purple-500 dark:text-purple-400',
-                badgeBg: 'bg-purple-500/10 text-purple-500'
-              }
-            };
-            const currentStyle = subjectStyles[ch.subject] || subjectStyles.physics;
+          <AnimatePresence mode="popLayout">
+            {filteredChapters.map((ch) => {
+              const isCompleted = completions[ch.id] || false;
+              
+              // Exquisite theme-adaptive color specs for each subject type
+              const subjectStyles = {
+                physics: {
+                  stroke: isCompleted ? 'border-l-emerald-500' : 'border-l-indigo-500',
+                  text: 'text-indigo-500 dark:text-indigo-400',
+                  badgeBg: 'bg-indigo-500/10 text-indigo-500'
+                },
+                chemistry: {
+                  stroke: isCompleted ? 'border-l-emerald-500' : 'border-l-emerald-500',
+                  text: 'text-emerald-500 dark:text-emerald-400',
+                  badgeBg: 'bg-emerald-500/10 text-emerald-500'
+                },
+                math: {
+                  stroke: isCompleted ? 'border-l-emerald-500' : 'border-l-purple-500',
+                  text: 'text-purple-500 dark:text-purple-400',
+                  badgeBg: 'bg-purple-500/10 text-purple-500'
+                }
+              };
+              const currentStyle = subjectStyles[ch.subject] || subjectStyles.physics;
 
-            return (
-              <button
-                key={ch.id}
-                onClick={() => onToggleChapter(ch.id, !isCompleted)}
-                className={`p-3.5 rounded-xl border border-l-4 text-left cursor-pointer flex items-start gap-3 transition-all duration-350 select-none hover:scale-[1.01] active-scale-99 ${currentStyle.stroke} ${
-                  isCompleted
-                    ? 'bg-emerald-500/[0.02] dark:bg-emerald-500/10 border-emerald-500/30 hover:bg-emerald-500/5 hover:border-emerald-500/50 shadow-xs'
-                    : 'bg-card border-border hover:bg-accent/15 hover:border-accent shadow-2xs'
-                }`}
-              >
-                <div className="shrink-0 mt-0.5">
-                  {isCompleted ? (
-                    <CheckSquare className="w-4 h-4 text-emerald-500 fill-emerald-500/20" />
-                  ) : (
-                    <Square className="w-4 h-4 text-muted-foreground/60" />
-                  )}
-                </div>
-
-                <div className="space-y-1">
-                  <span className={`text-xs font-semibold block leading-tight ${isCompleted ? 'text-emerald-500 dark:text-emerald-400 line-through opacity-70' : 'text-foreground'}`}>
-                    {ch.name}
-                  </span>
-                  
-                  <div className="flex gap-1.5 items-center">
-                    <span className={`text-[9px] font-mono font-bold uppercase px-1 rounded ${currentStyle.badgeBg}`}>
-                      {ch.subject}
-                    </span>
-                    <span className="text-[9px] font-mono text-muted-foreground">Class {ch.classLevel}</span>
+              return (
+                <motion.button
+                  key={ch.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+                  onClick={() => onToggleChapter(ch.id, !isCompleted)}
+                  className={`p-3.5 rounded-xl border border-l-4 text-left cursor-pointer flex items-start gap-3 select-none hover:scale-[1.01] active-scale-99 ${currentStyle.stroke} ${
+                    isCompleted
+                      ? 'bg-emerald-500/[0.02] dark:bg-emerald-500/10 border-emerald-500/30 hover:bg-emerald-500/5 hover:border-emerald-500/50 shadow-xs'
+                      : 'bg-card border-border hover:bg-accent/15 hover:border-accent shadow-2xs'
+                  }`}
+                >
+                  <div className="shrink-0 mt-0.5">
+                    {isCompleted ? (
+                      <CheckSquare className="w-4 h-4 text-emerald-500 fill-emerald-500/20" />
+                    ) : (
+                      <Square className="w-4 h-4 text-muted-foreground/60" />
+                    )}
                   </div>
-                </div>
-              </button>
-            );
-          })}
+
+                  <div className="space-y-1">
+                    <span className={`text-xs font-semibold block leading-tight ${isCompleted ? 'text-emerald-500 dark:text-emerald-400 line-through opacity-70' : 'text-foreground'}`}>
+                      {ch.name}
+                    </span>
+                    
+                    <div className="flex gap-1.5 items-center">
+                      <span className={`text-[9px] font-mono font-bold uppercase px-1 rounded ${currentStyle.badgeBg}`}>
+                        {ch.subject}
+                      </span>
+                      <span className="text-[9px] font-mono text-muted-foreground">Class {ch.classLevel}</span>
+                    </div>
+                  </div>
+                </motion.button>
+              );
+            })}
+          </AnimatePresence>
         </div>
       )}
 
