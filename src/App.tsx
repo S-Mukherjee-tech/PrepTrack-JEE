@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PrepTrackDB } from './db';
 import { 
@@ -18,6 +18,8 @@ import QuestionTrackerForm from './components/QuestionTrackerForm';
 import SyllabusTracker from './components/SyllabusTracker';
 import NotesAndErrors from './components/NotesAndErrors';
 import FeedbackModal from './components/FeedbackModal';
+import QuickNotes from './components/QuickNotes';
+import ToastContainer, { Toast } from './components/ToastContainer';
 import { CLASS_11_SYLLABUS, CLASS_12_SYLLABUS } from './data/syllabus';
 import { BrandingLogo } from './components/BrandingLogo';
 
@@ -65,6 +67,18 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'analytics' | 'questions' | 'syllabus' | 'notes' | 'settings'>('dashboard');
   const [dbLoading, setDbLoading] = useState(true);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+
+  // Toast Notifications State
+  const [toasts, setToasts] = useState<Toast[]>([]);
+
+  const addToast = (title: string, message: string, type: 'success' | 'info' | 'goal' = 'goal') => {
+    const id = Math.random().toString(36).substring(2, 9);
+    setToasts((prev) => [...prev, { id, type, title, message }]);
+  };
+
+  const handleCloseToast = (id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  };
 
   // Local settings fields to allow clean text deleting
   const [localWorkDuration, setLocalWorkDuration] = useState<string>('25');
@@ -285,6 +299,44 @@ export default function App() {
                       (todayRecord.math_pyq_main || 0) + (todayRecord.math_pyq_adv || 0);
     return questionsCount + pyqsCount;
   }, [questions]);
+
+  // Track and trigger Toast celebrations when daily study or questions goals are reached
+  const prevStudyMinutes = useRef<number | null>(null);
+  const prevQuestionCount = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (dbLoading) return; // Wait until local data loads completely
+    
+    const studyGoalMins = settings.dailyStudyMinutesGoal ?? 180;
+    
+    if (prevStudyMinutes.current !== null) {
+      if (studyMinutesToday >= studyGoalMins && prevStudyMinutes.current < studyGoalMins) {
+        addToast(
+          '🔥 Study Goal Reached!',
+          `Incredible dedication! You have successfully completed ${studyMinutesToday} minutes of focused study today, passing your target of ${studyGoalMins} minutes. Keep up this championship momentum!`,
+          'goal'
+        );
+      }
+    }
+    prevStudyMinutes.current = studyMinutesToday;
+  }, [studyMinutesToday, settings.dailyStudyMinutesGoal, dbLoading]);
+
+  useEffect(() => {
+    if (dbLoading) return; // Wait until local data loads completely
+    
+    const questionGoalCount = settings.dailyQuestionsSolvedGoal ?? 30;
+    
+    if (prevQuestionCount.current !== null) {
+      if (questionsSolvedToday >= questionGoalCount && prevQuestionCount.current < questionGoalCount) {
+        addToast(
+          '⚡ Question Goal Surpassed!',
+          `Tremendous performance! You solved ${questionsSolvedToday} questions today, successfully meeting your daily milestone of ${questionGoalCount}. Excellence logged!`,
+          'goal'
+        );
+      }
+    }
+    prevQuestionCount.current = questionsSolvedToday;
+  }, [questionsSolvedToday, settings.dailyQuestionsSolvedGoal, dbLoading]);
 
   // Aggregate questions metrics
   const questionAggregatess = useMemo(() => {
@@ -1052,6 +1104,9 @@ export default function App() {
 
                   </div>
 
+                  {/* QUICK NOTES SECTION */}
+                  <QuickNotes theme={settings.theme} cardBgClass={themeStyles.cardBg} />
+
                   {/* DYNAMIC JEE LIVE TOOL LINKS & TELEGRAM GROUP */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
                     
@@ -1446,6 +1501,9 @@ export default function App() {
 
           {/* DYNAMIC FEEDBACK BOOK FOR CLIENT */}
           <FeedbackModal onSubmitFeedback={handleSaveFeedback} />
+
+          {/* DYNAMIC GOAL TOAST NOTIFICATIONS */}
+          <ToastContainer toasts={toasts} onClose={handleCloseToast} theme={settings.theme} />
 
         </div>
       </main>
