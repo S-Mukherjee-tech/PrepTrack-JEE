@@ -464,10 +464,10 @@ export default function TimerSection({ settings, onSaveSession, currentSessionsT
                 setTimeElapsed(0);
                 setPomodoroStage('work');
               }}
-              className={`py-3 px-2 rounded-xl text-xs font-semibold capitalize border cursor-pointer flex flex-col items-center gap-1.5 transition-all duration-250 ${
+              className={`py-3.5 px-3 rounded-2xl text-xs font-bold capitalize border cursor-pointer flex flex-col items-center gap-1.5 transition-all duration-300 transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${
                 mode === m
-                  ? 'bg-primary border-primary text-primary-foreground shadow-sm'
-                  : 'bg-accent/15 border-border hover:bg-accent/30 text-muted-foreground hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed'
+                  ? 'bg-primary border-primary text-primary-foreground shadow-[0_8px_24px_rgba(129,140,248,0.22)]'
+                  : 'bg-accent/10 border-border/80 hover:bg-accent/20 text-muted-foreground hover:text-foreground'
               }`}
             >
               <span className="font-sans">
@@ -557,7 +557,7 @@ export default function TimerSection({ settings, onSaveSession, currentSessionsT
           {!isRunning ? (
             <button
               onClick={handleStart}
-              className="flex-1 min-w-[120px] bg-gradient-to-r from-indigo-600 to-indigo-500 hover:brightness-110 text-white font-semibold text-sm py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 shadow-md shadow-indigo-500/20 active-scale-98 transition-all cursor-pointer"
+              className="flex-1 min-w-[120px] bg-primary hover:brightness-110 active:scale-[0.98] text-primary-foreground font-bold text-sm py-4 px-6 rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-primary/25 transition-all duration-300 cursor-pointer"
             >
               <Play className="w-4.5 h-4.5 fill-current" /> Start Focused Study
             </button>
@@ -566,14 +566,14 @@ export default function TimerSection({ settings, onSaveSession, currentSessionsT
               {isPaused ? (
                 <button
                   onClick={handleStart}
-                  className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 active-scale-98 transition-all cursor-pointer"
+                  className="flex-1 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white font-bold text-sm py-4 px-6 rounded-2xl flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer shadow-lg shadow-emerald-600/20"
                 >
                   <Play className="w-4.5 h-4.5 fill-current" /> Resume Study
                 </button>
               ) : (
                 <button
                   onClick={handlePause}
-                  className="flex-1 bg-amber-600 hover:bg-amber-500 text-white font-semibold text-sm py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 active-scale-98 transition-all cursor-pointer"
+                  className="flex-1 bg-amber-600 hover:bg-amber-500 active:scale-[0.98] text-white font-bold text-sm py-4 px-6 rounded-2xl flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer shadow-lg shadow-amber-600/20"
                 >
                   <Pause className="w-4.5 h-4.5 fill-current" /> Pause Block
                 </button>
@@ -581,7 +581,7 @@ export default function TimerSection({ settings, onSaveSession, currentSessionsT
 
               <button
                 onClick={handleStopAndSave}
-                className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm py-3.5 px-5 rounded-xl flex items-center justify-center gap-2 active-scale-98 transition-all cursor-pointer"
+                className="bg-primary hover:brightness-110 active:scale-[0.98] text-primary-foreground font-bold text-sm py-4 px-5 rounded-2xl flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer shadow-lg shadow-primary/25"
                 title="Stop and save session to local history Log"
               >
                 <Square className="w-4.5 h-4.5 fill-current" /> Save Session
@@ -589,7 +589,7 @@ export default function TimerSection({ settings, onSaveSession, currentSessionsT
 
               <button
                 onClick={handleReset}
-                className="border border-border bg-accent/10 hover:bg-accent/30 text-muted-foreground hover:text-foreground font-semibold text-xs py-3.5 px-3 rounded-xl flex items-center justify-center transition-all cursor-pointer"
+                className="border border-border bg-accent/10 hover:bg-accent/30 text-muted-foreground hover:text-foreground font-bold text-xs py-4 px-4 rounded-2xl flex items-center justify-center transition-all duration-300 cursor-pointer active:scale-[0.98]"
                 title="Discard study session"
               >
                 <RotateCcw className="w-4 h-4" />

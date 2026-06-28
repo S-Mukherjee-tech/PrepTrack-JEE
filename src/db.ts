@@ -1,7 +1,7 @@
-import { StudySession, DailyQuestions, ErrorBookItem, SpecialImportanceItem, UserSettings } from './types';
+import { StudySession, DailyQuestions, ErrorBookItem, SpecialImportanceItem, UserSettings, MockTest } from './types';
 
 const DB_NAME = 'PrepTrackDB';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 class MemoryFallback {
   private static storage: Record<string, string> = {};
@@ -109,6 +109,11 @@ export class PrepTrackDB {
           // Chapter Completion Store
           if (!db.objectStoreNames.contains('chapter_completion')) {
             db.createObjectStore('chapter_completion', { keyPath: 'id' });
+          }
+
+          // Mock Tests Store
+          if (!db.objectStoreNames.contains('mock_tests')) {
+            db.createObjectStore('mock_tests', { keyPath: 'id' });
           }
         };
       } catch (e) {
@@ -653,6 +658,109 @@ export class PrepTrackDB {
       });
     } catch {
       MemoryFallback.removeItem('preptrack_chapter_completion');
+    }
+  }
+
+  // --- MOCK TEST OPERATIONS ---
+  public static async getMockTests(): Promise<MockTest[]> {
+    if (this.isFallbackEnabled()) {
+      try {
+        const val = MemoryFallback.getItem('preptrack_mock_tests');
+        return val ? JSON.parse(val) : [];
+      } catch {
+        return [];
+      }
+    }
+    try {
+      const db = await this.getDB();
+      return new Promise((resolve) => {
+        const transaction = db.transaction('mock_tests', 'readonly');
+        const store = transaction.objectStore('mock_tests');
+        const request = store.getAll();
+
+        request.onsuccess = () => {
+          const sorted = (request.result || []).sort((a, b) => b.timestamp - a.timestamp);
+          resolve(sorted);
+        };
+        request.onerror = () => resolve([]);
+      });
+    } catch {
+      try {
+        const val = MemoryFallback.getItem('preptrack_mock_tests');
+        return val ? JSON.parse(val) : [];
+      } catch {
+        return [];
+      }
+    }
+  }
+
+  public static async saveMockTest(test: MockTest): Promise<void> {
+    if (this.isFallbackEnabled()) {
+      try {
+        const tests = await this.getMockTests();
+        const index = tests.findIndex(t => t.id === test.id);
+        if (index > -1) {
+          tests[index] = test;
+        } else {
+          tests.push(test);
+        }
+        MemoryFallback.setItem('preptrack_mock_tests', JSON.stringify(tests));
+      } catch (e) {
+        console.error('Fallback save error:', e);
+      }
+      return;
+    }
+    try {
+      const db = await this.getDB();
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction('mock_tests', 'readwrite');
+        const store = transaction.objectStore('mock_tests');
+        const request = store.put(test);
+
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject('Failed to save mock test');
+      });
+    } catch {
+      try {
+        const tests = await this.getMockTests();
+        const index = tests.findIndex(t => t.id === test.id);
+        if (index > -1) {
+          tests[index] = test;
+        } else {
+          tests.push(test);
+        }
+        MemoryFallback.setItem('preptrack_mock_tests', JSON.stringify(tests));
+      } catch {}
+    }
+  }
+
+  public static async deleteMockTest(id: string): Promise<void> {
+    if (this.isFallbackEnabled()) {
+      try {
+        const tests = await this.getMockTests();
+        const filtered = tests.filter(t => t.id !== id);
+        MemoryFallback.setItem('preptrack_mock_tests', JSON.stringify(filtered));
+      } catch (e) {
+        console.error('Fallback delete error:', e);
+      }
+      return;
+    }
+    try {
+      const db = await this.getDB();
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction('mock_tests', 'readwrite');
+        const store = transaction.objectStore('mock_tests');
+        const request = store.delete(id);
+
+        request.onsuccess = () => resolve();
+        request.onerror = () => reject('Failed to delete mock test');
+      });
+    } catch {
+      try {
+        const tests = await this.getMockTests();
+        const filtered = tests.filter(t => t.id !== id);
+        MemoryFallback.setItem('preptrack_mock_tests', JSON.stringify(filtered));
+      } catch {}
     }
   }
 

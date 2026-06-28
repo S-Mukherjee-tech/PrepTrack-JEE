@@ -19,17 +19,17 @@ export default function QuestionTrackerForm({ questionsList, onSaveQuestions }: 
 
   const [selectedDate, setSelectedDate] = useState(getTodayStr());
 
-  // Input states - integers
-  const [mathNormal, setMathNormal] = useState<number | ''>(0);
-  const [physicsNormal, setPhysicsNormal] = useState<number | ''>(0);
-  const [chemistryNormal, setChemistryNormal] = useState<number | ''>(0);
+  // Input states - integers (using '' by default so there is no leading zero and placeholders are shown)
+  const [mathNormal, setMathNormal] = useState<number | ''>('');
+  const [physicsNormal, setPhysicsNormal] = useState<number | ''>('');
+  const [chemistryNormal, setChemistryNormal] = useState<number | ''>('');
 
-  const [mathMain, setMathMain] = useState<number | ''>(0);
-  const [mathAdv, setMathAdv] = useState<number | ''>(0);
-  const [phyMain, setPhyMain] = useState<number | ''>(0);
-  const [phyAdv, setPhyAdv] = useState<number | ''>(0);
-  const [chemMain, setChemMain] = useState<number | ''>(0);
-  const [chemAdv, setChemAdv] = useState<number | ''>(0);
+  const [mathMain, setMathMain] = useState<number | ''>('');
+  const [mathAdv, setMathAdv] = useState<number | ''>('');
+  const [phyMain, setPhyMain] = useState<number | ''>('');
+  const [phyAdv, setPhyAdv] = useState<number | ''>('');
+  const [chemMain, setChemMain] = useState<number | ''>('');
+  const [chemAdv, setChemAdv] = useState<number | ''>('');
 
   const [saveSuccessMessage, setSaveSuccessMessage] = useState(false);
 
@@ -37,31 +37,44 @@ export default function QuestionTrackerForm({ questionsList, onSaveQuestions }: 
   useEffect(() => {
     const record = questionsList.find((q) => q.date === selectedDate);
     if (record) {
-      setMathNormal(record.math || 0);
-      setPhysicsNormal(record.physics || 0);
-      setChemistryNormal(record.chemistry || 0);
-      setMathMain(record.math_pyq_main || 0);
-      setMathAdv(record.math_pyq_adv || 0);
-      setPhyMain(record.physics_pyq_main || 0);
-      setPhyAdv(record.physics_pyq_adv || 0);
-      setChemMain(record.chemistry_pyq_main || 0);
-      setChemAdv(record.chemistry_pyq_adv || 0);
+      setMathNormal(record.math === 0 ? '' : (record.math || ''));
+      setPhysicsNormal(record.physics === 0 ? '' : (record.physics || ''));
+      setChemistryNormal(record.chemistry === 0 ? '' : (record.chemistry || ''));
+      setMathMain(record.math_pyq_main === 0 ? '' : (record.math_pyq_main || ''));
+      setMathAdv(record.math_pyq_adv === 0 ? '' : (record.math_pyq_adv || ''));
+      setPhyMain(record.physics_pyq_main === 0 ? '' : (record.physics_pyq_main || ''));
+      setPhyAdv(record.physics_pyq_adv === 0 ? '' : (record.physics_pyq_adv || ''));
+      setChemMain(record.chemistry_pyq_main === 0 ? '' : (record.chemistry_pyq_main || ''));
+      setChemAdv(record.chemistry_pyq_adv === 0 ? '' : (record.chemistry_pyq_adv || ''));
     } else {
-      // Clear or reset to 0
-      setMathNormal(0);
-      setPhysicsNormal(0);
-      setChemistryNormal(0);
-      setMathMain(0);
-      setMathAdv(0);
-      setPhyMain(0);
-      setPhyAdv(0);
-      setChemMain(0);
-      setChemAdv(0);
+      setMathNormal('');
+      setPhysicsNormal('');
+      setChemistryNormal('');
+      setMathMain('');
+      setMathAdv('');
+      setPhyMain('');
+      setPhyAdv('');
+      setChemMain('');
+      setChemAdv('');
     }
   }, [selectedDate, questionsList]);
 
   // Calculations
   const parseNum = (val: number | '') => (val === '' ? 0 : val);
+
+  // Helper handler for integer inputs
+  const handleIntChange = (val: string, setter: (v: number | '') => void) => {
+    if (val === '') {
+      setter('');
+      return;
+    }
+    const cleaned = val.replace(/[^0-9]/g, '');
+    if (cleaned === '') {
+      setter('');
+      return;
+    }
+    setter(parseInt(cleaned, 10));
+  };
 
   const mathTotal = parseNum(mathNormal) + parseNum(mathMain) + parseNum(mathAdv);
   const physicsTotal = parseNum(physicsNormal) + parseNum(phyMain) + parseNum(phyAdv);
@@ -98,15 +111,15 @@ export default function QuestionTrackerForm({ questionsList, onSaveQuestions }: 
 
   const handleClear = () => {
     if (confirm('Are you sure you want to clear inputs for this date?')) {
-      setMathNormal(0);
-      setPhysicsNormal(0);
-      setChemistryNormal(0);
-      setMathMain(0);
-      setMathAdv(0);
-      setPhyMain(0);
-      setPhyAdv(0);
-      setChemMain(0);
-      setChemAdv(0);
+      setMathNormal('');
+      setPhysicsNormal('');
+      setChemistryNormal('');
+      setMathMain('');
+      setMathAdv('');
+      setPhyMain('');
+      setPhyAdv('');
+      setChemMain('');
+      setChemAdv('');
     }
   };
 
@@ -147,11 +160,13 @@ export default function QuestionTrackerForm({ questionsList, onSaveQuestions }: 
             <div>
               <label className="block text-[11px] font-medium text-muted-foreground mb-1">Normal Questions Solved</label>
               <input
-                type="number"
-                min="0"
+                type="text"
+                inputMode="numeric"
+                placeholder="0"
                 value={physicsNormal}
-                onChange={(e) => setPhysicsNormal(e.target.value === '' ? '' : Math.max(0, parseInt(e.target.value) || 0))}
-                className="w-full bg-card border border-border text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500/50"
+                onFocus={(e) => e.target.select()}
+                onChange={(e) => handleIntChange(e.target.value, setPhysicsNormal)}
+                className="w-full bg-card border border-border text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500/50 font-sans font-medium"
               />
             </div>
 
@@ -159,21 +174,25 @@ export default function QuestionTrackerForm({ questionsList, onSaveQuestions }: 
               <div>
                 <label className="block text-[10px] font-medium text-muted-foreground mb-1">JEE Main PYQs</label>
                 <input
-                  type="number"
-                  min="0"
+                  type="text"
+                  inputMode="numeric"
+                  placeholder="0"
                   value={phyMain}
-                  onChange={(e) => setPhyMain(e.target.value === '' ? '' : Math.max(0, parseInt(e.target.value) || 0))}
-                  className="w-full bg-card border border-border text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500/50"
+                  onFocus={(e) => e.target.select()}
+                  onChange={(e) => handleIntChange(e.target.value, setPhyMain)}
+                  className="w-full bg-card border border-border text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500/50 font-sans font-medium"
                 />
               </div>
               <div>
                 <label className="block text-[10px] font-medium text-muted-foreground mb-1">JEE Adv PYQs</label>
                 <input
-                  type="number"
-                  min="0"
+                  type="text"
+                  inputMode="numeric"
+                  placeholder="0"
                   value={phyAdv}
-                  onChange={(e) => setPhyAdv(e.target.value === '' ? '' : Math.max(0, parseInt(e.target.value) || 0))}
-                  className="w-full bg-card border border-border text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500/50"
+                  onFocus={(e) => e.target.select()}
+                  onChange={(e) => handleIntChange(e.target.value, setPhyAdv)}
+                  className="w-full bg-card border border-border text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500/50 font-sans font-medium"
                 />
               </div>
             </div>
@@ -193,11 +212,13 @@ export default function QuestionTrackerForm({ questionsList, onSaveQuestions }: 
             <div>
               <label className="block text-[11px] font-medium text-muted-foreground mb-1">Normal Questions Solved</label>
               <input
-                type="number"
-                min="0"
+                type="text"
+                inputMode="numeric"
+                placeholder="0"
                 value={chemistryNormal}
-                onChange={(e) => setChemistryNormal(e.target.value === '' ? '' : Math.max(0, parseInt(e.target.value) || 0))}
-                className="w-full bg-card border border-border text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500/50"
+                onFocus={(e) => e.target.select()}
+                onChange={(e) => handleIntChange(e.target.value, setChemistryNormal)}
+                className="w-full bg-card border border-border text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500/50 font-sans font-medium"
               />
             </div>
 
@@ -205,21 +226,25 @@ export default function QuestionTrackerForm({ questionsList, onSaveQuestions }: 
               <div>
                 <label className="block text-[10px] font-medium text-muted-foreground mb-1">JEE Main PYQs</label>
                 <input
-                  type="number"
-                  min="0"
+                  type="text"
+                  inputMode="numeric"
+                  placeholder="0"
                   value={chemMain}
-                  onChange={(e) => setChemMain(e.target.value === '' ? '' : Math.max(0, parseInt(e.target.value) || 0))}
-                  className="w-full bg-card border border-border text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500/50"
+                  onFocus={(e) => e.target.select()}
+                  onChange={(e) => handleIntChange(e.target.value, setChemMain)}
+                  className="w-full bg-card border border-border text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500/50 font-sans font-medium"
                 />
               </div>
               <div>
                 <label className="block text-[10px] font-medium text-muted-foreground mb-1">JEE Adv PYQs</label>
                 <input
-                  type="number"
-                  min="0"
+                  type="text"
+                  inputMode="numeric"
+                  placeholder="0"
                   value={chemAdv}
-                  onChange={(e) => setChemAdv(e.target.value === '' ? '' : Math.max(0, parseInt(e.target.value) || 0))}
-                  className="w-full bg-card border border-border text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500/50"
+                  onFocus={(e) => e.target.select()}
+                  onChange={(e) => handleIntChange(e.target.value, setChemAdv)}
+                  className="w-full bg-card border border-border text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500/50 font-sans font-medium"
                 />
               </div>
             </div>
@@ -239,11 +264,13 @@ export default function QuestionTrackerForm({ questionsList, onSaveQuestions }: 
             <div>
               <label className="block text-[11px] font-medium text-muted-foreground mb-1">Normal Questions Solved</label>
               <input
-                type="number"
-                min="0"
+                type="text"
+                inputMode="numeric"
+                placeholder="0"
                 value={mathNormal}
-                onChange={(e) => setMathNormal(e.target.value === '' ? '' : Math.max(0, parseInt(e.target.value) || 0))}
-                className="w-full bg-card border border-border text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500/50"
+                onFocus={(e) => e.target.select()}
+                onChange={(e) => handleIntChange(e.target.value, setMathNormal)}
+                className="w-full bg-card border border-border text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500/50 font-sans font-medium"
               />
             </div>
 
@@ -251,21 +278,25 @@ export default function QuestionTrackerForm({ questionsList, onSaveQuestions }: 
               <div>
                 <label className="block text-[10px] font-medium text-muted-foreground mb-1">JEE Main PYQs</label>
                 <input
-                  type="number"
-                  min="0"
+                  type="text"
+                  inputMode="numeric"
+                  placeholder="0"
                   value={mathMain}
-                  onChange={(e) => setMathMain(e.target.value === '' ? '' : Math.max(0, parseInt(e.target.value) || 0))}
-                  className="w-full bg-card border border-border text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500/50"
+                  onFocus={(e) => e.target.select()}
+                  onChange={(e) => handleIntChange(e.target.value, setMathMain)}
+                  className="w-full bg-card border border-border text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500/50 font-sans font-medium"
                 />
               </div>
               <div>
                 <label className="block text-[10px] font-medium text-muted-foreground mb-1">JEE Adv PYQs</label>
                 <input
-                  type="number"
-                  min="0"
+                  type="text"
+                  inputMode="numeric"
+                  placeholder="0"
                   value={mathAdv}
-                  onChange={(e) => setMathAdv(e.target.value === '' ? '' : Math.max(0, parseInt(e.target.value) || 0))}
-                  className="w-full bg-card border border-border text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500/50"
+                  onFocus={(e) => e.target.select()}
+                  onChange={(e) => handleIntChange(e.target.value, setMathAdv)}
+                  className="w-full bg-card border border-border text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500/50 font-sans font-medium"
                 />
               </div>
             </div>

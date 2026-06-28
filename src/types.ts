@@ -66,3 +66,24 @@ export interface UserSettings {
   dailyStudyMinutesGoal?: number; // target minutes of study per day
   dailyQuestionsSolvedGoal?: number; // target questions solved per day
 }
+
+export interface SubjectStats {
+  score: number;
+  correct: number;
+  incorrect: number;
+  unattempted: number;
+}
+
+export interface MockTest {
+  id: string;
+  date: string; // YYYY-MM-DD
+  pattern: 'JEE Main' | 'JEE Advanced';
+  fullMarks: number;
+  totalMarksScored: number;
+  physics: SubjectStats;
+  chemistry: SubjectStats;
+  math: SubjectStats;
+  notes?: string;
+  timestamp: number;
+}
+

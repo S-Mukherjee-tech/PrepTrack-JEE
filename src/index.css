@@ -1,47 +1,38 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;650;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
-  --font-display: "Space Grotesk", sans-serif;
+  --font-display: "Outfit", "Space Grotesk", sans-serif;
+  --color-primary: var(--primary);
+  --color-primary-foreground: #ffffff;
 }
 
-/* Frosted Glass Theme Selection Overrides */
+/* High-Contrast, Vibrant Theme Selection Overrides */
 .theme-glass {
-  --primary: #6366f1;
+  --primary: #818cf8;
 }
 
-.theme-glass .bg-card,
-.theme-glass .bg-[#0c1220],
-.theme-glass .bg-[#05140e],
-.theme-glass .bg-white {
-  background-color: rgba(255, 255, 255, 0.05) !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
-  backdrop-filter: blur(22px) saturate(110%);
-  -webkit-backdrop-filter: blur(22px) saturate(110%);
+.theme-glass .bg-card {
+  background: linear-gradient(135deg, rgba(18, 20, 37, 0.78), rgba(10, 11, 22, 0.88)) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  backdrop-filter: blur(28px) saturate(130%);
+  -webkit-backdrop-filter: blur(28px) saturate(130%);
   color: #f8fafc !important;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-}
-
-.theme-glass .border,
-.theme-glass .border-slate-800,
-.theme-glass .border-slate-200,
-.theme-glass .border-emerald-500\/15 {
-  border-color: rgba(255, 255, 255, 0.08) !important;
-}
-
-.theme-glass .bg-accent\/10,
-.theme-glass .bg-accent\/15,
-.theme-glass .bg-accent\/20,
-.theme-glass .bg-accent\/30,
-.theme-glass .text-slate-100 {
-  background-color: rgba(255, 255, 255, 0.04) !important;
+  box-shadow: 0 16px 48px -12px rgba(99, 102, 241, 0.18), inset 0 1px 1px rgba(255, 255, 255, 0.08) !important;
 }
 
 .theme-glass .text-muted-foreground,
-.theme-glass .text-slate-400 {
-  color: #94a3b8 !important;
+.theme-glass .text-slate-400,
+.theme-glass .text-gray-400,
+.theme-glass .text-slate-500,
+.theme-glass .text-gray-500 {
+  color: #cbd5e1 !important; /* Extremely high contrast light gray */
+}
+
+.theme-glass .text-slate-300 {
+  color: #f1f5f9 !important; /* Stunning light silver-white */
 }
 
 .theme-glass .text-foreground,
@@ -51,7 +42,197 @@
 .theme-glass h4,
 .theme-glass h5,
 .theme-glass span {
+  color: #ffffff;
+}
+
+/* Cosmic Ocean (Steel Slate Dark) Theme Overrides */
+.theme-slate {
+  --primary: #06b6d4;
+}
+
+.theme-slate .bg-card {
+  background: linear-gradient(135deg, #0f132e, #06091b) !important;
+  border-color: rgba(6, 182, 212, 0.28) !important;
+  color: #f8fafc !important;
+  box-shadow: 0 16px 40px -12px rgba(6, 182, 212, 0.25) !important;
+}
+
+.theme-slate .text-muted-foreground,
+.theme-slate .text-slate-400,
+.theme-slate .text-gray-400,
+.theme-slate .text-slate-500,
+.theme-slate .text-gray-500 {
+  color: #e2e8f0 !important; /* Highly polished, bright cyan-ocean contrast */
+}
+
+.theme-slate .text-slate-300 {
+  color: #f8fafc !important; /* Brilliant high-fidelity white */
+}
+
+.theme-slate .text-foreground,
+.theme-slate h1,
+.theme-slate h2,
+.theme-slate h3,
+.theme-slate h4,
+.theme-slate h5,
+.theme-slate span {
   color: #f8fafc;
+}
+
+/* Cyber Neon Theme Overrides */
+.theme-cyber {
+  --primary: #10b981;
+}
+
+.theme-cyber .bg-card {
+  background: linear-gradient(135deg, #051d11, #020d06) !important;
+  border-color: rgba(16, 185, 129, 0.45) !important;
+  color: #ecfdf5 !important;
+  box-shadow: 0 16px 40px -12px rgba(16, 185, 129, 0.32) !important;
+}
+
+.theme-cyber .text-muted-foreground,
+.theme-cyber .text-slate-400,
+.theme-cyber .text-gray-400,
+.theme-cyber .text-slate-500,
+.theme-cyber .text-gray-500 {
+  color: #8bfcd1 !important; /* Vibrant bright lime/mint glow for 100% legibility */
+}
+
+.theme-cyber .text-slate-300 {
+  color: #e6fffa !important; /* Maximum-brightness glowing cyan-emerald tint */
+}
+
+.theme-cyber .text-foreground,
+.theme-cyber span {
+  color: #ffffff !important;
+}
+
+.theme-cyber h1,
+.theme-cyber h2,
+.theme-cyber h3,
+.theme-cyber h4,
+.theme-cyber h5 {
+  color: #10b981 !important;
+  text-shadow: 0 0 14px rgba(16, 185, 129, 0.3);
+}
+
+/* Spring Blossom (Light) Theme Overrides */
+.theme-light {
+  --primary: #4f46e5;
+}
+
+.theme-light .bg-card {
+  background: linear-gradient(135deg, #ffffff, #fffdfb) !important;
+  border-color: rgba(244, 63, 94, 0.18) !important;
+  color: #0f172a !important;
+  box-shadow: 0 16px 40px -12px rgba(244, 63, 94, 0.09) !important;
+}
+
+.theme-light .text-muted-foreground,
+.theme-light .text-slate-400,
+.theme-light .text-gray-400,
+.theme-light .text-slate-500,
+.theme-light .text-gray-500 {
+  color: #334155 !important; /* Deep, high-contrast, fully readable charcoal slate */
+}
+
+.theme-light .text-slate-300 {
+  color: #1e293b !important; /* Strong dark indigo-gray */
+}
+
+.theme-light .text-foreground,
+.theme-light h1,
+.theme-light h2,
+.theme-light h3,
+.theme-light h4,
+.theme-light h5,
+.theme-light span {
+  color: #0f172a;
+}
+
+/* Global Smooth Element Polish (Fixes blocky look) */
+.bg-card, .rounded-3xl {
+  border-radius: 28px !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.rounded-2xl {
+  border-radius: 18px !important;
+}
+
+.rounded-xl {
+  border-radius: 14px !important;
+}
+
+/* Modern Input Polish with custom themes */
+input, select, textarea {
+  border-radius: 14px !important;
+  border-width: 1.5px !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.theme-glass input, .theme-glass select, .theme-glass textarea {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+}
+.theme-glass input:focus, .theme-glass select:focus, .theme-glass textarea:focus {
+  border-color: #818cf8 !important;
+  box-shadow: 0 0 16px rgba(129, 140, 248, 0.25) !important;
+  background-color: rgba(255, 255, 255, 0.07) !important;
+}
+
+.theme-slate input, .theme-slate select, .theme-slate textarea {
+  background-color: rgba(15, 23, 42, 0.4) !important;
+  border-color: rgba(6, 182, 212, 0.2) !important;
+  color: #f8fafc !important;
+}
+.theme-slate input:focus, .theme-slate select:focus, .theme-slate textarea:focus {
+  border-color: #06b6d4 !important;
+  box-shadow: 0 0 16px rgba(6, 182, 212, 0.25) !important;
+  background-color: rgba(15, 23, 42, 0.6) !important;
+}
+
+.theme-cyber input, .theme-cyber select, .theme-cyber textarea {
+  background-color: rgba(4, 22, 12, 0.5) !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+  color: #ecfdf5 !important;
+  font-family: "JetBrains Mono", monospace !important;
+}
+.theme-cyber input:focus, .theme-cyber select:focus, .theme-cyber textarea:focus {
+  border-color: #10b981 !important;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.35) !important;
+  background-color: rgba(4, 22, 12, 0.7) !important;
+}
+
+.theme-light input, .theme-light select, .theme-light textarea {
+  background-color: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+.theme-light input:focus, .theme-light select:focus, .theme-light textarea:focus {
+  border-color: #4f46e5 !important;
+  box-shadow: 0 0 14px rgba(79, 70, 229, 0.15) !important;
+  background-color: #ffffff !important;
+}
+
+/* Internal block smoothing */
+.theme-glass .bg-accent\/5, .theme-glass .bg-accent\/10, .theme-glass .bg-accent\/15 {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+.theme-slate .bg-accent\/5, .theme-slate .bg-accent\/10, .theme-slate .bg-accent\/15 {
+  background-color: rgba(6, 182, 212, 0.03) !important;
+  border-color: rgba(6, 182, 212, 0.1) !important;
+}
+.theme-cyber .bg-accent\/5, .theme-cyber .bg-accent\/10, .theme-cyber .bg-accent\/15 {
+  background-color: rgba(16, 185, 129, 0.04) !important;
+  border-color: rgba(16, 185, 129, 0.15) !important;
+}
+.theme-light .bg-accent\/5, .theme-light .bg-accent\/10, .theme-light .bg-accent\/15 {
+  background-color: #f8fafc !important;
+  border-color: #f1f5f9 !important;
 }
 
 /* Custom fade integrations */
