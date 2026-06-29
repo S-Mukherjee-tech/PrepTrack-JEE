@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, memo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Plus, 
@@ -30,7 +30,7 @@ interface MockTestTrackerProps {
   cardBgClass: string;
 }
 
-export default function MockTestTracker({
+const MockTestTracker = memo(function MockTestTracker({
   mockTests,
   onAddTest,
   onDeleteTest,
@@ -1310,4 +1310,6 @@ export default function MockTestTracker({
 
     </div>
   );
-}
+});
+
+export default MockTestTracker;

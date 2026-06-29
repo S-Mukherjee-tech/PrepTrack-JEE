@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, memo } from 'react';
 import { motion } from 'motion/react';
 import { StudySession, DailyQuestions } from '../types';
 import { BarChart, Clock, Hash, BookOpen } from 'lucide-react';
@@ -10,7 +10,7 @@ interface AnalyticsChartsProps {
 
 type PeriodType = 'day' | 'week' | 'month';
 
-export default function AnalyticsCharts({ sessions, questions }: AnalyticsChartsProps) {
+const AnalyticsCharts = memo(function AnalyticsCharts({ sessions, questions }: AnalyticsChartsProps) {
   const [sessionPeriod, setSessionPeriod] = useState<PeriodType>('day');
   const [questionsPeriod, setQuestionsPeriod] = useState<PeriodType>('day');
 
@@ -393,4 +393,6 @@ export default function AnalyticsCharts({ sessions, questions }: AnalyticsCharts
       </div>
     </div>
   );
-}
+});
+
+export default AnalyticsCharts;

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, memo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Subject, ErrorBookItem, SpecialImportanceItem } from '../types';
 import { Trash2, AlertCircle, BookOpen, Star, Sparkles, Filter, Plus, Check } from 'lucide-react';
@@ -12,7 +12,7 @@ interface NotesAndErrorsProps {
   onDeleteImportanceItem: (id: string) => void;
 }
 
-export default function NotesAndErrors({
+const NotesAndErrors = memo(function NotesAndErrors({
   errorItems,
   importanceItems,
   onAddErrorItem,
@@ -258,7 +258,7 @@ export default function NotesAndErrors({
                   >
                     <button
                       onClick={() => onDeleteErrorItem(item.id)}
-                      className="absolute top-4 right-4 text-muted-foreground hover:text-rose-500 p-1.5 hover:bg-rose-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer duration-200"
+                      className="absolute top-4 right-4 text-muted-foreground hover:text-rose-500 p-1.5 hover:bg-rose-500/10 rounded-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity cursor-pointer duration-200"
                       title="Delete record"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -414,7 +414,7 @@ export default function NotesAndErrors({
                     <div>
                       <button
                         onClick={() => onDeleteImportanceItem(item.id)}
-                        className="absolute top-4 right-4 text-muted-foreground hover:text-rose-500 p-1.5 hover:bg-rose-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer duration-200"
+                        className="absolute top-4 right-4 text-muted-foreground hover:text-rose-500 p-1.5 hover:bg-rose-500/10 rounded-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity cursor-pointer duration-200"
                         title="Delete record"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -454,4 +454,6 @@ export default function NotesAndErrors({
 
     </div>
   );
-}
+});
+
+export default NotesAndErrors;

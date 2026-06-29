@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, memo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { StudySession, StudyMode, UserSettings } from '../types';
 import { Play, Pause, Square, RotateCcw, Timer, Award, Coffee, BookOpen, AlertCircle, Volume2, VolumeX } from 'lucide-react';
@@ -9,7 +9,7 @@ interface TimerSectionProps {
   currentSessionsTodayCount: number;
 }
 
-export default function TimerSection({ settings, onSaveSession, currentSessionsTodayCount }: TimerSectionProps) {
+const TimerSection = memo(function TimerSection({ settings, onSaveSession, currentSessionsTodayCount }: TimerSectionProps) {
   const [mode, setMode] = useState<StudyMode>(() => {
     return (localStorage.getItem('preptrack_timer_mode') as StudyMode) || 'normal';
   });
@@ -825,4 +825,6 @@ export default function TimerSection({ settings, onSaveSession, currentSessionsT
       </AnimatePresence>
     </div>
   );
-}
+});
+
+export default TimerSection;

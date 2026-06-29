@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, memo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Chapter, Subject } from '../types';
 import { CLASS_11_SYLLABUS, CLASS_12_SYLLABUS } from '../data/syllabus';
@@ -10,7 +10,7 @@ interface SyllabusTrackerProps {
   onClearAll: () => void;
 }
 
-export default function SyllabusTracker({ completions, onToggleChapter, onClearAll }: SyllabusTrackerProps) {
+const SyllabusTracker = memo(function SyllabusTracker({ completions, onToggleChapter, onClearAll }: SyllabusTrackerProps) {
   const [activeClass, setActiveClass] = useState<'all' | '11' | '12'>('all');
   const [activeSubject, setActiveSubject] = useState<'all' | Subject>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -255,4 +255,6 @@ export default function SyllabusTracker({ completions, onToggleChapter, onClearA
 
     </div>
   );
-}
+});
+
+export default SyllabusTracker;

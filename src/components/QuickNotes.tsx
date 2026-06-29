@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, KeyboardEvent } from 'react';
+import { useState, useEffect, useRef, KeyboardEvent, memo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Trash2, Plus, CheckCircle2, Circle, ListTodo, Sparkles, FileText, Check, Edit3, Save, Clock } from 'lucide-react';
 
@@ -14,7 +14,7 @@ interface QuickNotesProps {
   cardBgClass: string;
 }
 
-export default function QuickNotes({ theme, cardBgClass }: QuickNotesProps) {
+const QuickNotes = memo(function QuickNotes({ theme, cardBgClass }: QuickNotesProps) {
   const [notes, setNotes] = useState<QuickNote[]>([]);
   const [inputText, setInputText] = useState('');
   const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
@@ -425,7 +425,7 @@ export default function QuickNotes({ theme, cardBgClass }: QuickNotesProps) {
                         ) : (
                           <button
                             onClick={() => startEditing(note)}
-                            className="opacity-0 group-hover:opacity-100 hover:text-foreground p-1 rounded-lg cursor-pointer transition-all"
+                            className="opacity-100 md:opacity-0 md:group-hover:opacity-100 hover:text-foreground p-1 rounded-lg cursor-pointer transition-all"
                             title="Edit reminder"
                           >
                             <Edit3 className="w-3.5 h-3.5" />
@@ -433,7 +433,7 @@ export default function QuickNotes({ theme, cardBgClass }: QuickNotesProps) {
                         )}
                         <button
                           onClick={() => handleDeleteNote(note.id)}
-                          className="opacity-0 group-hover:opacity-100 hover:text-rose-500 p-1 rounded-lg cursor-pointer transition-all"
+                          className="opacity-100 md:opacity-0 md:group-hover:opacity-100 hover:text-rose-500 p-1 rounded-lg cursor-pointer transition-all"
                           title="Delete"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -496,4 +496,6 @@ Changes are saved to the persistent database automatically as you type."
       </AnimatePresence>
     </div>
   );
-}
+});
+
+export default QuickNotes;

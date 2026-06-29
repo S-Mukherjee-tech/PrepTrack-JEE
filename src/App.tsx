@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PrepTrackDB } from './db';
 import { 
@@ -74,14 +74,14 @@ export default function App() {
   // Toast Notifications State
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const addToast = (title: string, message: string, type: 'success' | 'info' | 'goal' = 'goal') => {
+  const addToast = useCallback((title: string, message: string, type: 'success' | 'info' | 'goal' = 'goal') => {
     const id = Math.random().toString(36).substring(2, 9);
     setToasts((prev) => [...prev, { id, type, title, message }]);
-  };
+  }, []);
 
-  const handleCloseToast = (id: string) => {
+  const handleCloseToast = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
-  };
+  }, []);
 
   // Local settings fields to allow clean text deleting
   const [localWorkDuration, setLocalWorkDuration] = useState<string>('25');
@@ -126,22 +126,22 @@ export default function App() {
   }, []);
 
   // Set active tab scroll safely
-  const handleTabChange = (tab: typeof activeTab) => {
+  const handleTabChange = useCallback((tab: typeof activeTab) => {
     setActiveTab(tab);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }, []);
 
   // --- SAVE CALLBACKS UNIFYING DB AND REACT STATE ---
-  const handleSaveSettings = async (nextSettings: UserSettings) => {
+  const handleSaveSettings = useCallback(async (nextSettings: UserSettings) => {
     try {
       await PrepTrackDB.saveSettings(nextSettings);
       setSettings(nextSettings);
     } catch (e) {
       console.error(e);
     }
-  };
+  }, []);
 
-  const handleSaveStudySession = async (session: StudySession) => {
+  const handleSaveStudySession = useCallback(async (session: StudySession) => {
     try {
       await PrepTrackDB.saveStudySession(session);
       // Prepend to show immediately
@@ -149,9 +149,9 @@ export default function App() {
     } catch (e) {
       console.error(e);
     }
-  };
+  }, []);
 
-  const handleDeleteStudySession = async (id: string) => {
+  const handleDeleteStudySession = useCallback(async (id: string) => {
     if (confirm('Delete this study log entry permanently?')) {
       try {
         await PrepTrackDB.deleteStudySession(id);
@@ -160,9 +160,9 @@ export default function App() {
         console.error(e);
       }
     }
-  };
+  }, []);
 
-  const handleSaveQuestions = async (record: DailyQuestions) => {
+  const handleSaveQuestions = useCallback(async (record: DailyQuestions) => {
     try {
       await PrepTrackDB.saveQuestionsSolved(record);
       setQuestions((prev) => {
@@ -177,45 +177,45 @@ export default function App() {
     } catch (e) {
       console.error(e);
     }
-  };
+  }, []);
 
-  const handleAddErrorItem = async (item: ErrorBookItem) => {
+  const handleAddErrorItem = useCallback(async (item: ErrorBookItem) => {
     try {
       await PrepTrackDB.saveErrorBookItem(item);
       setErrorBook((prev) => [item, ...prev]);
     } catch (e) {
       console.error(e);
     }
-  };
+  }, []);
 
-  const handleDeleteErrorItem = async (id: string) => {
+  const handleDeleteErrorItem = useCallback(async (id: string) => {
     try {
       await PrepTrackDB.deleteErrorBookItem(id);
       setErrorBook((prev) => prev.filter((item) => item.id !== id));
     } catch (e) {
       console.error(e);
     }
-  };
+  }, []);
 
-  const handleAddImportanceItem = async (item: SpecialImportanceItem) => {
+  const handleAddImportanceItem = useCallback(async (item: SpecialImportanceItem) => {
     try {
       await PrepTrackDB.saveSpecialImportanceItem(item);
       setSpecialImportance((prev) => [item, ...prev]);
     } catch (e) {
       console.error(e);
     }
-  };
+  }, []);
 
-  const handleDeleteImportanceItem = async (id: string) => {
+  const handleDeleteImportanceItem = useCallback(async (id: string) => {
     try {
       await PrepTrackDB.deleteSpecialImportanceItem(id);
       setSpecialImportance((prev) => prev.filter((item) => item.id !== id));
     } catch (e) {
       console.error(e);
     }
-  };
+  }, []);
 
-  const handleSaveMockTest = async (test: MockTest) => {
+  const handleSaveMockTest = useCallback(async (test: MockTest) => {
     try {
       await PrepTrackDB.saveMockTest(test);
       setMockTests((prev) => [test, ...prev]);
@@ -227,9 +227,9 @@ export default function App() {
     } catch (e) {
       console.error(e);
     }
-  };
+  }, [addToast]);
 
-  const handleDeleteMockTest = async (id: string) => {
+  const handleDeleteMockTest = useCallback(async (id: string) => {
     if (confirm('Are you sure you want to delete this mock test log entry permanently?')) {
       try {
         await PrepTrackDB.deleteMockTest(id);
@@ -239,18 +239,18 @@ export default function App() {
         console.error(e);
       }
     }
-  };
+  }, [addToast]);
 
-  const handleToggleChapter = async (id: string, completed: boolean) => {
+  const handleToggleChapter = useCallback(async (id: string, completed: boolean) => {
     try {
       await PrepTrackDB.saveChapterCompletion(id, completed);
       setChapterCompletions((prev) => ({ ...prev, [id]: completed }));
     } catch (e) {
       console.error(e);
     }
-  };
+  }, []);
 
-  const handleClearChapters = async () => {
+  const handleClearChapters = useCallback(async () => {
     if (confirm('Are you sure you want to completely clear all chapter tick mark statuses? This cannot be undone.')) {
       try {
         await PrepTrackDB.clearChapterCompletions();
@@ -259,12 +259,12 @@ export default function App() {
         console.error(e);
       }
     }
-  };
+  }, []);
 
-  const handleSaveFeedback = (feedback: FeedbackItem) => {
+  const handleSaveFeedback = useCallback((feedback: FeedbackItem) => {
     // Simply logging or aggregating feedback safely
     console.log('Feedback submitted locally:', feedback);
-  };
+  }, []);
 
   const handleResetAllData = async () => {
     try {
@@ -527,7 +527,7 @@ export default function App() {
       case 'glass':
         return {
           bg: 'bg-[#060713] text-slate-100 selection:bg-indigo-500/30 selection:text-indigo-200',
-          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 space-y-8 relative z-10',
+          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-24 md:py-12 space-y-8 relative z-10',
           headerBg: 'bg-[#0a0c1b]/60 backdrop-blur-2xl border-b border-white/[0.08] sticky top-0 z-40',
           accentColor: 'text-[#818cf8]',
           borderStyle: 'border-white/[0.08]',
@@ -540,7 +540,7 @@ export default function App() {
       case 'cyber':
         return {
           bg: 'bg-[#020905] text-emerald-100 selection:bg-emerald-500/30 selection:text-emerald-300',
-          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 space-y-8',
+          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-24 md:py-12 space-y-8',
           headerBg: 'bg-[#03150b]/80 backdrop-blur-md border-b border-emerald-500/25 sticky top-0 z-40',
           accentColor: 'text-emerald-400',
           borderStyle: 'border-emerald-500/20',
@@ -553,7 +553,7 @@ export default function App() {
       case 'light':
         return {
           bg: 'bg-[#fffbf7] text-slate-900 selection:bg-indigo-100 selection:text-indigo-900',
-          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 space-y-8',
+          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-24 md:py-12 space-y-8',
           headerBg: 'bg-white/80 backdrop-blur-md border-b border-pink-100 sticky top-0 z-40 shadow-sm',
           accentColor: 'text-indigo-600',
           borderStyle: 'border-pink-100/60',
@@ -567,7 +567,7 @@ export default function App() {
       default:
         return {
           bg: 'bg-[#050816] text-slate-100 selection:bg-cyan-500/30 selection:text-cyan-200',
-          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 space-y-8',
+          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-24 md:py-12 space-y-8',
           headerBg: 'bg-[#090d24]/80 backdrop-blur-md border-b border-cyan-500/25 sticky top-0 z-40',
           accentColor: 'text-cyan-400',
           borderStyle: 'border-cyan-500/20',
@@ -775,15 +775,15 @@ export default function App() {
         </div>
       </header>
 
-      {/* MOBILE CONSOLE TABS - FIXED FLOATING OR FOOTER FOR EXTREME ACCESSIBILITY */}
-      <div className="md:hidden sticky top-16 bg-card border-b border-border z-30 flex items-center overflow-x-auto justify-between px-2 h-12 no-scrollbar gap-1 scroll-smooth">
+      {/* MOBILE CONSOLE TABS - FIXED BOTTOM NAV BAR FOR NATIVE APP EXPERIENCE */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-card/90 backdrop-blur-xl border-t border-border z-40 flex items-center justify-around px-2 h-16 pb-safe gap-1 shadow-[0_-8px_32px_rgba(0,0,0,0.12)]">
         {[
-          { id: 'dashboard', label: 'Dashboard', icon: Timer },
-          { id: 'analytics', label: 'Analytics', icon: BarChart },
-          { id: 'questions', label: 'Questions', icon: Sparkles },
+          { id: 'dashboard', label: 'Home', icon: Timer },
+          { id: 'analytics', label: 'Stats', icon: BarChart },
+          { id: 'questions', label: 'Solved', icon: Sparkles },
           { id: 'syllabus', label: 'Syllabus', icon: BookOpen },
           { id: 'notes', label: 'Mistakes', icon: BookMarked },
-          { id: 'mock_tests', label: 'Mock Tests', icon: Award },
+          { id: 'mock_tests', label: 'Tests', icon: Award },
           { id: 'settings', label: 'Settings', icon: Settings },
         ].map((tab) => {
           const Icon = tab.icon;
@@ -792,21 +792,26 @@ export default function App() {
             <button
               key={tab.id}
               onClick={() => handleTabChange(tab.id as any)}
-              className={`px-3 py-1.5 rounded-lg text-[10px] font-bold flex items-center gap-1 shrink-0 relative transition-colors duration-250 ${
+              className={`flex-1 py-1 flex flex-col items-center justify-center gap-1 relative transition-all duration-250 outline-none ${
                 isActive
-                  ? 'text-white'
-                  : 'text-muted-foreground hover:text-foreground'
+                  ? (settings.theme === 'light' ? 'text-rose-650 font-black' : settings.theme === 'cyber' ? 'text-emerald-400 font-black' : settings.theme === 'slate' ? 'text-cyan-400 font-black' : 'text-[#818cf8] font-black')
+                  : 'text-muted-foreground/80 hover:text-foreground font-medium'
               }`}
             >
               {isActive && (
                 <motion.div
                    layoutId="activeMobileTabPill"
-                   className="absolute inset-0 rounded-lg -z-0 bg-primary opacity-90"
+                   className={`absolute inset-x-1.5 inset-y-1 rounded-2xl -z-0 ${
+                     settings.theme === 'light' ? 'bg-rose-500/10' :
+                     settings.theme === 'cyber' ? 'bg-emerald-500/10' :
+                     settings.theme === 'slate' ? 'bg-cyan-500/10' :
+                     'bg-indigo-500/10'
+                   }`}
                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                 />
               )}
-              <Icon className="w-3.5 h-3.5 z-10 shrink-0" />
-              <span className="z-10">{tab.label}</span>
+              <Icon className="w-4.5 h-4.5 z-10 shrink-0" />
+              <span className="z-10 text-[8px] font-bold leading-none tracking-tight select-none">{tab.label}</span>
             </button>
           );
         })}
@@ -875,35 +880,35 @@ export default function App() {
                   </div>
 
                   {/* PCM Fast stats panel */}
-                  <div className="pt-4 grid grid-cols-4 gap-2 md:gap-4 max-w-lg">
-                    <div className="bg-white/10 backdrop-blur-md p-3 rounded-2xl text-center border border-white/5 shadow-sm relative group" title="Today's focused study minutes translated to hours (resets daily)">
+                  <div className="pt-4 grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 max-w-lg">
+                    <div className="bg-white/10 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl text-center border border-white/5 shadow-sm relative group" title="Today's focused study minutes translated to hours (resets daily)">
                       <span className="block text-[9px] uppercase font-bold text-indigo-150">Study Hrs (Today)</span>
-                      <span className="text-base font-bold font-mono tracking-tight text-white mt-1 block">
+                      <span className="text-sm sm:text-base font-bold font-mono tracking-tight text-white mt-1 block">
                         {(studyMinutesToday / 60).toFixed(1)}h
                       </span>
                     </div>
 
-                    <div className="bg-white/10 backdrop-blur-md p-3 rounded-2xl text-center border border-white/5 shadow-sm relative group" title="Today's total questions solved (resets daily)">
+                    <div className="bg-white/10 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl text-center border border-white/5 shadow-sm relative group" title="Today's total questions solved (resets daily)">
                       <span className="block text-[9px] uppercase font-bold text-indigo-150">Qs Solved (Today)</span>
-                      <span className="text-base font-bold font-mono tracking-tight text-white mt-1 block">
+                      <span className="text-sm sm:text-base font-bold font-mono tracking-tight text-white mt-1 block">
                         {questionsSolvedToday}
                       </span>
                     </div>
 
-                      <div className="bg-white/10 backdrop-blur-md p-3 rounded-2xl text-center border border-white/5 shadow-sm">
-                        <span className="block text-[9px] uppercase font-bold text-indigo-150">NCERT Done</span>
-                        <span className="text-base font-bold font-mono tracking-tight text-white mt-1">
-                          {syllabusStats.percentage}%
-                        </span>
-                      </div>
-
-                      <div className="bg-white/10 backdrop-blur-md p-3 rounded-2xl text-center border border-white/5 shadow-sm">
-                        <span className="block text-[9px] uppercase font-bold text-indigo-150">Streak 🔥</span>
-                        <span className="text-base font-bold font-mono tracking-tight text-white mt-1">
-                          {streakStats.currentStreak}d
-                        </span>
-                      </div>
+                    <div className="bg-white/10 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl text-center border border-white/5 shadow-sm">
+                      <span className="block text-[9px] uppercase font-bold text-indigo-150">NCERT Done</span>
+                      <span className="text-sm sm:text-base font-bold font-mono tracking-tight text-white mt-1 block">
+                        {syllabusStats.percentage}%
+                      </span>
                     </div>
+
+                    <div className="bg-white/10 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl text-center border border-white/5 shadow-sm">
+                      <span className="block text-[9px] uppercase font-bold text-indigo-150">Streak 🔥</span>
+                      <span className="text-sm sm:text-base font-bold font-mono tracking-tight text-white mt-1 block">
+                        {streakStats.currentStreak}d
+                      </span>
+                    </div>
+                  </div>
                   </div>                  
 
                   {/* Subtle horizontal section divider */}
@@ -995,24 +1000,24 @@ export default function App() {
                           Past Weekly Fire Checklist
                         </span>
                         
-                        <div className="grid grid-cols-7 gap-2">
+                        <div className="grid grid-cols-7 gap-1 sm:gap-2">
                           {streakStats.weeklyGrid.map((day) => {
                             return (
                               <div
                                 key={day.dateStr}
-                                className={`flex flex-col items-center gap-1.5 p-1 rounded-xl transition-all duration-300 relative ${
+                                className={`flex flex-col items-center gap-1.5 p-0.5 sm:p-1 rounded-xl transition-all duration-300 relative ${
                                   day.isToday 
                                     ? 'bg-indigo-500/5 border border-indigo-500/25' 
                                     : 'border border-transparent'
                                 }`}
                               >
-                                <span className={`text-[9px] font-mono font-black ${
+                                <span className={`text-[8px] sm:text-[9px] font-mono font-black ${
                                   day.isToday ? 'text-indigo-500' : 'text-muted-foreground/90'
                                 }`}>
                                   {day.dayAbbrev}
                                 </span>
                                 
-                                <div className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-400 border cursor-default ${
+                                <div className={`w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center transition-all duration-400 border cursor-default ${
                                   day.met
                                     ? 'bg-gradient-to-tr from-amber-500 to-orange-500 text-white border-orange-500/40 shadow-xs'
                                     : day.activeAtAll
@@ -1021,16 +1026,16 @@ export default function App() {
                                 }`}
                                 title={`${day.studyMins} mins studied, ${day.questionsSolved} questions solved`}>
                                   {day.met ? (
-                                    <Flame className="w-5 h-5 fill-white animate-pulse" />
+                                    <Flame className="w-4 h-4 sm:w-5 sm:h-5 fill-white animate-pulse" />
                                   ) : day.activeAtAll ? (
-                                    <span className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse" />
+                                    <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse" />
                                   ) : (
-                                    <span className="text-[10px] font-mono font-medium select-none">{day.dayNum}</span>
+                                    <span className="text-[9px] sm:text-[10px] font-mono font-medium select-none">{day.dayNum}</span>
                                   )}
                                 </div>
                                 
                                 {day.isToday && (
-                                  <span className="text-[8px] font-bold text-indigo-500 uppercase leading-none mt-0.5 tracking-wider select-none">
+                                  <span className="text-[7px] sm:text-[8px] font-bold text-indigo-500 uppercase leading-none mt-0.5 tracking-wider select-none">
                                     Today
                                   </span>
                                 )}

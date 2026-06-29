@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { DailyQuestions } from '../types';
 import { Hash, Plus, Calendar, Save, Trash2, CheckCircle } from 'lucide-react';
 
@@ -7,7 +7,7 @@ interface QuestionTrackerFormProps {
   onSaveQuestions: (record: DailyQuestions) => void;
 }
 
-export default function QuestionTrackerForm({ questionsList, onSaveQuestions }: QuestionTrackerFormProps) {
+const QuestionTrackerForm = memo(function QuestionTrackerForm({ questionsList, onSaveQuestions }: QuestionTrackerFormProps) {
   // Select active date (default is today YYYY-MM-DD)
   const getTodayStr = () => {
     const d = new Date();
@@ -359,4 +359,6 @@ export default function QuestionTrackerForm({ questionsList, onSaveQuestions }: 
 
     </div>
   );
-}
+});
+
+export default QuestionTrackerForm;

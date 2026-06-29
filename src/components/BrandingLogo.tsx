@@ -5,7 +5,7 @@ interface LogoProps {
   size?: number;
 }
 
-export const BrandingLogo: React.FC<LogoProps> = ({ className = '', size = 38 }) => {
+export const BrandingLogo: React.FC<LogoProps> = React.memo(({ className = '', size = 38 }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -78,4 +78,4 @@ export const BrandingLogo: React.FC<LogoProps> = ({ className = '', size = 38 })
       />
     </svg>
   );
-};
+});
