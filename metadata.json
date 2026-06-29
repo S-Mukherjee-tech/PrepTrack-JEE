@@ -1,6 +1,6 @@
 {
   "name": "PrepTrack",
-  "description": "Your JEE preparation Tracker",
+  "description": "Your Ultimate IIT JEE Preparation Tracker, Syllabus Planner & Error Book",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

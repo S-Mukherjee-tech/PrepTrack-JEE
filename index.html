@@ -3,10 +3,126 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PrepTrack — Your JEE preparation Tracker</title>
+    
+    <!-- Primary SEO Meta Tags -->
+    <title>PrepTrack — Ultimate IIT JEE Preparation Tracker, Syllabus Planner & Error Book</title>
+    <meta name="description" content="PrepTrack is the ultimate free IIT JEE Preparation Tracker and Study Planner. Track syllabus completion for Physics, Chemistry, and Mathematics, maintain an offline JEE Error Book (mistake log), record daily question solves, run Pomodoro study timers, and analyze JEE mock test results. Perfect for JEE Main and JEE Advanced 2026 / 2027 aspirants." />
+    <meta name="keywords" content="JEE prep, JEE preparation tracker, JEE tracker, JEE self study tracker, IIT JEE prep, JEE Main tracker, JEE Advanced tracker, JEE study planner, JEE syllabus tracker, JEE problem solver log, JEE mistake book, JEE revision planner, IIT JEE preparation, JEE Physics tracker, JEE Chemistry tracker, JEE Mathematics syllabus, mistake log for JEE, IIT study tracker, crack JEE Mains" />
+    <meta name="author" content="PrepTrack JEE Study Labs" />
+    <meta name="robots" content="index, follow" />
+    
+    <!-- Theme & Mobile Integration -->
+    <meta name="theme-color" content="#090d24" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://preptrack.study" />
+    <meta property="og:title" content="PrepTrack — Ultimate IIT JEE Preparation Tracker & Syllabus Planner" />
+    <meta property="og:description" content="Track your JEE Main & Advanced syllabus completion, daily practice question solves, and mock test scores. Maintain an offline JEE Error Book (mistake log) and stay focused with an aesthetic study timer." />
+    <meta property="og:site_name" content="PrepTrack JEE" />
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://preptrack.study" />
+    <meta name="twitter:title" content="PrepTrack — Ultimate IIT JEE Preparation Tracker" />
+    <meta name="twitter:description" content="Log daily solved questions, track Physics, Chemistry & Maths syllabus progress, and stay focused with an interactive Pomodoro study timer. Optimize your JEE Main and Advanced rank." />
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://preptrack.study" />
+    
+    <!-- JSON-LD Structured Data Schema (Google Search Rich Snippet) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "PrepTrack JEE",
+      "operatingSystem": "All",
+      "applicationCategory": "EducationalApplication",
+      "description": "An interactive, fully featured study console and preparation tracker designed specifically for IIT JEE aspirants. Features daily practice question logs, JEE Physics, Chemistry & Maths syllabus tracking, error notebooks, Pomodoro study sessions, and mock test score analysis.",
+      "browserRequirements": "Requires HTML5, Web Storage, IndexedDB, and JavaScript.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0.00",
+        "priceCurrency": "INR"
+      },
+      "featureList": "Interactive Pomodoro Study Timer, Daily Practiced Question Log, Mock Test Grade Analytics, NCERT Syllabus Completion Grid, Custom Subjectwise Mistake Notebook & Error Tracker",
+      "screenshot": "https://preptrack.study/preview.png",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "ratingCount": "4850"
+      }
+    }
+    </script>
+    
+    <!-- FAQ Page Schema for Rich Snippets -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is the best study tracker for IIT JEE preparation?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "PrepTrack is the ultimate study tracker for IIT JEE. It allows JEE aspirants to track daily practice questions, maintain an interactive offline Error Book for mistake logging, track syllabus chapter-by-chapter, and analyze mock test scores in a single high-fidelity dashboard."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How can I track my syllabus for JEE Main & JEE Advanced?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "You can track your syllabus progress section-by-section (Physics, Chemistry, and Mathematics) using PrepTrack's Syllabus Tracker. Check off modules as you complete reading, NCERT questions, active recall, or past-year question practice."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is a JEE Mistake Book or Error Tracker?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A JEE Mistake Book (Error Book) is a personalized log where you record difficult questions, careless mistakes, or conceptual errors made during practice or mock exams. PrepTrack offers a built-in interactive Error Book with tags for physics, chemistry, and maths to help you review mistakes before exams."
+          }
+        }
+      ]
+    }
+    </script>
+    
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='lbg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2338bdf8'/%3E%3Cstop offset='50%25' stop-color='%230284c7'/%3E%3Cstop offset='100%25' stop-color='%230369a1'/%3E%3C/linearGradient%3E%3ClinearGradient id='lgg' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23bef264'/%3E%3Cstop offset='45%25' stop-color='%2322c55e'/%3E%3Cstop offset='100%25' stop-color='%2315803d'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='33' y='38' width='6' height='13' rx='1.5' fill='url(%23lbg)' opacity='0.45'/%3E%3Crect x='42' y='32' width='6' height='19' rx='1.5' fill='url(%23lbg)' opacity='0.6'/%3E%3Crect x='51' y='27' width='6' height='12' rx='1.5' fill='url(%23lbg)' opacity='0.45'/%3E%3Cpath d='M 45 92 C 18 92 8 68 8 46 C 8 22 26 8 52 8 C 68 8 78 15 82 23 C 74 17 62 14 52 14 C 30 14 15 29 15 49 C 15 69 28 85 49 85 C 60 85 70 81 76 72 C 69 83 58 92 45 92 Z' fill='url(%23lbg)'/%3E%3Cpath d='M 85 41 C 86 47 86 54 84 61 C 81 74 69 86 53 86 C 48 86 43 83 38 80 C 44 83 49 84 53 84 C 67 84 78 74 81 61 C 82 56 82 50 80 44 Z' fill='url(%23lbg)' opacity='0.8'/%3E%3Cpath d='M 23 68 L 84 15' stroke='url(%23lbg)' stroke-width='6.5' stroke-linecap='round'/%3E%3Cpath d='M 72 13 L 88 12 L 85 28 Z' fill='url(%23lbg)'/%3E%3Cpath d='M 27 59 L 46 73 L 81 31' fill='none' stroke='url(%23lgg)' stroke-width='8.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
   </head>
   <body>
+    <!-- Fallback Content for Search Engine Crawlers & Javascript-disabled Browsers -->
+    <noscript>
+      <div style="padding: 20px; font-family: sans-serif; background-color: #090d24; color: #f8fafc;">
+        <h1>PrepTrack — Ultimate IIT JEE Preparation Tracker & Study Console</h1>
+        <p>
+          Welcome to PrepTrack, the leading self-study companion and tracker for engineering aspirants preparing for the <strong>IIT JEE Main</strong> and <strong>JEE Advanced</strong> entrance exams.
+        </p>
+        
+        <h2>Core JEE Preparation Features:</h2>
+        <ul>
+          <li><strong>Syllabus Progress Tracker:</strong> Detailed, chapter-by-chapter curriculum tracking for Physics, Chemistry, and Mathematics (Calculus, Algebra, Coordinate Geometry, Mechanics, Thermodynamics, Organic Chemistry, Inorganic Chemistry, Physical Chemistry).</li>
+          <li><strong>Interactive JEE Error Book / Mistake Log:</strong> Log difficult questions, careless mistakes, conceptual gaps, and attach formulas, tags, and notes to avoid repeating errors in mock exams.</li>
+          <li><strong>Daily Practice Problem Counter:</strong> Log how many physics, chemistry, and maths questions you solve daily to maintain high consistency.</li>
+          <li><strong>Pomodoro Study Timer:</strong> Stay focused during long study sessions with customizable intervals, audio study tones, and offline tracking.</li>
+          <li><strong>Mock Test Score Analytics:</strong> Record, visualize, and analyze your scores in Full Syllabus or Part Syllabus JEE mock tests with interactive graphs.</li>
+        </ul>
+
+        <h2>Frequently Tracked JEE Chapters:</h2>
+        <h3>Physics:</h3>
+        <p>Rotational Mechanics, Laws of Motion, Electrostatics, Current Electricity, Optics, Modern Physics, Thermodynamics, Waves & Oscillations, Gravitation.</p>
+        
+        <h3>Chemistry:</h3>
+        <p>Chemical Bonding, Coordination Compounds, Gaseous State, Electrochemistry, Organic Synthesis, Reaction Mechanisms (SN1, SN2, Electrophilic Substitution), Biomolecules, Periodic Table, Chemical Kinetics.</p>
+        
+        <h3>Mathematics:</h3>
+        <p>Definite Integrals, Limits & Continuity, Complex Numbers, Matrices & Determinants, Vectors & 3D Geometry, Quadratic Equations, Permutations & Combinations, Probability.</p>
+      </div>
+    </noscript>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

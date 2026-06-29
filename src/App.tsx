@@ -1071,72 +1071,120 @@ export default function App() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                       {/* STUDY HOUR GOAL */}
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2.5">
-                            <div className="p-2 bg-indigo-500/10 rounded-xl text-indigo-500">
-                              <BookOpen className="w-4.5 h-4.5" />
-                            </div>
-                            <div>
-                              <span className="text-xs font-bold text-foreground block">Focused Study Hours</span>
-                              <span className="text-[10px] text-muted-foreground font-mono">
-                                {(studyMinutesToday / 60).toFixed(1)}h of {((settings.dailyStudyMinutesGoal ?? 180) / 60).toFixed(1)}h target complete
-                              </span>
-                            </div>
+                      <div className="flex flex-col sm:flex-row items-center gap-5 p-5.5 rounded-2xl bg-slate-500/5 border border-slate-500/10 dark:bg-white/[0.02] dark:border-white/[0.05] hover:bg-slate-500/10 dark:hover:bg-white/[0.04] transition-all duration-300">
+                        {/* Radial Ring Container */}
+                        <div className="relative w-32 h-32 flex-shrink-0 flex items-center justify-center">
+                          {/* Outer glow overlay */}
+                          <div className="absolute inset-0 rounded-full bg-indigo-500/5 blur-md" />
+                          <svg className="w-full h-full transform -rotate-90" viewBox="0 0 128 128">
+                            {/* Track Circle */}
+                            <circle
+                              cx="64"
+                              cy="64"
+                              r="50"
+                              className="stroke-slate-200 dark:stroke-white/10 fill-transparent"
+                              strokeWidth="8"
+                            />
+                            {/* Progress Circle */}
+                            <motion.circle
+                              cx="64"
+                              cy="64"
+                              r="50"
+                              className="stroke-indigo-500 dark:stroke-indigo-400 fill-transparent"
+                              strokeWidth="8"
+                              strokeLinecap="round"
+                              strokeDasharray="314.16"
+                              initial={{ strokeDashoffset: 314.16 }}
+                              animate={{ strokeDashoffset: 314.16 - (Math.min(100, (studyMinutesToday / (settings.dailyStudyMinutesGoal ?? 180)) * 100) / 100) * 314.16 }}
+                              transition={{ duration: 1.2, ease: "easeOut" }}
+                            />
+                          </svg>
+                          {/* Inner percentage & details */}
+                          <div className="absolute flex flex-col items-center justify-center text-center">
+                            <span className="text-xl font-black font-mono tracking-tight text-foreground">
+                              {Math.min(100, Math.round((studyMinutesToday / (settings.dailyStudyMinutesGoal ?? 180)) * 100))}%
+                            </span>
+                            <span className="text-[9px] uppercase font-bold tracking-wider text-muted-foreground font-sans">
+                              Studied
+                            </span>
                           </div>
-                          <span className="text-xs font-black font-mono text-indigo-500 bg-indigo-500/10 px-2.5 py-1 rounded-lg">
-                            {Math.min(100, Math.round((studyMinutesToday / (settings.dailyStudyMinutesGoal ?? 180)) * 100))}%
-                          </span>
                         </div>
 
-                        {/* Progress bar container */}
-                        <div className="w-full h-2.5 bg-accent/15 rounded-full overflow-hidden relative border border-border/20">
-                          <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${Math.min(100, (studyMinutesToday / (settings.dailyStudyMinutesGoal ?? 180)) * 100)}%` }}
-                            transition={{ duration: 0.8, ease: "easeOut" }}
-                            className="h-full rounded-full bg-primary"
-                          />
-                        </div>
-                        
-                        <div className="flex items-center justify-between text-[10px] text-muted-foreground font-medium px-0.5">
-                          <span>{studyMinutesToday} mins studied today</span>
-                          <span>{(settings.dailyStudyMinutesGoal ?? 180)} mins target</span>
+                        {/* Text and Details */}
+                        <div className="flex-1 space-y-2.5 text-center sm:text-left w-full">
+                          <div className="flex items-center justify-center sm:justify-start gap-2">
+                            <div className="p-1.5 bg-indigo-500/10 rounded-lg text-indigo-500 shrink-0">
+                              <BookOpen className="w-4 h-4" />
+                            </div>
+                            <span className="text-sm font-bold text-foreground">Focused Study Hours</span>
+                          </div>
+                          <div className="space-y-1">
+                            <span className="text-xs text-muted-foreground font-medium block">
+                              {(studyMinutesToday / 60).toFixed(1)}h of {((settings.dailyStudyMinutesGoal ?? 180) / 60).toFixed(1)}h target complete
+                            </span>
+                            <div className="text-[10px] text-muted-foreground/80 font-mono">
+                              {studyMinutesToday} mins / {(settings.dailyStudyMinutesGoal ?? 180)} mins goal
+                            </div>
+                          </div>
                         </div>
                       </div>
 
                       {/* PROBLEMS SOLVED GOAL */}
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2.5">
-                            <div className="p-2 bg-emerald-500/10 rounded-xl text-emerald-500">
-                              <CheckCircle className="w-4.5 h-4.5" />
+                      <div className="flex flex-col sm:flex-row items-center gap-5 p-5.5 rounded-2xl bg-slate-500/5 border border-slate-500/10 dark:bg-white/[0.02] dark:border-white/[0.05] hover:bg-slate-500/10 dark:hover:bg-white/[0.04] transition-all duration-300">
+                        {/* Radial Ring Container */}
+                        <div className="relative w-32 h-32 flex-shrink-0 flex items-center justify-center">
+                          {/* Outer glow overlay */}
+                          <div className="absolute inset-0 rounded-full bg-emerald-500/5 blur-md" />
+                          <svg className="w-full h-full transform -rotate-90" viewBox="0 0 128 128">
+                            {/* Track Circle */}
+                            <circle
+                              cx="64"
+                              cy="64"
+                              r="50"
+                              className="stroke-slate-200 dark:stroke-white/10 fill-transparent"
+                              strokeWidth="8"
+                            />
+                            {/* Progress Circle */}
+                            <motion.circle
+                              cx="64"
+                              cy="64"
+                              r="50"
+                              className="stroke-emerald-500 dark:stroke-emerald-400 fill-transparent"
+                              strokeWidth="8"
+                              strokeLinecap="round"
+                              strokeDasharray="314.16"
+                              initial={{ strokeDashoffset: 314.16 }}
+                              animate={{ strokeDashoffset: 314.16 - (Math.min(100, (questionsSolvedToday / (settings.dailyQuestionsSolvedGoal ?? 30)) * 100) / 100) * 314.16 }}
+                              transition={{ duration: 1.2, ease: "easeOut" }}
+                            />
+                          </svg>
+                          {/* Inner percentage & details */}
+                          <div className="absolute flex flex-col items-center justify-center text-center">
+                            <span className="text-xl font-black font-mono tracking-tight text-foreground">
+                              {Math.min(100, Math.round((questionsSolvedToday / (settings.dailyQuestionsSolvedGoal ?? 30)) * 100))}%
+                            </span>
+                            <span className="text-[9px] uppercase font-bold tracking-wider text-muted-foreground font-sans">
+                              Solved
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Text and Details */}
+                        <div className="flex-1 space-y-2.5 text-center sm:text-left w-full">
+                          <div className="flex items-center justify-center sm:justify-start gap-2">
+                            <div className="p-1.5 bg-emerald-500/10 rounded-lg text-emerald-500 shrink-0">
+                              <CheckCircle className="w-4 h-4" />
                             </div>
-                            <div>
-                              <span className="text-xs font-bold text-foreground block">Daily Problem Solves</span>
-                              <span className="text-[10px] text-muted-foreground font-mono">
-                                {questionsSolvedToday} of {(settings.dailyQuestionsSolvedGoal ?? 30)} questions tracked today
-                              </span>
+                            <span className="text-sm font-bold text-foreground">Daily Problem Solves</span>
+                          </div>
+                          <div className="space-y-1">
+                            <span className="text-xs text-muted-foreground font-medium block">
+                              {questionsSolvedToday} of {(settings.dailyQuestionsSolvedGoal ?? 30)} questions tracked
+                            </span>
+                            <div className="text-[10px] text-muted-foreground/80 font-mono">
+                              {questionsSolvedToday} Qs / {(settings.dailyQuestionsSolvedGoal ?? 30)} Qs goal
                             </div>
                           </div>
-                          <span className="text-xs font-black font-mono text-emerald-500 bg-emerald-500/10 px-2.5 py-1 rounded-lg">
-                            {Math.min(100, Math.round((questionsSolvedToday / (settings.dailyQuestionsSolvedGoal ?? 30)) * 100))}%
-                          </span>
-                        </div>
-
-                        {/* Progress bar container */}
-                        <div className="w-full h-2.5 bg-accent/15 rounded-full overflow-hidden relative border border-border/20">
-                          <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${Math.min(100, (questionsSolvedToday / (settings.dailyQuestionsSolvedGoal ?? 30)) * 100)}%` }}
-                            transition={{ duration: 0.8, ease: "easeOut" }}
-                            className="h-full bg-emerald-500 rounded-full"
-                          />
-                        </div>
-
-                        <div className="flex items-center justify-between text-[10px] text-muted-foreground font-medium px-0.5">
-                          <span>{questionsSolvedToday} questions solved today</span>
-                          <span>{(settings.dailyQuestionsSolvedGoal ?? 30)} Qs target</span>
                         </div>
                       </div>
                     </div>
