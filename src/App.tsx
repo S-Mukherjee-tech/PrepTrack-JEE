@@ -764,6 +764,7 @@ export default function App() {
               }}
               className="p-2 border border-border rounded-xl bg-accent/15 hover:bg-accent/30 text-muted-foreground hover:text-foreground transition-all cursor-pointer"
               title={`Switch Theme (Current: ${settings.theme})`}
+              aria-label={`Switch Theme (Current: ${settings.theme})`}
             >
               {settings.theme === 'light' ? (
                 <Moon className="w-4 h-4" />
@@ -1281,6 +1282,7 @@ export default function App() {
                                     onClick={() => handleDeleteStudySession(s.id)}
                                     className="text-muted-foreground hover:text-rose-500 p-1 hover:bg-rose-500/10 rounded-lg cursor-pointer transition-colors"
                                     title="Delete study record"
+                                    aria-label="Delete study record"
                                   >
                                     <Trash2 className="w-3.5 h-3.5" />
                                   </button>
@@ -1425,6 +1427,7 @@ export default function App() {
                                   onClick={() => handleDeleteStudySession(s.id)}
                                   className="text-muted-foreground hover:text-rose-500 p-2 hover:bg-rose-500/15 rounded-xl cursor-pointer duration-200 transition-colors"
                                   title="Prune Study Log"
+                                  aria-label="Prune Study Log"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
                                 </button>

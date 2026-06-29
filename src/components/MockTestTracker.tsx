@@ -1233,6 +1233,7 @@ const MockTestTracker = memo(function MockTestTracker({
                             onClick={() => onDeleteTest(test.id)}
                             className="p-2 text-muted-foreground hover:text-rose-500 rounded-lg hover:bg-rose-500/10 transition-all cursor-pointer"
                             title="Delete exam log"
+                            aria-label="Delete exam log"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>

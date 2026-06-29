@@ -171,8 +171,9 @@ const NotesAndErrors = memo(function NotesAndErrors({
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-muted-foreground mb-1">Subject</label>
+                  <label htmlFor="err-subject-select" className="block text-xs font-semibold text-muted-foreground mb-1">Subject</label>
                   <select
+                    id="err-subject-select"
                     value={errSubject}
                     onChange={(e) => setErrSubject(e.target.value as Subject)}
                     className="w-full bg-card border border-border text-xs rounded-lg px-3 py-2"
@@ -260,6 +261,7 @@ const NotesAndErrors = memo(function NotesAndErrors({
                       onClick={() => onDeleteErrorItem(item.id)}
                       className="absolute top-4 right-4 text-muted-foreground hover:text-rose-500 p-1.5 hover:bg-rose-500/10 rounded-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity cursor-pointer duration-200"
                       title="Delete record"
+                      aria-label="Delete record"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -325,8 +327,9 @@ const NotesAndErrors = memo(function NotesAndErrors({
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-muted-foreground mb-1">Subject</label>
+                  <label htmlFor="imp-subject-select" className="block text-xs font-semibold text-muted-foreground mb-1">Subject</label>
                   <select
+                    id="imp-subject-select"
                     value={impSubject}
                     onChange={(e) => setImpSubject(e.target.value as Subject)}
                     className="w-full bg-card border border-border text-xs rounded-lg px-3 py-2"
@@ -416,6 +419,7 @@ const NotesAndErrors = memo(function NotesAndErrors({
                         onClick={() => onDeleteImportanceItem(item.id)}
                         className="absolute top-4 right-4 text-muted-foreground hover:text-rose-500 p-1.5 hover:bg-rose-500/10 rounded-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity cursor-pointer duration-200"
                         title="Delete record"
+                        aria-label="Delete record"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>

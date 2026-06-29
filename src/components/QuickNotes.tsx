@@ -380,6 +380,7 @@ const QuickNotes = memo(function QuickNotes({ theme, cardBgClass }: QuickNotesPr
                               ? 'hover:text-emerald-400'
                               : 'hover:text-[#6366f1]'
                           }`}
+                          aria-label={note.completed ? "Mark incomplete" : "Mark complete"}
                         >
                           {note.completed ? (
                             <CheckCircle2 className="w-4 h-4" />
@@ -419,6 +420,7 @@ const QuickNotes = memo(function QuickNotes({ theme, cardBgClass }: QuickNotesPr
                             onClick={() => saveInlineEdit(note.id)}
                             className="text-emerald-400 hover:text-emerald-300 p-1 rounded-lg cursor-pointer transition-all"
                             title="Save changes"
+                            aria-label="Save changes"
                           >
                             <Check className="w-3.5 h-3.5" />
                           </button>
@@ -427,6 +429,7 @@ const QuickNotes = memo(function QuickNotes({ theme, cardBgClass }: QuickNotesPr
                             onClick={() => startEditing(note)}
                             className="opacity-100 md:opacity-0 md:group-hover:opacity-100 hover:text-foreground p-1 rounded-lg cursor-pointer transition-all"
                             title="Edit reminder"
+                            aria-label="Edit reminder"
                           >
                             <Edit3 className="w-3.5 h-3.5" />
                           </button>
@@ -435,6 +438,7 @@ const QuickNotes = memo(function QuickNotes({ theme, cardBgClass }: QuickNotesPr
                           onClick={() => handleDeleteNote(note.id)}
                           className="opacity-100 md:opacity-0 md:group-hover:opacity-100 hover:text-rose-500 p-1 rounded-lg cursor-pointer transition-all"
                           title="Delete"
+                          aria-label="Delete reminder"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>

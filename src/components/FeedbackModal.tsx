@@ -75,6 +75,7 @@ export default function FeedbackModal({ onSubmitFeedback }: FeedbackModalProps) 
                   onMouseEnter={() => setHoverRating(star)}
                   onMouseLeave={() => setHoverRating(null)}
                   className="p-1 hover:scale-110 active-scale-90 transition-all cursor-pointer focus:outline-none"
+                  aria-label={`Rate ${star} Stars`}
                 >
                   <Star
                     className={`w-6 h-6 ${

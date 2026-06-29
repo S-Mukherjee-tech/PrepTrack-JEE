@@ -573,10 +573,11 @@ const TimerSection = memo(function TimerSection({ settings, onSaveSession, curre
         {/* Audible notification options */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-accent/5 border border-border/40 p-3 rounded-2xl animate-fade-in">
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-bold text-muted-foreground flex items-center gap-1.5">
+            <label htmlFor="alarm-sound-select" className="text-[11px] font-bold text-muted-foreground flex items-center gap-1.5 cursor-pointer">
               <Volume2 className="w-4 h-4 text-indigo-500" /> Pomodoro Alert:
-            </span>
+            </label>
             <select
+              id="alarm-sound-select"
               value={alarmSound}
               onChange={(e) => setAlarmSound(e.target.value as any)}
               className="bg-accent/20 hover:bg-accent/35 border border-border text-[11px] rounded-lg px-2 py-1 outline-none font-bold text-foreground cursor-pointer transition-all"
@@ -612,8 +613,9 @@ const TimerSection = memo(function TimerSection({ settings, onSaveSession, curre
         {/* Configurations for Active Session labels */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Select Session Block</label>
+            <label htmlFor="session-block-select" className="block text-xs font-semibold text-muted-foreground mb-1.5">Select Session Block</label>
             <select
+              id="session-block-select"
               disabled={isRunning}
               value={sessionSelected}
               onChange={(e) => setSessionSelected(e.target.value)}
