@@ -3,7 +3,7 @@
 
 @theme {
   --font-sans: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-mono: "Outfit", "Plus Jakarta Sans", ui-monospace, monospace;
   --font-display: "Outfit", "Space Grotesk", sans-serif;
   --color-primary: var(--primary);
   --color-primary-foreground: #ffffff;
@@ -119,7 +119,7 @@
 
 /* Spring Blossom (Light) Theme Overrides */
 .theme-light {
-  --primary: #4f46e5;
+  --primary: #f43f5e;
 }
 
 .theme-light .bg-card {
@@ -154,15 +154,136 @@
 /* Global Smooth Element Polish (Fixes blocky look) */
 .bg-card, .rounded-3xl {
   border-radius: 28px !important;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  transition-property: transform, box-shadow, border-color, background-color, backdrop-filter !important;
+  transition-duration: 0.5s !important;
+  transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1) !important;
 }
 
 .rounded-2xl {
   border-radius: 18px !important;
+  transition-property: transform, box-shadow, border-color, background-color, backdrop-filter !important;
+  transition-duration: 0.5s !important;
+  transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1) !important;
 }
 
 .rounded-xl {
   border-radius: 14px !important;
+  transition-property: transform, box-shadow, border-color, background-color, backdrop-filter !important;
+  transition-duration: 0.4s !important;
+  transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+/* Ensure ultra-crisp fonts globally across all elements during transitions */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* High-performance responsive hover effects for all cards inside main content area */
+main .bg-card:not(header):not(footer):not(.sticky):not(nav),
+main .rounded-2xl:not(header):not(footer):not(.sticky):not(nav),
+main .rounded-3xl:not(header):not(footer):not(.sticky):not(nav) {
+  transition-property: transform, box-shadow, border-color, background-color, backdrop-filter !important;
+  transition-duration: 0.5s !important;
+  transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  will-change: transform, box-shadow;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+  transform: translate3d(0, 0, 0) !important;
+  transform-style: preserve-3d !important;
+  contain: paint !important;
+  contain-intrinsic-size: auto 320px !important;
+}
+
+/* Only trigger surface-up lift and premium tactile scale on hover-capable cursor devices (Desktops/Laptops) */
+@media (hover: hover) {
+  main .bg-card:not(header):not(footer):not(.sticky):not(nav):hover,
+  main .rounded-2xl:not(header):not(footer):not(.sticky):not(nav):hover,
+  main .rounded-3xl:not(header):not(footer):not(.sticky):not(nav):hover {
+    transform: translate3d(0, -4px, 0) scale(1.01) !important;
+  }
+}
+
+/* Highlight-on-tap pulse state for mobile/touch devices instead of transform translate */
+@media (hover: none) {
+  main .bg-card:not(header):not(footer):not(.sticky):not(nav):active,
+  main .rounded-2xl:not(header):not(footer):not(.sticky):not(nav):active,
+  main .rounded-3xl:not(header):not(footer):not(.sticky):not(nav):active {
+    transform: scale(0.98) !important;
+    opacity: 0.95 !important;
+    transition-duration: 0.15s !important;
+  }
+}
+
+/* Dynamic glow effects on hover styled according to the active theme */
+.theme-glass main .bg-card:hover,
+.theme-glass main .rounded-2xl:hover,
+.theme-glass main .rounded-3xl:hover {
+  border-color: rgba(129, 140, 248, 0.7) !important;
+  box-shadow: 0 22px 48px -10px rgba(129, 140, 248, 0.36), 
+              0 0 24px rgba(129, 140, 248, 0.22), 
+              inset 0 1px 2px rgba(255, 255, 255, 0.25) !important;
+}
+
+.theme-slate main .bg-card:hover,
+.theme-slate main .rounded-2xl:hover,
+.theme-slate main .rounded-3xl:hover {
+  border-color: rgba(6, 182, 212, 0.75) !important;
+  box-shadow: 0 22px 48px -10px rgba(6, 182, 212, 0.42), 
+              0 0 24px rgba(6, 182, 212, 0.25) !important;
+}
+
+.theme-cyber main .bg-card:hover,
+.theme-cyber main .rounded-2xl:hover,
+.theme-cyber main .rounded-3xl:hover {
+  border-color: rgba(16, 185, 129, 0.85) !important;
+  box-shadow: 0 22px 48px -10px rgba(16, 185, 129, 0.52), 
+              0 0 26px rgba(16, 185, 129, 0.32) !important;
+}
+
+.theme-light main .bg-card:hover,
+.theme-light main .rounded-2xl:hover,
+.theme-light main .rounded-3xl:hover {
+  border-color: rgba(244, 63, 94, 0.5) !important;
+  box-shadow: 0 20px 42px -10px rgba(244, 63, 94, 0.18), 
+              0 0 18px rgba(244, 63, 94, 0.1) !important;
+}
+
+/* Modern inputs, buttons & interactable controls response */
+main button:not([disabled]):not(.cursor-default):not(.react-calendar__tile), 
+main a,
+main .clickable-item,
+main select,
+main input[type="text"] {
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+              background-color 0.25s ease,
+              border-color 0.25s ease !important;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+@media (hover: hover) {
+  main button:not([disabled]):not(.cursor-default):not(.react-calendar__tile):hover, 
+  main a:hover,
+  main .clickable-item:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 14px -3px rgba(0, 0, 0, 0.12) !important;
+  }
+}
+
+main button:not([disabled]):not(.cursor-default):not(.react-calendar__tile):active, 
+main a:active,
+main .clickable-item:active {
+  transform: translateY(1px) !important;
+}
+
+/* For form controls, keep them super stable. We don't need scaling or translations on focus */
+main input:focus, 
+main select:focus, 
+main textarea:focus {
+  transform: none !important;
 }
 
 /* Modern Input Polish with custom themes */
@@ -198,7 +319,7 @@ input, select, textarea {
   background-color: rgba(4, 22, 12, 0.5) !important;
   border-color: rgba(16, 185, 129, 0.3) !important;
   color: #ecfdf5 !important;
-  font-family: "JetBrains Mono", monospace !important;
+  font-family: var(--font-mono) !important;
 }
 .theme-cyber input:focus, .theme-cyber select:focus, .theme-cyber textarea:focus {
   border-color: #10b981 !important;
@@ -237,8 +358,8 @@ input, select, textarea {
 
 /* Custom fade integrations */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .animate-fade-in {
@@ -299,3 +420,36 @@ input, select, textarea {
   scrollbar-width: none; /* Firefox */
 }
 
+/* Stunning ambient float animations for high-fidelity Copilot/Gemini-like backdrops */
+@keyframes floatGlow {
+  0% { transform: translate(0px, 0px) scale(1); }
+  50% { transform: translate(40px, -60px) scale(1.15); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}
+
+@keyframes floatGlowReverse {
+  0% { transform: translate(0px, 0px) scale(1.1); }
+  50% { transform: translate(-60px, 40px) scale(0.9); }
+  100% { transform: translate(0px, 0px) scale(1.1); }
+}
+
+/* Custom Monospace Override for Gorgeous, Rounded, Tabular Digits with No Slashed Zeroes */
+.font-mono {
+  font-family: var(--font-mono) !important;
+  font-variant-numeric: tabular-nums !important;
+  font-feature-settings: "tnum" 1, "zero" 0, "ss01" 1, "ss02" 1 !important;
+  letter-spacing: -0.015em !important;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.55; transform: scale(1); filter: blur(6px); }
+  50% { opacity: 0.95; transform: scale(1.05); filter: blur(10px); }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 4s ease-in-out infinite;
+}
+
+.animate-circuit-slow {
+  animation: spin 6s linear infinite;
+}

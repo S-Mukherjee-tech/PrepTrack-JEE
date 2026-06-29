@@ -375,12 +375,47 @@ export default function MockTestTracker({
   }, [chartData, chartSubjectFilter]);
 
   // Theme-specific colors matching existing design parameters
-  const activeTabAccent = theme === 'cyber' ? 'bg-emerald-500 text-black font-extrabold shadow-sm' : 'bg-indigo-600 text-white font-bold shadow-sm';
-  const buttonHoverColor = theme === 'cyber' ? 'hover:bg-emerald-500/20 text-emerald-400' : 'hover:bg-indigo-500/25 text-[#6366f1]';
-  const inputBorderFocus = theme === 'cyber' ? 'focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/35' : 'focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/35';
-  const outlineBorder = theme === 'cyber' ? 'border-emerald-500/20' : 'border-border';
-  const accentColorText = theme === 'cyber' ? 'text-emerald-400' : 'text-[#6366f1]';
-  const badgeColor = theme === 'cyber' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-indigo-500/10 text-indigo-500 dark:text-indigo-400 border border-indigo-500/20';
+  const activeTabAccent = 
+    theme === 'cyber' ? 'bg-emerald-500 text-black font-extrabold shadow-sm' :
+    theme === 'light' ? 'bg-rose-500 text-white font-bold shadow-sm' :
+    theme === 'slate' ? 'bg-cyan-500 text-slate-950 font-bold shadow-sm' :
+    'bg-indigo-600 text-white font-bold shadow-sm';
+
+  const buttonHoverColor = 
+    theme === 'cyber' ? 'hover:bg-emerald-500/20 text-emerald-400' :
+    theme === 'light' ? 'hover:bg-rose-500/20 text-rose-600' :
+    theme === 'slate' ? 'hover:bg-cyan-500/20 text-cyan-400' :
+    'hover:bg-indigo-500/25 text-[#6366f1]';
+
+  const inputBorderFocus = 
+    theme === 'cyber' ? 'focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/35' :
+    theme === 'light' ? 'focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500/35' :
+    theme === 'slate' ? 'focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/35' :
+    'focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/35';
+
+  const outlineBorder = 
+    theme === 'cyber' ? 'border-emerald-500/20' :
+    theme === 'light' ? 'border-rose-500/20' :
+    theme === 'slate' ? 'border-cyan-500/20' :
+    'border-border';
+
+  const accentColorText = 
+    theme === 'cyber' ? 'text-emerald-400' :
+    theme === 'light' ? 'text-rose-500' :
+    theme === 'slate' ? 'text-cyan-400' :
+    'text-[#6366f1]';
+
+  const badgeColor = 
+    theme === 'cyber' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
+    theme === 'light' ? 'bg-rose-500/10 text-rose-600 border border-rose-500/20' :
+    theme === 'slate' ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20' :
+    'bg-indigo-500/10 text-indigo-500 dark:text-indigo-400 border border-indigo-500/20';
+
+  const activeOptionStyle = 
+    theme === 'cyber' ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400' :
+    theme === 'light' ? 'bg-rose-500/20 border-rose-500/40 text-rose-600' :
+    theme === 'slate' ? 'bg-cyan-500/20 border-cyan-500/40 text-cyan-400' :
+    'bg-indigo-500/20 border-indigo-500/40 text-[#6366f1]';
 
   return (
     <div className={`rounded-3xl p-6 shadow-sm transition-all duration-300 hover:shadow-md border border-white/5 ${cardBgClass}`}>
@@ -424,8 +459,18 @@ export default function MockTestTracker({
             <span>Interactive Trend</span>
             {mockTests.length > 0 && (
               <span className="absolute -top-1 -right-1 flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+                <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                  theme === 'cyber' ? 'bg-emerald-400' :
+                  theme === 'light' ? 'bg-rose-400' :
+                  theme === 'slate' ? 'bg-cyan-400' :
+                  'bg-indigo-400'
+                }`}></span>
+                <span className={`relative inline-flex rounded-full h-2 w-2 ${
+                  theme === 'cyber' ? 'bg-emerald-500' :
+                  theme === 'light' ? 'bg-rose-500' :
+                  theme === 'slate' ? 'bg-cyan-500' :
+                  'bg-indigo-500'
+                }`}></span>
               </span>
             )}
           </button>
@@ -478,7 +523,7 @@ export default function MockTestTracker({
                     onClick={() => handleFullMarksPreset('JEE Main')}
                     className={`flex-1 py-3 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${
                       pattern === 'JEE Main'
-                        ? theme === 'cyber' ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400' : 'bg-indigo-500/20 border-indigo-500/40 text-[#6366f1]'
+                        ? activeOptionStyle
                         : 'bg-background hover:bg-accent/15 border-border text-muted-foreground'
                     }`}
                   >
@@ -489,7 +534,7 @@ export default function MockTestTracker({
                     onClick={() => handleFullMarksPreset('JEE Advanced')}
                     className={`flex-1 py-3 text-xs font-semibold rounded-xl border transition-all cursor-pointer ${
                       pattern === 'JEE Advanced'
-                        ? theme === 'cyber' ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400' : 'bg-indigo-500/20 border-indigo-500/40 text-[#6366f1]'
+                        ? activeOptionStyle
                         : 'bg-background hover:bg-accent/15 border-border text-muted-foreground'
                     }`}
                   >
@@ -721,7 +766,7 @@ export default function MockTestTracker({
             </div>
 
             {/* Live Auto-Calculation Aggregates Showcase */}
-            <div className="p-5 rounded-2xl bg-indigo-500/[0.04] dark:bg-white/[0.02] border border-white/10 grid grid-cols-2 md:grid-cols-4 gap-4 text-center select-none shadow-inner">
+            <div className="p-5 rounded-2xl bg-primary/[0.04] border border-white/10 grid grid-cols-2 md:grid-cols-4 gap-4 text-center select-none shadow-inner">
               <div>
                 <span className="text-[11px] font-extrabold uppercase tracking-wider text-muted-foreground block mb-1">Total Marks Scored</span>
                 <span className={`text-base md:text-xl font-bold font-display ${accentColorText}`}>
@@ -764,8 +809,11 @@ export default function MockTestTracker({
             <div className="flex justify-end gap-3 border-t border-white/5 pt-5">
               <button
                 type="submit"
-                className={`px-5 py-3 text-xs font-bold rounded-xl transition-all shadow-md bg-indigo-650 hover:bg-indigo-700 text-white flex items-center gap-2 cursor-pointer ${
-                  theme === 'cyber' ? 'bg-emerald-500 hover:bg-emerald-600 text-black font-extrabold' : ''
+                className={`px-5 py-3 text-xs font-bold rounded-xl transition-all shadow-md flex items-center gap-2 cursor-pointer duration-200 hover:scale-[1.01] active:scale-[0.99] ${
+                  theme === 'cyber' ? 'bg-emerald-500 hover:bg-emerald-600 text-black font-extrabold shadow-emerald-500/10' :
+                  theme === 'light' ? 'bg-rose-500 hover:bg-rose-600 text-white shadow-rose-500/10' :
+                  theme === 'slate' ? 'bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold shadow-cyan-500/10' :
+                  'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-600/10'
                 }`}
               >
                 <Plus className="w-4 h-4" /> Save Mock Test Analysis
@@ -817,7 +865,10 @@ export default function MockTestTracker({
                           onClick={() => setChartFilter(pat)}
                           className={`px-3 py-1 text-[10px] rounded-lg transition-all cursor-pointer font-sans ${
                             chartFilter === pat
-                              ? theme === 'cyber' ? 'bg-emerald-500/25 text-emerald-400 font-bold' : 'bg-indigo-500/15 text-[#6366f1] font-bold'
+                              ? theme === 'cyber' ? 'bg-emerald-500/25 text-emerald-400 font-bold' :
+                                theme === 'light' ? 'bg-rose-500/15 text-rose-600 font-bold' :
+                                theme === 'slate' ? 'bg-cyan-500/20 text-cyan-400 font-bold' :
+                                'bg-indigo-500/15 text-[#6366f1] font-bold'
                               : 'text-muted-foreground hover:text-foreground'
                           }`}
                         >
@@ -839,7 +890,10 @@ export default function MockTestTracker({
                           onClick={() => setChartSubjectFilter(sub.id as any)}
                           className={`px-3 py-1 text-[10px] rounded-lg transition-all cursor-pointer font-sans ${
                             chartSubjectFilter === sub.id
-                              ? theme === 'cyber' ? 'bg-emerald-500/25 text-emerald-400 font-bold' : 'bg-indigo-500/15 text-[#6366f1] font-bold'
+                              ? theme === 'cyber' ? 'bg-emerald-500/25 text-emerald-400 font-bold' :
+                                theme === 'light' ? 'bg-rose-500/15 text-rose-600 font-bold' :
+                                theme === 'slate' ? 'bg-cyan-500/20 text-cyan-400 font-bold' :
+                                'bg-indigo-500/15 text-[#6366f1] font-bold'
                               : 'text-muted-foreground hover:text-foreground'
                           }`}
                         >
@@ -907,7 +961,12 @@ export default function MockTestTracker({
                                 L ${svgCoordinates[svgCoordinates.length - 1].x} ${svgDimensions.height - svgDimensions.padding}
                                 Z
                               `}
-                              fill={theme === 'cyber' ? 'url(#cyberArea)' : 'url(#indigoArea)'}
+                              fill={
+                                theme === 'cyber' ? 'url(#cyberArea)' :
+                                theme === 'light' ? 'url(#roseArea)' :
+                                theme === 'slate' ? 'url(#cyanArea)' :
+                                'url(#indigoArea)'
+                              }
                               opacity="0.1"
                             />
 
@@ -918,7 +977,12 @@ export default function MockTestTracker({
                               transition={{ duration: 0.8, ease: 'easeOut' }}
                               d={`M ${svgCoordinates.map(c => `${c.x} ${c.y}`).join(' L ')}`}
                               fill="none"
-                              stroke={theme === 'cyber' ? '#10b981' : '#6366f1'}
+                              stroke={
+                                theme === 'cyber' ? '#10b981' :
+                                theme === 'light' ? '#f43f5e' :
+                                theme === 'slate' ? '#06b6d4' :
+                                '#6366f1'
+                              }
                               strokeWidth="2.5"
                               strokeLinecap="round"
                               strokeLinejoin="round"
@@ -938,7 +1002,12 @@ export default function MockTestTracker({
                                     cx={pt.x}
                                     cy={pt.y}
                                     r="9"
-                                    fill={theme === 'cyber' ? '#10b981' : '#6366f1'}
+                                    fill={
+                                      theme === 'cyber' ? '#10b981' :
+                                      theme === 'light' ? '#f43f5e' :
+                                      theme === 'slate' ? '#06b6d4' :
+                                      '#6366f1'
+                                    }
                                     opacity="0.3"
                                     className="animate-pulse"
                                   />
@@ -947,8 +1016,18 @@ export default function MockTestTracker({
                                   cx={pt.x}
                                   cy={pt.y}
                                   r="5"
-                                  fill={theme === 'cyber' ? '#000' : '#fff'}
-                                  stroke={theme === 'cyber' ? '#10b981' : '#6366f1'}
+                                  fill={
+                                    theme === 'cyber' ? '#000' :
+                                    theme === 'light' ? '#fff' :
+                                    theme === 'slate' ? '#0f172a' :
+                                    '#fff'
+                                  }
+                                  stroke={
+                                    theme === 'cyber' ? '#10b981' :
+                                    theme === 'light' ? '#f43f5e' :
+                                    theme === 'slate' ? '#06b6d4' :
+                                    '#6366f1'
+                                  }
                                   strokeWidth="2.5"
                                   className="transition-all duration-150 hover:r-7"
                                 />
@@ -972,6 +1051,14 @@ export default function MockTestTracker({
                             <stop offset="0%" stopColor="#10b981" />
                             <stop offset="100%" stopColor="#000000" />
                           </linearGradient>
+                          <linearGradient id="roseArea" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#f43f5e" />
+                            <stop offset="100%" stopColor="#000000" />
+                          </linearGradient>
+                          <linearGradient id="cyanArea" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#06b6d4" />
+                            <stop offset="100%" stopColor="#000000" />
+                          </linearGradient>
                           <linearGradient id="indigoArea" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="0%" stopColor="#6366f1" />
                             <stop offset="100%" stopColor="#000000" />
@@ -992,7 +1079,12 @@ export default function MockTestTracker({
                       >
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
-                            <span className="text-[10px] bg-indigo-500/10 text-indigo-400 font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">
+                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider border ${
+                              theme === 'cyber' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                              theme === 'light' ? 'bg-rose-500/10 text-rose-600 border-rose-500/20' :
+                              theme === 'slate' ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20' :
+                              'bg-indigo-500/10 text-indigo-400 border-indigo-500/20'
+                            }`}>
                               {hoveredDataPoint.test.pattern}
                             </span>
                             <span className="text-xs text-muted-foreground font-mono flex items-center gap-1">
@@ -1026,7 +1118,7 @@ export default function MockTestTracker({
 
                 {/* Over-Arching Analytics Coaching Insights Section */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="p-5 rounded-2xl bg-indigo-500/[0.02] dark:bg-white/[0.01] border border-white/5 flex flex-col justify-between">
+                  <div className="p-5 rounded-2xl bg-primary/[0.02] border border-white/5 flex flex-col justify-between">
                     <div>
                       <h4 className="text-xs font-mono text-muted-foreground uppercase tracking-wider">Overall Syllabus Curve Progress</h4>
                       <h3 className="text-base font-bold font-display text-foreground mt-1.5">Aggregate Consistency</h3>
@@ -1112,7 +1204,12 @@ export default function MockTestTracker({
                       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/5 pb-4">
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
-                            <span className="text-xs bg-indigo-500/10 text-indigo-400 font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wide border border-indigo-500/20">
+                            <span className={`text-xs font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wide border ${
+                              theme === 'cyber' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                              theme === 'light' ? 'bg-rose-500/10 text-rose-600 border-rose-500/20' :
+                              theme === 'slate' ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20' :
+                              'bg-indigo-500/10 text-indigo-400 border-indigo-500/20'
+                            }`}>
                               {test.pattern}
                             </span>
                             <span className="text-xs text-muted-foreground font-mono flex items-center gap-1">

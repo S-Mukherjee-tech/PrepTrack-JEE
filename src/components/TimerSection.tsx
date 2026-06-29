@@ -379,8 +379,30 @@ export default function TimerSection({ settings, onSaveSession, currentSessionsT
   }, [timeElapsed, mode, pomodoroStage, settings]);
   const strokeDashoffset = circumference - ratio * circumference;
 
+  const isThemeCyber = settings.theme === 'cyber';
+  const isThemeLight = settings.theme === 'light';
+  const isThemeSlate = settings.theme === 'slate';
+
+  const timerGlowColor = 
+    isThemeCyber ? 'rgba(16,185,129,0.35)' :
+    isThemeLight ? 'rgba(244,63,94,0.3)' :
+    isThemeSlate ? 'rgba(6,182,212,0.35)' :
+    'rgba(99,102,241,0.35)';
+
+  const accentTextClass = 
+    isThemeCyber ? 'text-emerald-400' :
+    isThemeLight ? 'text-rose-500' :
+    isThemeSlate ? 'text-cyan-400' :
+    'text-indigo-500';
+
+  const badgeThemeClass = 
+    isThemeCyber ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/25' :
+    isThemeLight ? 'bg-rose-500/10 text-rose-600 border border-rose-500/20' :
+    isThemeSlate ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/25' :
+    'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20';
+
   return (
-    <div className="bg-card border border-border rounded-3xl p-6 lg:p-8 shadow-sm flex flex-col md:flex-row gap-8 items-center relative overflow-hidden transition-all duration-300 hover:scale-[1.005] hover:shadow-md hover:border-border/80">
+    <div className="bg-card border border-border rounded-3xl p-6 lg:p-8 shadow-sm flex flex-col md:flex-row gap-8 items-center relative overflow-hidden">
       
       {/* Decorative gradient glowing orb - purely aesthetic */}
       <div className="absolute top-0 right-0 w-48 h-48 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
@@ -388,15 +410,48 @@ export default function TimerSection({ settings, onSaveSession, currentSessionsT
       {/* Circle visual progress & displays */}
       <div className="relative flex flex-col items-center justify-center shrink-0">
         
+        {/* Breathing glowing backdrop aura behind the clock dial when studying */}
+        <AnimatePresence>
+          {isRunning && !isPaused && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ 
+                opacity: [0.4, 0.75, 0.4], 
+                scale: [0.98, 1.05, 0.98]
+              }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ 
+                duration: 3, 
+                repeat: Infinity, 
+                ease: "easeInOut" 
+              }}
+              className="absolute inset-0 rounded-full blur-2xl pointer-events-none z-0"
+              style={{
+                background: `radial-gradient(circle, ${timerGlowColor} 0%, transparent 70%)`
+              }}
+            />
+          )}
+        </AnimatePresence>
+        
         {/* Animated circular gauge block styled with exquisite detail */}
-        <div className="w-56 h-56 rounded-full flex flex-col items-center justify-center relative shadow-xs bg-accent/5">
+        <div className="w-56 h-56 rounded-full flex flex-col items-center justify-center relative shadow-xs bg-accent/5 z-10">
           
           {/* SVG circle track loader under the core text */}
           <svg className="absolute inset-x-0 inset-y-0 w-full h-full transform -rotate-90 pointer-events-none" viewBox="0 0 220 220">
             <defs>
               <linearGradient id="timerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor={settings.theme === 'cyber' ? '#10b981' : '#6366f1'} />
-                <stop offset="100%" stopColor={settings.theme === 'cyber' ? '#34d399' : '#a855f7'} />
+                <stop offset="0%" stopColor={
+                  isThemeCyber ? '#10b981' :
+                  isThemeLight ? '#f43f5e' :
+                  isThemeSlate ? '#06b6d4' :
+                  '#6366f1'
+                } />
+                <stop offset="100%" stopColor={
+                  isThemeCyber ? '#34d399' :
+                  isThemeLight ? '#fb7185' :
+                  isThemeSlate ? '#38bdf8' :
+                  '#a855f7'
+                } />
               </linearGradient>
             </defs>
             {/* Background track */}
@@ -422,30 +477,66 @@ export default function TimerSection({ settings, onSaveSession, currentSessionsT
               className={`transition-all duration-300 ease-out ${isRunning && !isPaused && mode === 'normal' ? 'animate-[spin_24s_linear_infinite] origin-center' : ''}`}
               fill="transparent"
             />
+            {/* Fine rotating dashed radar ring - provides a precision instrument vibe */}
+            <circle
+              cx="110"
+              cy="110"
+              r={radius + 8}
+              stroke="currentColor"
+              strokeWidth="1"
+              strokeDasharray="3, 11"
+              className={`text-muted-foreground/20 transition-all duration-300 ${
+                isRunning && !isPaused ? 'animate-[spin_40s_linear_infinite] origin-center' : ''
+              }`}
+              fill="transparent"
+            />
           </svg>
 
           {/* Core glass ring overlay with inner shadow */}
-          <div className="absolute w-[180px] h-[180px] rounded-full border border-border/60 bg-card/75 backdrop-blur-md flex flex-col items-center justify-center shadow-xs z-10">
+          <div className={`absolute w-[182px] h-[182px] rounded-full border-2 backdrop-blur-xl flex flex-col items-center justify-center z-10 transition-all duration-500 ${
+            isRunning && !isPaused
+              ? isThemeCyber ? 'border-emerald-500/40 bg-slate-950/80 shadow-[inset_0_0_20px_rgba(16,185,129,0.15)]' :
+                isThemeLight ? 'border-rose-500/40 bg-white/90 shadow-[inset_0_0_20px_rgba(244,63,94,0.1)]' :
+                isThemeSlate ? 'border-cyan-500/40 bg-slate-950/80 shadow-[inset_0_0_20px_rgba(6,182,212,0.15)]' :
+                'border-indigo-500/40 bg-slate-950/80 shadow-[inset_0_0_20px_rgba(99,102,241,0.15)]'
+              : 'border-border/60 bg-card/75 shadow-xs'
+          }`}>
             
-            <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-bold flex items-center gap-1.5 mb-1 bg-accent/20 px-2.5 py-0.5 rounded-full">
-              {mode === 'normal' && <Timer className="w-3 h-3 text-indigo-500" />}
-              {mode === 'pomodoro' && (pomodoroStage === 'work' ? <Award className="w-3 h-3 text-emerald-500 animate-bounce" /> : <Coffee className="w-3 h-3 text-orange-500" />)}
-              {mode === 'test' && <BookOpen className="w-3 h-3 text-rose-500" />}
+            <span className={`text-[9px] uppercase tracking-wider font-bold flex items-center gap-1.5 mb-1 px-2.5 py-0.5 rounded-full ${badgeThemeClass}`}>
+              {mode === 'normal' && <Timer className="w-3 h-3" />}
+              {mode === 'pomodoro' && (pomodoroStage === 'work' ? <Award className="w-3 h-3 animate-bounce" /> : <Coffee className="w-3 h-3" />)}
+              {mode === 'test' && <BookOpen className="w-3 h-3" />}
               {mode === 'normal' && 'Normal Study'}
               {mode === 'pomodoro' && `Pomodoro: ${pomodoroStage}`}
               {mode === 'test' && '3HR JEE TEST'}
             </span>
 
-            {/* Timer String digits */}
-            <div className="font-mono text-3xl font-semibold tracking-tight text-foreground flex gap-0.5 items-center my-1.5 transition-colors">
-              <span>{hoursStr}</span>
-              <span className={isRunning && !isPaused ? "animate-pulse text-indigo-500" : ""}>:</span>
-              <span>{minutesStr}</span>
-              <span className={isRunning && !isPaused ? "animate-pulse text-indigo-500" : ""}>:</span>
-              <span>{secondsStr}</span>
+            {/* Timer String digits - jitter free tabular formatting */}
+            <div className="font-mono text-3xl md:text-4xl font-black tracking-tight text-foreground flex gap-0.5 items-center my-1.5 transition-colors select-none">
+              <span className="tabular-nums">{hoursStr}</span>
+              <span className={`transition-colors duration-300 ${
+                isRunning && !isPaused 
+                  ? isThemeCyber ? 'animate-pulse text-emerald-400' :
+                    isThemeLight ? 'animate-pulse text-rose-500' :
+                    isThemeSlate ? 'animate-pulse text-cyan-400' :
+                    'animate-pulse text-indigo-400'
+                  : 'text-muted-foreground'
+              }`}>:</span>
+              <span className="tabular-nums">{minutesStr}</span>
+              <span className={`transition-colors duration-300 ${
+                isRunning && !isPaused 
+                  ? isThemeCyber ? 'animate-pulse text-emerald-400' :
+                    isThemeLight ? 'animate-pulse text-rose-500' :
+                    isThemeSlate ? 'animate-pulse text-cyan-400' :
+                    'animate-pulse text-indigo-400'
+                  : 'text-muted-foreground'
+              }`}>:</span>
+              <span className="tabular-nums">{secondsStr}</span>
             </div>
 
-            <p className="text-[9px] text-muted-foreground/80 font-medium">
+            <p className={`text-[9px] font-semibold tracking-wide ${
+              isRunning && !isPaused ? accentTextClass : 'text-muted-foreground/80'
+            }`}>
               {isRunning ? (isPaused ? 'Paused' : 'Active Study Session') : 'Prepared & Offline'}
             </p>
           </div>
@@ -555,45 +646,94 @@ export default function TimerSection({ settings, onSaveSession, currentSessionsT
         {/* Timer Control CTA Buttons */}
         <div className="pt-2 flex flex-wrap gap-3">
           {!isRunning ? (
-            <button
+            <motion.button
+              whileHover={{ scale: 1.02, translateY: -1 }}
+              whileTap={{ scale: 0.98 }}
               onClick={handleStart}
-              className="flex-1 min-w-[120px] bg-primary hover:brightness-110 active:scale-[0.98] text-primary-foreground font-bold text-sm py-4 px-6 rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-primary/25 transition-all duration-300 cursor-pointer"
+              className={`flex-1 min-w-[140px] font-extrabold text-sm py-4 px-6 rounded-2xl flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer shadow-lg ${
+                isThemeCyber ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-black shadow-emerald-500/20 hover:shadow-emerald-500/30' :
+                isThemeLight ? 'bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-rose-500/20 hover:shadow-rose-500/30' :
+                isThemeSlate ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-slate-950 shadow-cyan-500/20 hover:shadow-cyan-500/30' :
+                'bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 text-white shadow-indigo-600/20 hover:shadow-indigo-600/30'
+              }`}
             >
               <Play className="w-4.5 h-4.5 fill-current" /> Start Focused Study
-            </button>
+            </motion.button>
           ) : (
             <>
               {isPaused ? (
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.03, translateY: -1 }}
+                  whileTap={{ scale: 0.97 }}
+                  animate={{
+                    boxShadow: [
+                      isThemeCyber ? '0 0 0 0px rgba(16,185,129,0.2)' :
+                      isThemeLight ? '0 0 0 0px rgba(244,63,94,0.2)' :
+                      isThemeSlate ? '0 0 0 0px rgba(6,182,212,0.2)' :
+                      '0 0 0 0px rgba(16,185,129,0.2)',
+                      isThemeCyber ? '0 0 0 8px rgba(16,185,129,0)' :
+                      isThemeLight ? '0 0 0 8px rgba(244,63,94,0)' :
+                      isThemeSlate ? '0 0 0 8px rgba(6,182,212,0)' :
+                      '0 0 0 8px rgba(16,185,129,0)'
+                    ]
+                  }}
+                  transition={{
+                    boxShadow: {
+                      repeat: Infinity,
+                      duration: 2,
+                      ease: "easeOut"
+                    }
+                  }}
                   onClick={handleStart}
-                  className="flex-1 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white font-bold text-sm py-4 px-6 rounded-2xl flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer shadow-lg shadow-emerald-600/20"
+                  className={`flex-1 font-extrabold text-sm py-4 px-6 rounded-2xl flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer shadow-xl relative overflow-hidden group ${
+                    isThemeCyber ? 'bg-gradient-to-r from-emerald-500 via-green-400 to-emerald-500 text-black shadow-emerald-500/25' :
+                    isThemeLight ? 'bg-gradient-to-r from-rose-500 via-pink-400 to-rose-500 text-white shadow-rose-500/25' :
+                    isThemeSlate ? 'bg-gradient-to-r from-cyan-500 via-sky-400 to-cyan-500 text-slate-950 shadow-cyan-500/25' :
+                    'bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 text-white shadow-emerald-500/25'
+                  }`}
                 >
                   <Play className="w-4.5 h-4.5 fill-current" /> Resume Study
-                </button>
+                </motion.button>
               ) : (
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={handlePause}
-                  className="flex-1 bg-amber-600 hover:bg-amber-500 active:scale-[0.98] text-white font-bold text-sm py-4 px-6 rounded-2xl flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer shadow-lg shadow-amber-600/20"
+                  className={`flex-1 font-bold text-sm py-4 px-6 rounded-2xl flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer shadow-lg ${
+                    isThemeCyber ? 'bg-amber-500/15 hover:bg-amber-500/25 text-amber-400 border border-amber-500/30' :
+                    isThemeLight ? 'bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 shadow-amber-500/5' :
+                    isThemeSlate ? 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30' :
+                    'bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                  }`}
                 >
                   <Pause className="w-4.5 h-4.5 fill-current" /> Pause Block
-                </button>
+                </motion.button>
               )}
 
-              <button
+              <motion.button
+                whileHover={{ scale: 1.02, translateY: -1 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={handleStopAndSave}
-                className="bg-primary hover:brightness-110 active:scale-[0.98] text-primary-foreground font-bold text-sm py-4 px-5 rounded-2xl flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer shadow-lg shadow-primary/25"
+                className={`font-bold text-sm py-4 px-5 rounded-2xl flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer shadow-lg ${
+                  isThemeCyber ? 'bg-slate-900 hover:bg-slate-800 text-emerald-400 border border-emerald-500/30 shadow-emerald-500/5' :
+                  isThemeLight ? 'bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200' :
+                  isThemeSlate ? 'bg-slate-900 hover:bg-slate-800 text-cyan-400 border border-cyan-500/30 shadow-cyan-500/5' :
+                  'bg-indigo-50 hover:bg-indigo-100/80 text-indigo-500 border border-indigo-200 shadow-indigo-500/5'
+                }`}
                 title="Stop and save session to local history Log"
               >
                 <Square className="w-4.5 h-4.5 fill-current" /> Save Session
-              </button>
+              </motion.button>
 
-              <button
+              <motion.button
+                whileHover={{ scale: 1.05, rotate: -45 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={handleReset}
-                className="border border-border bg-accent/10 hover:bg-accent/30 text-muted-foreground hover:text-foreground font-bold text-xs py-4 px-4 rounded-2xl flex items-center justify-center transition-all duration-300 cursor-pointer active:scale-[0.98]"
+                className="border border-border bg-accent/10 hover:bg-accent/30 text-muted-foreground hover:text-foreground font-bold text-xs py-4 px-4 rounded-2xl flex items-center justify-center transition-all duration-300 cursor-pointer"
                 title="Discard study session"
               >
                 <RotateCcw className="w-4 h-4" />
-              </button>
+              </motion.button>
             </>
           )}
         </div>

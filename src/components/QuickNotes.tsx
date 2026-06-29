@@ -182,15 +182,44 @@ export default function QuickNotes({ theme, cardBgClass }: QuickNotesProps) {
   });
 
   // Theme styling helpers
-  const activeBadgeColor = theme === 'cyber' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-indigo-500/10 text-[#6366f1] border-indigo-500/20';
-  const buttonHoverColor = theme === 'cyber' ? 'hover:bg-emerald-500/20 text-emerald-400' : 'hover:bg-indigo-500/25 text-[#6366f1]';
-  const inputBorderFocus = theme === 'cyber' ? 'focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/35' : 'focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/35';
-  const activeTabAccent = theme === 'cyber' ? 'bg-emerald-500 text-black font-extrabold shadow-sm' : 'bg-indigo-600 text-white font-bold shadow-sm';
-  const accentColorText = theme === 'cyber' ? 'text-emerald-400' : 'text-[#6366f1]';
-  const outlineBorder = theme === 'cyber' ? 'border-emerald-500/20' : 'border-border';
+  const activeBadgeColor = 
+    theme === 'cyber' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' :
+    theme === 'light' ? 'bg-rose-500/10 text-rose-600 border-rose-500/30' :
+    theme === 'slate' ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30' :
+    'bg-indigo-500/10 text-indigo-400 border-indigo-500/30';
+
+  const buttonHoverColor = 
+    theme === 'cyber' ? 'hover:bg-emerald-500/20 text-emerald-400' :
+    theme === 'light' ? 'hover:bg-rose-500/20 text-rose-600' :
+    theme === 'slate' ? 'hover:bg-cyan-500/20 text-cyan-400' :
+    'hover:bg-indigo-500/25 text-[#6366f1]';
+
+  const inputBorderFocus = 
+    theme === 'cyber' ? 'focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/35' :
+    theme === 'light' ? 'focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500/35' :
+    theme === 'slate' ? 'focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/35' :
+    'focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/35';
+
+  const activeTabAccent = 
+    theme === 'cyber' ? 'bg-emerald-500 text-black font-extrabold shadow-sm' :
+    theme === 'light' ? 'bg-rose-500 text-white font-bold shadow-sm' :
+    theme === 'slate' ? 'bg-cyan-500 text-slate-950 font-bold shadow-sm' :
+    'bg-indigo-650 text-white font-bold shadow-sm';
+
+  const accentColorText = 
+    theme === 'cyber' ? 'text-emerald-400' :
+    theme === 'light' ? 'text-rose-500' :
+    theme === 'slate' ? 'text-cyan-400' :
+    'text-[#6366f1]';
+
+  const outlineBorder = 
+    theme === 'cyber' ? 'border-emerald-500/20' :
+    theme === 'light' ? 'border-rose-500/20' :
+    theme === 'slate' ? 'border-cyan-500/20' :
+    'border-border';
 
   return (
-    <div className={`rounded-3xl p-6 shadow-sm transition-all duration-300 hover:scale-[1.005] hover:shadow-md hover:border-border/80 ${cardBgClass}`}>
+    <div className={`rounded-3xl p-6 shadow-sm border border-border ${cardBgClass}`}>
       
       {/* HEADER TABS SECTION */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-white/5 pb-4.5 mb-5 select-none">
@@ -231,7 +260,10 @@ export default function QuickNotes({ theme, cardBgClass }: QuickNotesProps) {
                   onClick={() => setFilter(tab)}
                   className={`px-2.5 py-1 text-[10px] uppercase tracking-wider rounded-lg transition-all font-mono leading-none cursor-pointer ${
                     filter === tab
-                      ? theme === 'cyber' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-indigo-500/20 text-[#6366f1]'
+                      ? theme === 'cyber' ? 'bg-emerald-500/20 text-emerald-400' :
+                        theme === 'light' ? 'bg-rose-500/20 text-rose-600' :
+                        theme === 'slate' ? 'bg-cyan-500/20 text-cyan-400' :
+                        'bg-indigo-500/20 text-[#6366f1]'
                       : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >

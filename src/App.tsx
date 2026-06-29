@@ -620,13 +620,81 @@ export default function App() {
       }}
     >
       
+      {/* Dynamic ambient floating backdrops for balanced aesthetic side effects */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none select-none z-0">
+        {settings.theme === 'glass' && (
+          <>
+            <div className="absolute top-[10%] left-[5%] w-[450px] h-[450px] rounded-full bg-indigo-600/12 blur-[130px] animate-[floatGlow_25s_infinite_ease-in-out]" />
+            <div className="absolute bottom-[15%] right-[5%] w-[500px] h-[500px] rounded-full bg-pink-500/10 blur-[140px] animate-[floatGlowReverse_30s_infinite_ease-in-out]" />
+            <div className="absolute top-[40%] right-[15%] w-[380px] h-[380px] rounded-full bg-purple-600/8 blur-[120px] animate-[floatGlow_20s_infinite_ease-in-out]" />
+          </>
+        )}
+        {settings.theme === 'slate' && (
+          <>
+            <div className="absolute top-[15%] left-[10%] w-[500px] h-[500px] rounded-full bg-cyan-500/10 blur-[130px] animate-[floatGlow_28s_infinite_ease-in-out]" />
+            <div className="absolute bottom-[20%] right-[8%] w-[450px] h-[450px] rounded-full bg-indigo-500/12 blur-[130px] animate-[floatGlowReverse_24s_infinite_ease-in-out]" />
+          </>
+        )}
+        {settings.theme === 'cyber' && (
+          <>
+            <div className="absolute top-[8%] left-[12%] w-[480px] h-[480px] rounded-full bg-emerald-500/8 blur-[120px] animate-[floatGlow_22s_infinite_ease-in-out]" />
+            <div className="absolute bottom-[25%] right-[10%] w-[400px] h-[400px] rounded-full bg-teal-500/10 blur-[120px] animate-[floatGlowReverse_26s_infinite_ease-in-out]" />
+          </>
+        )}
+        {settings.theme === 'light' && (
+          <>
+            <div className="absolute top-[5%] left-[3%] w-[550px] h-[550px] rounded-full bg-rose-200/20 blur-[140px] animate-[floatGlow_35s_infinite_ease-in-out]" />
+            <div className="absolute bottom-[10%] right-[5%] w-[480px] h-[480px] rounded-full bg-amber-100/25 blur-[120px] animate-[floatGlowReverse_28s_infinite_ease-in-out]" />
+          </>
+        )}
+      </div>
+
       {/* GLOBAL NAVBAR HEADER */}
       <header className={themeStyles.headerBg}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3 select-none">
             {/* Custom high-fidelity branding icon with growth paths, success tick & action arrow */}
-            <div className={`p-1.5 rounded-xl bg-slate-900/10 dark:bg-white/5 border border-border/40 text-white shadow-xs`}>
-              <BrandingLogo size={28} className="shrink-0" />
+            <div className="relative group shrink-0 select-none">
+              {/* Animated glowing backdrop aura - constant breathing glow */}
+              <div 
+                className="absolute -inset-1.5 rounded-xl opacity-65 blur-md group-hover:opacity-100 transition duration-1000 animate-pulse-glow"
+                style={{
+                  background: settings.theme === 'cyber'
+                    ? 'linear-gradient(to right, #10b981, #059669, #34d399)'
+                    : settings.theme === 'light'
+                    ? 'linear-gradient(to right, #f43f5e, #ec4899, #fb7185)'
+                    : settings.theme === 'slate'
+                    ? 'linear-gradient(to right, #06b6d4, #0891b2, #38bdf8)'
+                    : 'linear-gradient(to right, #818cf8, #6366f1, #c084fc)'
+                }}
+              />
+              
+              {/* The main logo container box */}
+              <div className="relative p-1.5 rounded-xl bg-slate-950 dark:bg-[#030712] border border-primary/30 text-white shadow-lg overflow-hidden flex items-center justify-center">
+                {/* A circuiting glowing line effect */}
+                <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden rounded-xl">
+                  <div 
+                    className="absolute top-0 left-0 w-[200%] h-[200%] -translate-x-1/4 -translate-y-1/4 animate-circuit-slow"
+                    style={{
+                      background: `conic-gradient(from 0deg, transparent 40%, ${
+                        settings.theme === 'cyber' ? '#10b981' :
+                        settings.theme === 'light' ? '#f43f5e' :
+                        settings.theme === 'slate' ? '#06b6d4' :
+                        '#818cf8'
+                      } 50%, ${
+                        settings.theme === 'cyber' ? '#059669' :
+                        settings.theme === 'light' ? '#fb7185' :
+                        settings.theme === 'slate' ? '#0891b2' :
+                        '#6366f1'
+                      } 60%, transparent 70%)`
+                    }}
+                  />
+                  <div className="absolute inset-[1px] bg-slate-950 dark:bg-[#0a0f1d] rounded-[11px]" />
+                </div>
+                
+                {/* Branding Logo inside */}
+                <BrandingLogo size={28} className="shrink-0 relative z-10" />
+              </div>
             </div>
 
             <div>
@@ -650,21 +718,25 @@ export default function App() {
             ].map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
+              const textClass = isActive 
+                ? (settings.theme === 'light' ? 'text-rose-650 font-extrabold' : settings.theme === 'cyber' ? 'text-emerald-400 font-extrabold' : settings.theme === 'slate' ? 'text-cyan-400 font-extrabold' : 'text-[#818cf8] font-extrabold') 
+                : (settings.theme === 'light' ? 'text-slate-600 hover:text-rose-600 hover:bg-rose-50/40' : settings.theme === 'cyber' ? 'text-emerald-500/70 hover:text-emerald-300 hover:bg-emerald-950/20' : settings.theme === 'slate' ? 'text-slate-400 hover:text-cyan-300 hover:bg-cyan-950/20' : 'text-slate-400 hover:text-white hover:bg-white/5');
               return (
                 <button
                   key={tab.id}
                   onClick={() => handleTabChange(tab.id as any)}
-                  className={`h-16 px-4 flex items-center gap-2 text-xs font-semibold relative transition-all duration-300 cursor-pointer outline-none ${
-                    isActive ? 'text-white font-bold' : 'text-slate-400 hover:text-white'
-                  }`}
+                  className={`h-16 px-4 flex items-center gap-2 text-xs font-semibold relative transition-all duration-300 cursor-pointer outline-none rounded-t-lg ${textClass}`}
                 >
                   <Icon className="w-4 h-4 shrink-0 z-10" />
                   <span className="z-10">{tab.label}</span>
                   {isActive && (
                     <motion.div
                       layoutId="activeTabUnderline"
-                      className={`absolute bottom-0 left-0 right-0 h-[3px] z-0 ${
-                        settings.theme === 'cyber' ? 'bg-emerald-500' : settings.theme === 'light' ? 'bg-indigo-650' : 'bg-[#6366f1]'
+                      className={`absolute bottom-0 left-0 right-0 h-1 z-10 ${
+                        settings.theme === 'cyber' ? 'bg-emerald-400 shadow-[0_-2px_10px_rgba(16,185,129,0.5)]' :
+                        settings.theme === 'light' ? 'bg-rose-500 shadow-[0_-2px_10px_rgba(244,63,94,0.5)]' :
+                        settings.theme === 'slate' ? 'bg-cyan-400 shadow-[0_-2px_10px_rgba(6,182,212,0.5)]' :
+                        'bg-indigo-400 shadow-[0_-2px_10px_rgba(129,140,248,0.5)]'
                       }`}
                       transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                     />
@@ -672,7 +744,7 @@ export default function App() {
                   {isActive && (
                     <motion.div
                       layoutId="activeTabBackground"
-                      className="absolute inset-0 bg-white/5 rounded-t-lg z-0"
+                      className="absolute inset-0 bg-white/[0.03] rounded-t-lg z-0"
                       transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                     />
                   )}
@@ -728,11 +800,9 @@ export default function App() {
             >
               {isActive && (
                 <motion.div
-                  layoutId="activeMobileTabPill"
-                  className={`absolute inset-0 rounded-lg -z-0 ${
-                    settings.theme === 'cyber' ? 'bg-emerald-600' : settings.theme === 'light' ? 'bg-indigo-600' : 'bg-[#6366f1]'
-                  }`}
-                  transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                   layoutId="activeMobileTabPill"
+                   className="absolute inset-0 rounded-lg -z-0 bg-primary opacity-90"
+                   transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                 />
               )}
               <Icon className="w-3.5 h-3.5 z-10 shrink-0" />
@@ -836,6 +906,9 @@ export default function App() {
                     </div>
                   </div>                  
 
+                  {/* Subtle horizontal section divider */}
+                  <div className={`border-t ${themeStyles.borderStyle} my-8 opacity-65`} />
+
                   {/* Central Study Timer */}
                   <TimerSection 
                     settings={settings}
@@ -843,8 +916,11 @@ export default function App() {
                     currentSessionsTodayCount={sessionsTodayCount}
                   />
                   
+                  {/* Subtle horizontal section divider */}
+                  <div className={`border-t ${themeStyles.borderStyle} my-8 opacity-65`} />
+                  
                   {/* GAMIFIED STUDY STREAK COUNTER */}
-                  <div className={`bg-card border border-border rounded-3xl p-6 shadow-sm ${themeStyles.cardBg} animate-fade-in relative overflow-hidden transition-all duration-300 hover:scale-[1.005] hover:shadow-md hover:border-border/80`}>
+                  <div className={`bg-card border border-border rounded-3xl p-6 shadow-sm ${themeStyles.cardBg} animate-fade-in relative overflow-hidden`}>
                     
                     {/* Decorative ambient background glow */}
                     <div className="absolute -right-12 -top-12 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl pointer-events-none" />
@@ -967,8 +1043,11 @@ export default function App() {
                     </div>
                   </div>
 
+                  {/* Subtle horizontal section divider */}
+                  <div className={`border-t ${themeStyles.borderStyle} my-8 opacity-65`} />
+
                   {/* TODAY'S GOALS PROGRESS BOARD */}
-                  <div className={`bg-card border border-border rounded-3xl p-6 shadow-sm space-y-6 ${themeStyles.cardBg} animate-fade-in transition-all duration-300 hover:scale-[1.005] hover:shadow-md hover:border-border/80`}>
+                  <div className={`bg-card border border-border rounded-3xl p-6 shadow-sm space-y-6 ${themeStyles.cardBg} animate-fade-in`}>
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/40 pb-5">
                       <div>
                         <h3 className="text-base font-bold font-display tracking-tight flex items-center gap-2">
@@ -1011,9 +1090,7 @@ export default function App() {
                             initial={{ width: 0 }}
                             animate={{ width: `${Math.min(100, (studyMinutesToday / (settings.dailyStudyMinutesGoal ?? 180)) * 100)}%` }}
                             transition={{ duration: 0.8, ease: "easeOut" }}
-                            className={`h-full rounded-full ${
-                              settings.theme === 'cyber' ? 'bg-emerald-500' : 'bg-[#6366f1]'
-                            }`}
+                            className="h-full rounded-full bg-primary"
                           />
                         </div>
                         
@@ -1077,11 +1154,14 @@ export default function App() {
                     ) : null}
                   </div>
 
+                  {/* Subtle horizontal section divider */}
+                  <div className={`border-t ${themeStyles.borderStyle} my-8 opacity-65`} />
+
                   {/* Fast Daily Quick Solves card */}
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     
                     {/* Solved ratios quick guide */}
-                    <div className="bg-card border border-border rounded-2xl p-6.5 space-y-4 transition-all duration-300 hover:scale-[1.005] hover:shadow-md hover:border-border/80">
+                    <div className="bg-card border border-border rounded-2xl p-6.5 space-y-4">
                       <h4 className="text-sm font-bold font-display tracking-tight flex items-center gap-1.5 text-foreground">
                         <TrendingUp className="w-4 h-4 text-emerald-500" /> Today's Focus Pulse
                       </h4>
@@ -1108,7 +1188,7 @@ export default function App() {
                     </div>
 
                     {/* Study History Snapshot */}
-                    <div className="lg:col-span-2 bg-card border border-border rounded-2xl p-6.5 space-y-4 transition-all duration-300 hover:scale-[1.005] hover:shadow-md hover:border-border/80">
+                    <div className="lg:col-span-2 bg-card border border-border rounded-2xl p-6.5 space-y-4">
                       <div className="flex items-center justify-between">
                         <h4 className="text-sm font-bold font-display tracking-tight flex items-center gap-1.5 text-foreground">
                           <History className="w-4.5 h-4.5 text-indigo-500 animate-spin-slow" /> Recent Actions Study Log
@@ -1168,7 +1248,7 @@ export default function App() {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
                     
                     {/* Telegram Community */}
-                    <div className="bg-card border border-border rounded-3xl p-6 shadow-sm flex flex-col justify-between transition-all duration-300 hover:scale-[1.005] hover:shadow-md hover:border-border/80">
+                    <div className="bg-card border border-border rounded-3xl p-6 shadow-sm flex flex-col justify-between">
                       <div className="space-y-1.5">
                         <span className="text-[9px] uppercase font-bold text-indigo-500 bg-indigo-500/10 px-2 py-0.5 rounded-full w-max">Community Sync</span>
                         <h4 className="text-base font-bold font-sans tracking-tight">JEE CIRCLES Telegram</h4>
@@ -1188,7 +1268,7 @@ export default function App() {
                     </div>
 
                     {/* Exam Countdown timer link */}
-                    <div className="bg-card border border-border rounded-3xl p-6 shadow-sm flex flex-col justify-between transition-all duration-300 hover:scale-[1.005] hover:shadow-md hover:border-border/80">
+                    <div className="bg-card border border-border rounded-3xl p-6 shadow-sm flex flex-col justify-between">
                       <div className="space-y-1.5">
                         <span className="text-[9px] uppercase font-bold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-full w-max">Live Timer App</span>
                         <h4 className="text-base font-bold font-sans tracking-tight">JEE & NEET Exam Clock</h4>
@@ -1208,7 +1288,7 @@ export default function App() {
                     </div>
 
                     {/* IIT JEE Guide link */}
-                    <div className="bg-card border border-border rounded-3xl p-6 shadow-sm flex flex-col justify-between transition-all duration-300 hover:scale-[1.005] hover:shadow-md hover:border-border/80">
+                    <div className="bg-card border border-border rounded-3xl p-6 shadow-sm flex flex-col justify-between">
                       <div className="space-y-1.5">
                         <span className="text-[9px] uppercase font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full w-max">Aspirant Guides</span>
                         <h4 className="text-base font-bold font-sans tracking-tight">The IIT JEE Guide Hub</h4>
