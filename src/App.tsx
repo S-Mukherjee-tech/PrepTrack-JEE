@@ -856,8 +856,8 @@ export default function App() {
           {/* Keep Dashboard always mounted to preserve active running stopwatch and avoid resetting */}
           <div className={activeTab === 'dashboard' ? 'block' : 'hidden'}>
             <motion.div
-              initial={{ opacity: 0, y: 15, filter: 'blur(4px)' }}
-              animate={activeTab === 'dashboard' ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
+              initial={{ opacity: 0, y: 15 }}
+              animate={activeTab === 'dashboard' ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
               className="space-y-8"
             >
@@ -1372,9 +1372,9 @@ export default function App() {
             {activeTab !== 'dashboard' && (
               <motion.div
                 key={activeTab}
-                initial={{ opacity: 0, y: 15, filter: 'blur(4px)' }}
-                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                exit={{ opacity: 0, y: -15, filter: 'blur(4px)' }}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
                 transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
                 className="space-y-8"
               >

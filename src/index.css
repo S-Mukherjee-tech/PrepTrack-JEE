@@ -150,26 +150,17 @@
   color: #0f172a;
 }
 
-/* Global Smooth Element Polish (Fixes blocky look) */
+/* Global Smooth Element Polish (Fixes blocky look) - Highly Optimized to eliminate rendering/scrolling overhead */
 .bg-card, .rounded-3xl {
   border-radius: 28px !important;
-  transition-property: transform, box-shadow, border-color, background-color !important;
-  transition-duration: 0.5s !important;
-  transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1) !important;
 }
 
 .rounded-2xl {
   border-radius: 18px !important;
-  transition-property: transform, box-shadow, border-color, background-color !important;
-  transition-duration: 0.5s !important;
-  transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1) !important;
 }
 
 .rounded-xl {
   border-radius: 14px !important;
-  transition-property: transform, box-shadow, border-color, background-color !important;
-  transition-duration: 0.4s !important;
-  transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1) !important;
 }
 
 /* Ensure ultra-crisp fonts globally across all elements during transitions */
@@ -183,20 +174,23 @@
 main .bg-card:not(header):not(footer):not(.sticky):not(nav),
 main .rounded-2xl:not(header):not(footer):not(.sticky):not(nav),
 main .rounded-3xl:not(header):not(footer):not(.sticky):not(nav) {
-  transition-property: transform, box-shadow, border-color, background-color !important;
-  transition-duration: 0.5s !important;
-  transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-  will-change: transform, box-shadow;
+  /* Lightweight transitions only for background/border, keeping scroll entirely unburdened */
+  transition: border-color 0.2s ease, background-color 0.2s ease !important;
   backface-visibility: hidden !important;
   -webkit-backface-visibility: hidden !important;
-  transform: translate3d(0, 0, 0) !important;
-  transform-style: preserve-3d !important;
-  contain: paint !important;
-  contain-intrinsic-size: auto 320px !important;
 }
 
 /* Only trigger surface-up lift and premium tactile scale on hover-capable cursor devices (Desktops/Laptops) */
 @media (hover: hover) {
+  main .bg-card:not(header):not(footer):not(.sticky):not(nav),
+  main .rounded-2xl:not(header):not(footer):not(.sticky):not(nav),
+  main .rounded-3xl:not(header):not(footer):not(.sticky):not(nav) {
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+                box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+                border-color 0.2s ease, 
+                background-color 0.2s ease !important;
+  }
+
   main .bg-card:not(header):not(footer):not(.sticky):not(nav):hover,
   main .rounded-2xl:not(header):not(footer):not(.sticky):not(nav):hover,
   main .rounded-3xl:not(header):not(footer):not(.sticky):not(nav):hover {
@@ -211,7 +205,7 @@ main .rounded-3xl:not(header):not(footer):not(.sticky):not(nav) {
   main .rounded-3xl:not(header):not(footer):not(.sticky):not(nav):active {
     transform: scale(0.98) !important;
     opacity: 0.95 !important;
-    transition-duration: 0.15s !important;
+    transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s ease !important;
   }
 }
 
@@ -252,18 +246,22 @@ main .rounded-3xl:not(header):not(footer):not(.sticky):not(nav) {
 /* Modern inputs, buttons & interactable controls response */
 main button:not([disabled]):not(.cursor-default):not(.react-calendar__tile), 
 main a,
-main .clickable-item,
-main select,
-main input[type="text"] {
-  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
-              box-shadow 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
-              background-color 0.25s ease,
-              border-color 0.25s ease !important;
+main .clickable-item {
+  transition: background-color 0.15s ease, border-color 0.15s ease !important;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
 
 @media (hover: hover) {
+  main button:not([disabled]):not(.cursor-default):not(.react-calendar__tile), 
+  main a,
+  main .clickable-item {
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                background-color 0.15s ease,
+                border-color 0.15s ease !important;
+  }
+
   main button:not([disabled]):not(.cursor-default):not(.react-calendar__tile):hover, 
   main a:hover,
   main .clickable-item:hover {
@@ -421,15 +419,31 @@ input, select, textarea {
 
 /* Stunning ambient float animations for high-fidelity Copilot/Gemini-like backdrops */
 @keyframes floatGlow {
-  0% { transform: translate(0px, 0px) scale(1); }
-  50% { transform: translate(40px, -60px) scale(1.15); }
-  100% { transform: translate(0px, 0px) scale(1); }
+  0% { transform: translate3d(0px, 0px, 0px) scale(1); }
+  50% { transform: translate3d(20px, -30px, 0px) scale(1.05); }
+  100% { transform: translate3d(0px, 0px, 0px) scale(1); }
 }
 
 @keyframes floatGlowReverse {
-  0% { transform: translate(0px, 0px) scale(1.1); }
-  50% { transform: translate(-60px, 40px) scale(0.9); }
-  100% { transform: translate(0px, 0px) scale(1.1); }
+  0% { transform: translate3d(0px, 0px, 0px) scale(1.05); }
+  50% { transform: translate3d(-30px, 20px, 0px) scale(0.95); }
+  100% { transform: translate3d(0px, 0px, 0px) scale(1.05); }
+}
+
+/* Disable heavy background blur movement on mobile/tablet devices for buttery smooth 120Hz scrolling */
+@media (hover: none) {
+  .animate-\[floatGlow_25s_infinite_ease-in-out\],
+  .animate-\[floatGlowReverse_30s_infinite_ease-in-out\],
+  .animate-\[floatGlow_20s_infinite_ease-in-out\],
+  .animate-\[floatGlow_28s_infinite_ease-in-out\],
+  .animate-\[floatGlowReverse_24s_infinite_ease-in-out\],
+  .animate-\[floatGlow_22s_infinite_ease-in-out\],
+  .animate-\[floatGlowReverse_26s_infinite_ease-in-out\],
+  .animate-\[floatGlow_35s_infinite_ease-in-out\],
+  .animate-\[floatGlowReverse_28s_infinite_ease-in-out\] {
+    animation: none !important;
+    transform: none !important;
+  }
 }
 
 /* Custom Monospace Override for Gorgeous, Rounded, Tabular Digits with No Slashed Zeroes */
