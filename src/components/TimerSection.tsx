@@ -402,7 +402,7 @@ const TimerSection = memo(function TimerSection({ settings, onSaveSession, curre
     'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20';
 
   return (
-    <div className="bg-card border border-border rounded-3xl p-6 lg:p-8 shadow-sm flex flex-col md:flex-row gap-8 items-center relative overflow-hidden">
+    <div className="bg-card border border-border rounded-3xl p-6 lg:p-8 shadow-sm flex flex-col md:flex-row gap-8 items-center relative overflow-hidden dashboard-card-gpu">
       
       {/* Decorative gradient glowing orb - purely aesthetic */}
       <div className="absolute top-0 right-0 w-48 h-48 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
@@ -411,27 +411,14 @@ const TimerSection = memo(function TimerSection({ settings, onSaveSession, curre
       <div className="relative flex flex-col items-center justify-center shrink-0">
         
         {/* Breathing glowing backdrop aura behind the clock dial when studying */}
-        <AnimatePresence>
-          {isRunning && !isPaused && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ 
-                opacity: [0.4, 0.75, 0.4], 
-                scale: [0.98, 1.05, 0.98]
-              }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ 
-                duration: 3, 
-                repeat: Infinity, 
-                ease: "easeInOut" 
-              }}
-              className="absolute inset-0 rounded-full blur-2xl pointer-events-none z-0"
-              style={{
-                background: `radial-gradient(circle, ${timerGlowColor} 0%, transparent 70%)`
-              }}
-            />
-          )}
-        </AnimatePresence>
+        {isRunning && !isPaused && (
+          <div
+            className="absolute inset-0 rounded-full blur-2xl pointer-events-none z-0 animate-pulse-glow"
+            style={{
+              background: `radial-gradient(circle, ${timerGlowColor} 0%, transparent 70%)`
+            }}
+          />
+        )}
         
         {/* Animated circular gauge block styled with exquisite detail */}
         <div className="w-56 h-56 rounded-full flex flex-col items-center justify-center relative shadow-xs bg-accent/5 z-10">

@@ -466,3 +466,32 @@ input, select, textarea {
 .animate-circuit-slow {
   animation: spin 6s linear infinite;
 }
+
+/* Optimization for Dashboard Cards to maximize GPU rasterization */
+.dashboard-card-gpu {
+  will-change: transform, opacity;
+  contain: content;
+}
+
+/* Theme Morphing Transition on the Root Element with Filter Effect */
+:root {
+  --theme-transition-duration: 0.6s;
+}
+
+html {
+  transition: background-color var(--theme-transition-duration) cubic-bezier(0.4, 0, 0.2, 1),
+              filter var(--theme-transition-duration) cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* High-level Morphing effect class during theme changes */
+html.theme-morphing {
+  filter: contrast(1.1) brightness(1.08) saturate(1.05) blur(0.4px);
+}
+
+html.theme-morphing *,
+html.theme-morphing {
+  transition: background-color var(--theme-transition-duration) cubic-bezier(0.4, 0, 0.2, 1),
+              border-color var(--theme-transition-duration) cubic-bezier(0.4, 0, 0.2, 1),
+              color var(--theme-transition-duration) cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow var(--theme-transition-duration) cubic-bezier(0.4, 0, 0.2, 1) !important;
+}

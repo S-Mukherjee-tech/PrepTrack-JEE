@@ -24,6 +24,7 @@ import ToastContainer, { Toast } from './components/ToastContainer';
 import MockTestTracker from './components/MockTestTracker';
 import { CLASS_11_SYLLABUS, CLASS_12_SYLLABUS } from './data/syllabus';
 import { BrandingLogo } from './components/BrandingLogo';
+import { WindowedStudyLog } from './components/WindowedStudyLog';
 
 // Lucide Icons
 import { 
@@ -36,6 +37,7 @@ import {
   Trash2, 
   TrendingUp, 
   History,
+  ArrowUp,
   MessageSquare,
   ArrowUpRight,
   Sparkles,
@@ -96,6 +98,56 @@ export default function App() {
     setLocalStudyGoal(((settings.dailyStudyMinutesGoal ?? 180) / 60).toString());
     setLocalQuestionGoal((settings.dailyQuestionsSolvedGoal ?? 30).toString());
   }, [settings.pomodoroWorkDuration, settings.pomodoroBreakDuration, settings.dailyStudyMinutesGoal, settings.dailyQuestionsSolvedGoal]);
+
+  // requestAnimationFrame-based debouncing scroll listener to maintain constant 120Hz refresh rate
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (totalHeight > 0) {
+        setScrollProgress((window.scrollY / totalHeight) * 100);
+      } else {
+        setScrollProgress(0);
+      }
+      setShowScrollTop(window.scrollY > 300);
+    };
+
+    let ticking = false;
+    const scrollListener = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', scrollListener, { passive: true });
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', scrollListener);
+    };
+  }, []);
+
+  // Manage high-level CSS classes and single transition morphing filter effect on root documentElement
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.add('theme-morphing');
+    
+    const allThemes = ['theme-glass', 'theme-cyber', 'theme-light', 'theme-slate'];
+    allThemes.forEach((t) => root.classList.remove(t));
+    root.classList.add(`theme-${settings.theme}`);
+
+    const timer = setTimeout(() => {
+      root.classList.remove('theme-morphing');
+    }, 600);
+
+    return () => clearTimeout(timer);
+  }, [settings.theme]);
 
   // Load database files
   useEffect(() => {
@@ -650,7 +702,24 @@ export default function App() {
       </div>
 
       {/* GLOBAL NAVBAR HEADER */}
-      <header className={themeStyles.headerBg}>
+      <header className={`${themeStyles.headerBg} relative`}>
+        {/* requestAnimationFrame-based dynamic scroll progress bar */}
+        <div 
+          className="absolute top-0 left-0 h-[2.5px] z-50 transition-all duration-75"
+          style={{ 
+            width: `${scrollProgress}%`,
+            background: settings.theme === 'cyber' ? '#10b981' :
+                        settings.theme === 'light' ? '#f43f5e' :
+                        settings.theme === 'slate' ? '#06b6d4' :
+                        '#818cf8',
+            boxShadow: `0 1px 6px ${
+              settings.theme === 'cyber' ? 'rgba(16,185,129,0.5)' :
+              settings.theme === 'light' ? 'rgba(244,63,94,0.5)' :
+              settings.theme === 'slate' ? 'rgba(6,182,212,0.5)' :
+              'rgba(129,140,248,0.5)'
+            }`
+          }}
+        />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3 select-none">
             {/* Custom high-fidelity branding icon with growth paths, success tick & action arrow */}
@@ -926,7 +995,7 @@ export default function App() {
                   <div className={`border-t ${themeStyles.borderStyle} my-8 opacity-65`} />
                   
                   {/* GAMIFIED STUDY STREAK COUNTER */}
-                  <div className={`bg-card border border-border rounded-3xl p-6 shadow-sm ${themeStyles.cardBg} animate-fade-in relative overflow-hidden`}>
+                  <div className={`bg-card border border-border rounded-3xl p-6 shadow-sm ${themeStyles.cardBg} animate-fade-in relative overflow-hidden dashboard-card-gpu`}>
                     
                     {/* Decorative ambient background glow */}
                     <div className="absolute -right-12 -top-12 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl pointer-events-none" />
@@ -1215,7 +1284,7 @@ export default function App() {
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     
                     {/* Solved ratios quick guide */}
-                    <div className="bg-card border border-border rounded-2xl p-6.5 space-y-4">
+                    <div className="bg-card border border-border rounded-2xl p-6.5 space-y-4 dashboard-card-gpu">
                       <h4 className="text-sm font-bold font-display tracking-tight flex items-center gap-1.5 text-foreground">
                         <TrendingUp className="w-4 h-4 text-emerald-500" /> Today's Focus Pulse
                       </h4>
@@ -1242,7 +1311,7 @@ export default function App() {
                     </div>
 
                     {/* Study History Snapshot */}
-                    <div className="lg:col-span-2 bg-card border border-border rounded-2xl p-6.5 space-y-4">
+                    <div className="lg:col-span-2 bg-card border border-border rounded-2xl p-6.5 space-y-4 dashboard-card-gpu">
                       <div className="flex items-center justify-between">
                         <h4 className="text-sm font-bold font-display tracking-tight flex items-center gap-1.5 text-foreground">
                           <History className="w-4.5 h-4.5 text-indigo-500 animate-spin-slow" /> Recent Actions Study Log
@@ -1255,43 +1324,12 @@ export default function App() {
                         </button>
                       </div>
 
-                      {sessions.length === 0 ? (
-                        <div className="py-8 text-center text-xs text-muted-foreground border border-dashed border-border rounded-xl">
-                          No study periods recorded yet today. Hit start focused study to begin!
-                        </div>
-                      ) : (
-                        <div className="space-y-2.5 max-h-[170px] overflow-y-auto pr-1">
-                          {sessions.slice(0, 4).map((s) => {
-                            const dateObj = new Date(s.startTime);
-                            const mins = Math.round(s.duration / 60);
-                            return (
-                              <div key={s.id} className="flex items-center justify-between p-3 rounded-xl bg-accent/15 border border-border/50 text-xs hover:border-accent/30 transition-all">
-                                <div className="space-y-0.5">
-                                  <span className="font-bold text-foreground block">{s.sessionName}</span>
-                                  <span className="text-[10px] text-muted-foreground font-mono">
-                                    {dateObj.toLocaleDateString()} {dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                  </span>
-                                </div>
-
-                                <div className="flex items-center gap-4">
-                                  <span className="font-bold font-mono text-indigo-500 bg-indigo-500/10 px-2 py-0.5 rounded">
-                                    {mins > 0 ? `${mins} m` : `${s.duration} s`}
-                                  </span>
-                                  
-                                  <button
-                                    onClick={() => handleDeleteStudySession(s.id)}
-                                    className="text-muted-foreground hover:text-rose-500 p-1 hover:bg-rose-500/10 rounded-lg cursor-pointer transition-colors"
-                                    title="Delete study record"
-                                    aria-label="Delete study record"
-                                  >
-                                    <Trash2 className="w-3.5 h-3.5" />
-                                  </button>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
+                      <WindowedStudyLog
+                        sessions={sessions}
+                        onDeleteSession={handleDeleteStudySession}
+                        maxHeight="170px"
+                        isAnalyticsVariant={false}
+                      />
                     </div>
 
                   </div>
@@ -1368,343 +1406,284 @@ export default function App() {
             </motion.div>
           </div>
 
-          <AnimatePresence mode="wait">
-            {activeTab !== 'dashboard' && (
-              <motion.div
-                key={activeTab}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
-                transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-                className="space-y-8"
-              >
-                {/* TAB 2: PROGRESS HISTORY & BAR CHARTS */}
-                {activeTab === 'analytics' && (
-                <div className="space-y-8">
-                  <AnalyticsCharts sessions={sessions} questions={questions} />
+          {/* TAB 2: PROGRESS HISTORY & BAR CHARTS */}
+          <div className={activeTab === 'analytics' ? 'block animate-fade-in space-y-8' : 'hidden'}>
+            <AnalyticsCharts sessions={sessions} questions={questions} />
 
-                  <div className="bg-card border border-border rounded-3xl p-6 lg:p-8 shadow-sm space-y-6">
-                    <div className="flex justify-between items-center border-b border-border/60 pb-5">
-                      <div>
-                        <h3 className="text-lg font-bold font-sans tracking-tight">Full Study Period History Log</h3>
-                        <p className="text-xs text-muted-foreground">Historical breakdown of your focused study sessions on this device</p>
+            <div className="bg-card border border-border rounded-3xl p-6 lg:p-8 shadow-sm space-y-6">
+              <div className="flex justify-between items-center border-b border-border/60 pb-5">
+                <div>
+                  <h3 className="text-lg font-bold font-sans tracking-tight">Full Study Period History Log</h3>
+                  <p className="text-xs text-muted-foreground">Historical breakdown of your focused study sessions on this device</p>
+                </div>
+              </div>
+
+              {sessions.length === 0 ? (
+                <div className="text-center py-12 border border-dashed border-border rounded-xl">
+                  <History className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
+                  <span className="text-xs font-semibold text-muted-foreground">No sessions logged yet</span>
+                  <p className="text-[10px] text-muted-foreground/55 mt-1">Start stopwatch timer and complete a study study period to display historical charts.</p>
+                </div>
+              ) : (
+                <WindowedStudyLog
+                  sessions={sessions}
+                  onDeleteSession={handleDeleteStudySession}
+                  maxHeight="400px"
+                  isAnalyticsVariant={true}
+                />
+              )}
+            </div>
+          </div>
+
+          {/* TAB 3: QUESTIONS LOGGER */}
+          <div className={activeTab === 'questions' ? 'block animate-fade-in' : 'hidden'}>
+            <QuestionTrackerForm 
+              questionsList={questions}
+              onSaveQuestions={handleSaveQuestions}
+            />
+          </div>
+
+          {/* TAB 4: SYLLABUS TABS */}
+          <div className={activeTab === 'syllabus' ? 'block animate-fade-in' : 'hidden'}>
+            <SyllabusTracker 
+              completions={chapterCompletions}
+              onToggleChapter={handleToggleChapter}
+              onClearAll={handleClearChapters}
+            />
+          </div>
+
+          {/* TAB 5: NOTES & ERROR BOOKS */}
+          <div className={activeTab === 'notes' ? 'block animate-fade-in' : 'hidden'}>
+            <NotesAndErrors 
+              errorItems={errorBook}
+              importanceItems={specialImportance}
+              onAddErrorItem={handleAddErrorItem}
+              onDeleteErrorItem={handleDeleteErrorItem}
+              onAddImportanceItem={handleAddImportanceItem}
+              onDeleteImportanceItem={handleDeleteImportanceItem}
+            />
+          </div>
+
+          {/* TAB 6: MOCK TEST TRACKER */}
+          <div className={activeTab === 'mock_tests' ? 'block animate-fade-in' : 'hidden'}>
+            <MockTestTracker 
+              mockTests={mockTests}
+              onAddTest={handleSaveMockTest}
+              onDeleteTest={handleDeleteMockTest}
+              theme={settings.theme}
+              cardBgClass="bg-card/75 backdrop-blur-md"
+            />
+          </div>
+
+          {/* TAB 7: SETTINGS & APPEARANCES */}
+          <div className={activeTab === 'settings' ? 'block animate-fade-in bg-card border border-border rounded-3xl p-6 lg:p-8 shadow-sm space-y-8' : 'hidden'}>
+            <div className="border-b border-border/60 pb-5">
+              <h3 className="text-lg font-bold font-sans tracking-tight">Settings & Appearance</h3>
+              <p className="text-xs text-muted-foreground">Customize your study targets, timer intervals, themes, and local datasets.</p>
+            </div>
+
+            {/* Theme Settings Selector */}
+            <div className="space-y-4">
+              <h4 className="text-sm font-bold text-foreground">Select Theme Accent</h4>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                {[
+                  { id: 'glass', name: '🌌 Aurora Glass Theme', desc: 'Luminous translucent glass panels floating on a vivid cosmic-violet backdrop with high contrast accents.', colorBg: 'bg-gradient-to-tr from-indigo-500 via-purple-600 to-pink-500', textC: 'text-white' },
+                  { id: 'slate', name: '💎 Cosmic Ocean Theme', desc: 'Stunning deep navy-slate interface accented with high-fidelity glowing electric cyan highlights.', colorBg: 'bg-gradient-to-tr from-cyan-600 to-blue-900', textC: 'text-white' },
+                  { id: 'cyber', name: '⚡ Cyber Neon Theme', desc: 'Vibrant retro-futuristic dark neon setup styled with vivid laser green and high energy glows.', colorBg: 'bg-gradient-to-tr from-emerald-500 to-teal-950 border border-emerald-400', textC: 'text-emerald-400' },
+                  { id: 'light', name: '🌸 Spring Blossom Theme', desc: 'Delightful pure bright layout infused with warm cherry blossom rose and radiant golden tones.', colorBg: 'bg-gradient-to-tr from-pink-300 via-rose-400 to-amber-200', textC: 'text-slate-900 border border-slate-200' },
+                ].map((themeOpt) => (
+                  <button
+                    key={themeOpt.id}
+                    onClick={() => handleSaveSettings({ ...settings, theme: themeOpt.id as ThemeType })}
+                    className={`p-5 rounded-2xl text-left transition-all border outline-none cursor-pointer duration-200 hover:scale-101 active-scale-98 ${
+                      settings.theme === themeOpt.id
+                        ? 'border-indigo-500 bg-indigo-500/5 ring-2 ring-indigo-500/20'
+                        : 'border-border bg-accent/15 hover:bg-accent/25'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-bold text-foreground">{themeOpt.name}</span>
+                      <div className={`w-3.5 h-3.5 rounded-full ${themeOpt.colorBg} border border-border flex items-center justify-center`}>
+                        {settings.theme === themeOpt.id && (
+                          <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full" />
+                        )}
                       </div>
                     </div>
+                    <p className="text-[10px] text-muted-foreground leading-normal">{themeOpt.desc}</p>
+                  </button>
+                ))}
+              </div>
+            </div>
 
-                    {sessions.length === 0 ? (
-                      <div className="text-center py-12 border border-dashed border-border rounded-xl">
-                        <History className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
-                        <span className="text-xs font-semibold text-muted-foreground">No sessions logged yet</span>
-                        <p className="text-[10px] text-muted-foreground/55 mt-1">Start stopwatch timer and complete a study study period to display historical charts.</p>
-                      </div>
-                    ) : (
-                      <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
-                        {sessions.map((s) => {
-                          const dt = new Date(s.startTime);
-                          const hrsStr = Math.floor(s.duration / 3600);
-                          const minsStr = Math.floor((s.duration % 3600) / 60);
-                          return (
-                            <div key={s.id} className="p-4 rounded-2xl bg-accent/10 border border-border/80 text-xs flex flex-col sm:flex-row sm:items-center sm:justify-between hover:border-accent/40 hover:bg-accent/15 transition-all gap-4">
-                              <div className="space-y-1">
-                                <div className="flex gap-2 items-center">
-                                  <span className="font-bold text-foreground text-sm uppercase font-display">{s.sessionName}</span>
-                                  <span className="text-[10px] font-mono text-muted-foreground uppercase bg-accent/30 px-1.5 py-0.5 rounded">
-                                    {s.mode || 'normal'} mode
-                                  </span>
-                                </div>
-
-                                <p className="text-[10px] text-muted-foreground font-mono">
-                                  Start: {dt.toLocaleDateString([], { weekday: 'short', month: 'numeric', day: 'numeric' })} at {dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}  •  End: {new Date(s.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                </p>
-                              </div>
-
-                              <div className="flex items-center gap-4 self-end sm:self-auto">
-                                <span className="text-xs font-bold font-mono text-indigo-500 bg-indigo-500/10 px-3 py-1 rounded-xl">
-                                  {hrsStr > 0 ? `${hrsStr}h ${minsStr}m` : `${minsStr}m`}
-                                </span>
-
-                                <button
-                                  onClick={() => handleDeleteStudySession(s.id)}
-                                  className="text-muted-foreground hover:text-rose-500 p-2 hover:bg-rose-500/15 rounded-xl cursor-pointer duration-200 transition-colors"
-                                  title="Prune Study Log"
-                                  aria-label="Prune Study Log"
-                                >
-                                  <Trash2 className="w-3.5 h-3.5" />
-                                </button>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* TAB 3: QUESTIONS LOGGER */}
-              {activeTab === 'questions' && (
+            {/* Pomodoro Configurations */}
+            <div className="space-y-4 border-t border-border/60 pt-6">
+              <h4 className="text-sm font-bold text-foreground">Study timer intervals</h4>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <QuestionTrackerForm 
-                    questionsList={questions}
-                    onSaveQuestions={handleSaveQuestions}
+                  <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Pomodoro Work Duration (Minutes)</label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={localWorkDuration}
+                    onFocus={(e) => e.target.select()}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/[^0-9]/g, '');
+                      setLocalWorkDuration(val);
+                      const parsed = parseInt(val);
+                      if (!isNaN(parsed) && parsed >= 5 && parsed <= 180) {
+                        handleSaveSettings({ ...settings, pomodoroWorkDuration: parsed });
+                      }
+                    }}
+                    onBlur={() => {
+                      let parsed = parseInt(localWorkDuration);
+                      if (isNaN(parsed)) parsed = 25;
+                      const clamped = Math.min(180, Math.max(5, parsed));
+                      setLocalWorkDuration(clamped.toString());
+                      handleSaveSettings({ ...settings, pomodoroWorkDuration: clamped });
+                    }}
+                    className="w-full bg-accent/20 border border-border text-xs rounded-xl px-3 py-2.5 font-medium text-foreground outline-none focus:border-indigo-500/50"
                   />
                 </div>
-              )}
 
-              {/* TAB 4: SYLLABUS TABS */}
-              {activeTab === 'syllabus' && (
                 <div>
-                  <SyllabusTracker 
-                    completions={chapterCompletions}
-                    onToggleChapter={handleToggleChapter}
-                    onClearAll={handleClearChapters}
+                  <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Pomodoro Break Duration (Minutes)</label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={localBreakDuration}
+                    onFocus={(e) => e.target.select()}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/[^0-9]/g, '');
+                      setLocalBreakDuration(val);
+                      const parsed = parseInt(val);
+                      if (!isNaN(parsed) && parsed >= 1 && parsed <= 60) {
+                        handleSaveSettings({ ...settings, pomodoroBreakDuration: parsed });
+                      }
+                    }}
+                    onBlur={() => {
+                      let parsed = parseInt(localBreakDuration);
+                      if (isNaN(parsed)) parsed = 5;
+                      const clamped = Math.min(60, Math.max(1, parsed));
+                      setLocalBreakDuration(clamped.toString());
+                      handleSaveSettings({ ...settings, pomodoroBreakDuration: clamped });
+                    }}
+                    className="w-full bg-accent/20 border border-border text-xs rounded-xl px-3 py-2.5 font-medium text-foreground outline-none focus:border-indigo-500/50"
                   />
                 </div>
-              )}
+              </div>
+            </div>
 
-              {/* TAB 5: NOTES & ERROR BOOKS */}
-              {activeTab === 'notes' && (
+            {/* Daily Goals Configurations */}
+            <div className="space-y-4 border-t border-border/60 pt-6">
+              <div>
+                <h4 className="text-sm font-bold text-foreground">Daily Study Targets</h4>
+                <p className="text-[11px] text-muted-foreground mt-0.5">Set target milestones to track study progress bars accurately.</p>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <NotesAndErrors 
-                    errorItems={errorBook}
-                    importanceItems={specialImportance}
-                    onAddErrorItem={handleAddErrorItem}
-                    onDeleteErrorItem={handleDeleteErrorItem}
-                    onAddImportanceItem={handleAddImportanceItem}
-                    onDeleteImportanceItem={handleDeleteImportanceItem}
-                  />
+                  <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Daily Study Hours Goal</label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      inputMode="decimal"
+                      value={localStudyGoal}
+                      onFocus={(e) => e.target.select()}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/[^0-9.]/g, '');
+                        // Only allow one decimal point
+                        const parts = val.split('.');
+                        const cleaned = parts[0] + (parts.length > 1 ? '.' + parts.slice(1).join('') : '');
+                        setLocalStudyGoal(cleaned);
+                        const parsed = parseFloat(cleaned);
+                        if (!isNaN(parsed) && parsed >= 0.5 && parsed <= 24) {
+                          handleSaveSettings({ ...settings, dailyStudyMinutesGoal: Math.round(parsed * 60) });
+                        }
+                      }}
+                      onBlur={() => {
+                        let parsed = parseFloat(localStudyGoal);
+                        if (isNaN(parsed)) parsed = 3;
+                        const clamped = Math.min(24, Math.max(0.5, parsed));
+                        setLocalStudyGoal(clamped.toString());
+                        handleSaveSettings({ ...settings, dailyStudyMinutesGoal: Math.round(clamped * 60) });
+                      }}
+                      className="w-full bg-accent/20 border border-border text-xs rounded-xl pl-3 pr-14 py-2.5 font-medium text-foreground outline-none focus:border-indigo-500/50"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">Hours</span>
+                  </div>
                 </div>
-              )}
 
-              {/* TAB 6: MOCK TEST TRACKER */}
-              {activeTab === 'mock_tests' && (
                 <div>
-                  <MockTestTracker 
-                    mockTests={mockTests}
-                    onAddTest={handleSaveMockTest}
-                    onDeleteTest={handleDeleteMockTest}
-                    theme={settings.theme}
-                    cardBgClass="bg-card/75 backdrop-blur-md"
-                  />
+                  <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Daily Question Target</label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      value={localQuestionGoal}
+                      onFocus={(e) => e.target.select()}
+                      onChange={(e) => {
+                        const val = e.target.value.replace(/[^0-9]/g, '');
+                        setLocalQuestionGoal(val);
+                        const parsed = parseInt(val);
+                        if (!isNaN(parsed) && parsed >= 1 && parsed <= 500) {
+                          handleSaveSettings({ ...settings, dailyQuestionsSolvedGoal: parsed });
+                        }
+                      }}
+                      onBlur={() => {
+                        let parsed = parseInt(localQuestionGoal);
+                        if (isNaN(parsed)) parsed = 30;
+                        const clamped = Math.min(500, Math.max(1, parsed));
+                        setLocalQuestionGoal(clamped.toString());
+                        handleSaveSettings({ ...settings, dailyQuestionsSolvedGoal: clamped });
+                      }}
+                      className="w-full bg-accent/20 border border-border text-xs rounded-xl pl-3 pr-20 py-2.5 font-medium text-foreground outline-none focus:border-indigo-500/50"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">Questions</span>
+                  </div>
                 </div>
-              )}
+              </div>
+            </div>
 
-              {/* TAB 6: SETTINGS & APPEARANCES */}
-              {activeTab === 'settings' && (
-                <div className="bg-card border border-border rounded-3xl p-6 lg:p-8 shadow-sm space-y-8">
-                  
-                  <div className="border-b border-border/60 pb-5">
-                    <h3 className="text-lg font-bold font-sans tracking-tight">Settings & Appearance</h3>
-                    <p className="text-xs text-muted-foreground">Customize your study targets, timer intervals, themes, and local datasets.</p>
-                  </div>
-
-                  {/* Theme Settings Selector */}
-                  <div className="space-y-4">
-                    <h4 className="text-sm font-bold text-foreground">Select Theme Accent</h4>
-                    
-                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-                      {[
-                        { id: 'glass', name: '🌌 Aurora Glass Theme', desc: 'Luminous translucent glass panels floating on a vivid cosmic-violet backdrop with high contrast accents.', colorBg: 'bg-gradient-to-tr from-indigo-500 via-purple-600 to-pink-500', textC: 'text-white' },
-                        { id: 'slate', name: '💎 Cosmic Ocean Theme', desc: 'Stunning deep navy-slate interface accented with high-fidelity glowing electric cyan highlights.', colorBg: 'bg-gradient-to-tr from-cyan-600 to-blue-900', textC: 'text-white' },
-                        { id: 'cyber', name: '⚡ Cyber Neon Theme', desc: 'Vibrant retro-futuristic dark neon setup styled with vivid laser green and high energy glows.', colorBg: 'bg-gradient-to-tr from-emerald-500 to-teal-950 border border-emerald-400', textC: 'text-emerald-400' },
-                        { id: 'light', name: '🌸 Spring Blossom Theme', desc: 'Delightful pure bright layout infused with warm cherry blossom rose and radiant golden tones.', colorBg: 'bg-gradient-to-tr from-pink-300 via-rose-400 to-amber-200', textC: 'text-slate-900 border border-slate-200' },
-                      ].map((themeOpt) => (
-                        <button
-                          key={themeOpt.id}
-                          onClick={() => handleSaveSettings({ ...settings, theme: themeOpt.id as ThemeType })}
-                          className={`p-5 rounded-2xl text-left transition-all border outline-none cursor-pointer duration-200 hover:scale-101 active-scale-98 ${
-                            settings.theme === themeOpt.id
-                              ? 'border-indigo-500 bg-indigo-500/5 ring-2 ring-indigo-500/20'
-                              : 'border-border bg-accent/15 hover:bg-accent/25'
-                          }`}
-                        >
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="text-xs font-bold text-foreground">{themeOpt.name}</span>
-                            <div className={`w-3.5 h-3.5 rounded-full ${themeOpt.colorBg} border border-border flex items-center justify-center`}>
-                              {settings.theme === themeOpt.id && (
-                                <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full" />
-                              )}
-                            </div>
-                          </div>
-                          <p className="text-[10px] text-muted-foreground leading-normal">{themeOpt.desc}</p>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Pomodoro Configurations */}
-                  <div className="space-y-4 border-t border-border/60 pt-6">
-                    <h4 className="text-sm font-bold text-foreground">Study timer intervals</h4>
-                    
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Pomodoro Work Duration (Minutes)</label>
-                        <input
-                          type="text"
-                          inputMode="numeric"
-                          value={localWorkDuration}
-                          onFocus={(e) => e.target.select()}
-                          onChange={(e) => {
-                            const val = e.target.value.replace(/[^0-9]/g, '');
-                            setLocalWorkDuration(val);
-                            const parsed = parseInt(val);
-                            if (!isNaN(parsed) && parsed >= 5 && parsed <= 180) {
-                              handleSaveSettings({ ...settings, pomodoroWorkDuration: parsed });
-                            }
-                          }}
-                          onBlur={() => {
-                            let parsed = parseInt(localWorkDuration);
-                            if (isNaN(parsed)) parsed = 25;
-                            const clamped = Math.min(180, Math.max(5, parsed));
-                            setLocalWorkDuration(clamped.toString());
-                            handleSaveSettings({ ...settings, pomodoroWorkDuration: clamped });
-                          }}
-                          className="w-full bg-accent/20 border border-border text-xs rounded-xl px-3 py-2.5 font-medium text-foreground outline-none focus:border-indigo-500/50"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Pomodoro Break Duration (Minutes)</label>
-                        <input
-                          type="text"
-                          inputMode="numeric"
-                          value={localBreakDuration}
-                          onFocus={(e) => e.target.select()}
-                          onChange={(e) => {
-                            const val = e.target.value.replace(/[^0-9]/g, '');
-                            setLocalBreakDuration(val);
-                            const parsed = parseInt(val);
-                            if (!isNaN(parsed) && parsed >= 1 && parsed <= 60) {
-                              handleSaveSettings({ ...settings, pomodoroBreakDuration: parsed });
-                            }
-                          }}
-                          onBlur={() => {
-                            let parsed = parseInt(localBreakDuration);
-                            if (isNaN(parsed)) parsed = 5;
-                            const clamped = Math.min(60, Math.max(1, parsed));
-                            setLocalBreakDuration(clamped.toString());
-                            handleSaveSettings({ ...settings, pomodoroBreakDuration: clamped });
-                          }}
-                          className="w-full bg-accent/20 border border-border text-xs rounded-xl px-3 py-2.5 font-medium text-foreground outline-none focus:border-indigo-500/50"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Daily Goals Configurations */}
-                  <div className="space-y-4 border-t border-border/60 pt-6 animate-fade-in">
-                    <div>
-                      <h4 className="text-sm font-bold text-foreground">Daily Study Targets</h4>
-                      <p className="text-[11px] text-muted-foreground mt-0.5">Set target milestones to track study progress bars accurately.</p>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Daily Study Hours Goal</label>
-                        <div className="relative">
-                          <input
-                            type="text"
-                            inputMode="decimal"
-                            value={localStudyGoal}
-                            onFocus={(e) => e.target.select()}
-                            onChange={(e) => {
-                              const val = e.target.value.replace(/[^0-9.]/g, '');
-                              // Only allow one decimal point
-                              const parts = val.split('.');
-                              const cleaned = parts[0] + (parts.length > 1 ? '.' + parts.slice(1).join('') : '');
-                              setLocalStudyGoal(cleaned);
-                              const parsed = parseFloat(cleaned);
-                              if (!isNaN(parsed) && parsed >= 0.5 && parsed <= 24) {
-                                handleSaveSettings({ ...settings, dailyStudyMinutesGoal: Math.round(parsed * 60) });
-                              }
-                            }}
-                            onBlur={() => {
-                              let parsed = parseFloat(localStudyGoal);
-                              if (isNaN(parsed)) parsed = 3;
-                              const clamped = Math.min(24, Math.max(0.5, parsed));
-                              setLocalStudyGoal(clamped.toString());
-                              handleSaveSettings({ ...settings, dailyStudyMinutesGoal: Math.round(clamped * 60) });
-                            }}
-                            className="w-full bg-accent/20 border border-border text-xs rounded-xl pl-3 pr-14 py-2.5 font-medium text-foreground outline-none focus:border-indigo-500/50"
-                          />
-                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">Hours</span>
-                        </div>
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Daily Question Target</label>
-                        <div className="relative">
-                          <input
-                            type="text"
-                            inputMode="numeric"
-                            value={localQuestionGoal}
-                            onFocus={(e) => e.target.select()}
-                            onChange={(e) => {
-                              const val = e.target.value.replace(/[^0-9]/g, '');
-                              setLocalQuestionGoal(val);
-                              const parsed = parseInt(val);
-                              if (!isNaN(parsed) && parsed >= 1 && parsed <= 500) {
-                                handleSaveSettings({ ...settings, dailyQuestionsSolvedGoal: parsed });
-                              }
-                            }}
-                            onBlur={() => {
-                              let parsed = parseInt(localQuestionGoal);
-                              if (isNaN(parsed)) parsed = 30;
-                              const clamped = Math.min(500, Math.max(1, parsed));
-                              setLocalQuestionGoal(clamped.toString());
-                              handleSaveSettings({ ...settings, dailyQuestionsSolvedGoal: clamped });
-                            }}
-                            className="w-full bg-accent/20 border border-border text-xs rounded-xl pl-3 pr-20 py-2.5 font-medium text-foreground outline-none focus:border-indigo-500/50"
-                          />
-                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">Questions</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Reset Device Data Console */}
-                  <div className="space-y-4 border-t border-border/60 pt-6">
-                    <div className="flex items-center gap-3 bg-rose-500/5 border border-rose-500/10 p-4 rounded-2xl">
-                      <ShieldAlert className="w-6 h-6 text-rose-500 shrink-0" />
-                      <div>
-                        <h5 className="text-xs font-bold text-rose-500">Danger Zone: Reset All Data</h5>
-                        <p className="text-[10px] text-muted-foreground">Permanently wipe all session histories, mistake diaries, checked syllabus checklists, and custom settings.</p>
-                      </div>
-                    </div>
-
-                    {showResetConfirm ? (
-                      <div className="bg-rose-500/10 border border-rose-500/30 p-4 rounded-xl space-y-3 animate-[fadeIn_0.2s_ease-out]">
-                        <span className="text-xs font-bold text-foreground block">⚠️ Are you absolutely sure? All data in IndexedDB will be wiped.</span>
-                        <div className="flex gap-2">
-                          <button
-                            onClick={handleResetAllData}
-                            className="bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs py-2 px-4 rounded-xl cursor-pointer"
-                          >
-                            Yes, Wipe Everything
-                          </button>
-                          <button
-                            onClick={() => setShowResetConfirm(false)}
-                            className="bg-accent/20 hover:bg-accent/45 border border-border text-xs py-2 px-4 rounded-xl text-foreground cursor-pointer"
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => setShowResetConfirm(true)}
-                        className="bg-rose-500/10 text-rose-500 hover:bg-rose-600 hover:text-white font-bold text-xs py-2.5 px-5 rounded-xl border border-rose-500/20 cursor-pointer transition-all"
-                      >
-                        Delete My Device Data Logs
-                      </button>
-                    )}
-                  </div>
-
+            {/* Reset Device Data Console */}
+            <div className="space-y-4 border-t border-border/60 pt-6">
+              <div className="flex items-center gap-3 bg-rose-500/5 border border-rose-500/10 p-4 rounded-2xl">
+                <ShieldAlert className="w-6 h-6 text-rose-500 shrink-0" />
+                <div>
+                  <h5 className="text-xs font-bold text-rose-500">Danger Zone: Reset All Data</h5>
+                  <p className="text-[10px] text-muted-foreground">Permanently wipe all session histories, mistake diaries, checked syllabus checklists, and custom settings.</p>
                 </div>
+              </div>
+
+              {showResetConfirm ? (
+                <div className="bg-rose-500/10 border border-rose-500/30 p-4 rounded-xl space-y-3 animate-[fadeIn_0.2s_ease-out]">
+                  <span className="text-xs font-bold text-foreground block">⚠️ Are you absolutely sure? All data in IndexedDB will be wiped.</span>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleResetAllData}
+                      className="bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs py-2 px-4 rounded-xl cursor-pointer"
+                    >
+                      Yes, Wipe Everything
+                    </button>
+                    <button
+                      onClick={() => setShowResetConfirm(false)}
+                      className="bg-accent/20 hover:bg-accent/45 border border-border text-xs py-2 px-4 rounded-xl text-foreground cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setShowResetConfirm(true)}
+                  className="bg-rose-500/10 text-rose-500 hover:bg-rose-600 hover:text-white font-bold text-xs py-2.5 px-5 rounded-xl border border-rose-500/20 cursor-pointer transition-all"
+                >
+                  Delete My Device Data Logs
+                </button>
               )}
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </div>
+          </div>
 
 
           {/* DYNAMIC FEEDBACK BOOK FOR CLIENT */}
@@ -1723,6 +1702,39 @@ export default function App() {
           <p>© All Rights Reserved 2026. Localized Database Storage Active.</p>
         </div>
       </footer>
+
+      {/* Floating Scroll-to-Top button */}
+      <AnimatePresence>
+        {showScrollTop && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8, y: 15 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: 15 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="fixed bottom-20 md:bottom-8 right-6 p-3.5 rounded-2xl border text-white z-40 shadow-xl cursor-pointer hover:scale-105 transition-transform flex items-center justify-center"
+            style={{
+              background: settings.theme === 'cyber' ? 'rgba(5,26,16,0.9)' :
+                          settings.theme === 'light' ? 'rgba(255,255,255,0.95)' :
+                          settings.theme === 'slate' ? 'rgba(13,18,46,0.9)' :
+                          'rgba(19,21,40,0.9)',
+              borderColor: settings.theme === 'cyber' ? 'rgba(16,185,129,0.45)' :
+                           settings.theme === 'light' ? 'rgba(244,63,94,0.3)' :
+                           settings.theme === 'slate' ? 'rgba(6,182,212,0.4)' :
+                           'rgba(255,255,255,0.12)',
+              color: settings.theme === 'light' ? '#f43f5e' :
+                     settings.theme === 'cyber' ? '#10b981' :
+                     settings.theme === 'slate' ? '#06b6d4' :
+                     '#818cf8',
+              boxShadow: `0 8px 30px rgba(0, 0, 0, 0.35)`
+            }}
+            title="Scroll to Top"
+            aria-label="Scroll to Top"
+          >
+            <ArrowUp className="w-4.5 h-4.5" />
+          </motion.button>
+        )}
+      </AnimatePresence>
 
     </div>
   );

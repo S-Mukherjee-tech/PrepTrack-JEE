@@ -219,7 +219,7 @@ const QuickNotes = memo(function QuickNotes({ theme, cardBgClass }: QuickNotesPr
     'border-border';
 
   return (
-    <div className={`rounded-3xl p-6 shadow-sm border border-border ${cardBgClass}`}>
+    <div className={`rounded-3xl p-6 shadow-sm border border-border ${cardBgClass} dashboard-card-gpu`}>
       
       {/* HEADER TABS SECTION */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-white/5 pb-4.5 mb-5 select-none">
@@ -295,16 +295,9 @@ const QuickNotes = memo(function QuickNotes({ theme, cardBgClass }: QuickNotesPr
       </div>
 
       {/* RENDER ACTIVE TAB */}
-      <AnimatePresence mode="wait">
+      <div className="transition-all duration-150">
         {activeTab === 'tasks' ? (
-          <motion.div
-            key="tasks-tab"
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -5 }}
-            transition={{ duration: 0.15 }}
-            className="space-y-4"
-          >
+          <div className="space-y-4 animate-fade-in">
             {/* Input area with auto-saving draft */}
             <div className="flex items-center gap-2">
               <input
@@ -326,127 +319,99 @@ const QuickNotes = memo(function QuickNotes({ theme, cardBgClass }: QuickNotesPr
 
             {/* Notes List */}
             <div className="space-y-2 max-h-[250px] overflow-y-auto pr-1">
-              <AnimatePresence initial={false}>
-                {filteredNotes.length === 0 ? (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="py-10 text-center text-xs text-muted-foreground border border-dashed border-white/5 rounded-2xl flex flex-col items-center justify-center gap-2"
+              {filteredNotes.length === 0 ? (
+                <div className="py-10 text-center text-xs text-muted-foreground border border-dashed border-white/5 rounded-2xl flex flex-col items-center justify-center gap-2">
+                  <Sparkles className="w-5 h-5 text-muted-foreground/30 animate-pulse" />
+                  <span>
+                    {filter === 'completed'
+                      ? 'No completed tasks yet.'
+                      : filter === 'active'
+                      ? 'All tasks completed! Masterclass status.'
+                      : 'Your dynamic workspace is ready. Jot a reminder above!'}
+                  </span>
+                </div>
+              ) : (
+                filteredNotes.map((note) => (
+                  <div
+                    key={note.id}
+                    className={`flex items-start justify-between p-3 rounded-xl bg-accent/5 dark:bg-white/[0.02] border ${outlineBorder} hover:bg-accent/10 dark:hover:bg-white/[0.04] transition-all duration-150 active:scale-[0.99] group`}
                   >
-                    <Sparkles className="w-5 h-5 text-muted-foreground/30 animate-pulse" />
-                    <span>
-                      {filter === 'completed'
-                        ? 'No completed tasks yet.'
-                        : filter === 'active'
-                        ? 'All tasks completed! Masterclass status.'
-                        : 'Your dynamic workspace is ready. Jot a reminder above!'}
-                    </span>
-                  </motion.div>
-                ) : (
-                  filteredNotes.map((note) => (
-                    <motion.div
-                      layout
-                      key={note.id}
-                      initial={{ opacity: 0, y: -10, scale: 0.95, height: 'auto' }}
-                      animate={{ opacity: 1, y: 0, scale: 1, height: 'auto' }}
-                      exit={{ 
-                        opacity: 0, 
-                        scale: 0.9, 
-                        y: 10,
-                        height: 0, 
-                        paddingTop: 0, 
-                        paddingBottom: 0,
-                        marginTop: 0,
-                        marginBottom: 0,
-                        borderWidth: 0,
-                        overflow: 'hidden'
-                      }}
-                      transition={{
-                        layout: { type: "spring", stiffness: 450, damping: 30 },
-                        opacity: { duration: 0.15 },
-                        height: { duration: 0.2 },
-                        default: { duration: 0.2 }
-                      }}
-                      className={`flex items-start justify-between p-3 rounded-xl bg-accent/5 dark:bg-white/[0.02] border ${outlineBorder} hover:bg-accent/10 dark:hover:bg-white/[0.04] transition-all group`}
-                    >
-                      <div className="flex items-start gap-3 flex-1 min-w-0 mr-2">
-                        <button
-                          onClick={() => handleToggleComplete(note.id)}
-                          className={`text-muted-foreground mt-0.5 transition-colors cursor-pointer shrink-0 ${
+                    <div className="flex items-start gap-3 flex-1 min-w-0 mr-2">
+                      <button
+                        onClick={() => handleToggleComplete(note.id)}
+                        className={`text-muted-foreground mt-0.5 transition-colors cursor-pointer shrink-0 ${
+                          note.completed
+                            ? 'text-emerald-500'
+                            : theme === 'cyber'
+                            ? 'hover:text-emerald-400'
+                            : 'hover:text-[#6366f1]'
+                        }`}
+                        aria-label={note.completed ? "Mark incomplete" : "Mark complete"}
+                      >
+                        {note.completed ? (
+                          <CheckCircle2 className="w-4 h-4" />
+                        ) : (
+                          <Circle className="w-4 h-4" />
+                        )}
+                      </button>
+                      
+                      {editingId === note.id ? (
+                        <input
+                          type="text"
+                          value={editingText}
+                          onChange={(e) => handleInlineTextChange(e.target.value, note.id)}
+                          onKeyDown={(e) => handleInlineEditKeyDown(e, note.id)}
+                          onBlur={() => saveInlineEdit(note.id)}
+                          autoFocus
+                          className={`flex-1 text-xs text-foreground bg-accent/25 px-2.5 py-1 rounded-lg border-2 ${outlineBorder} focus:outline-none ${inputBorderFocus}`}
+                        />
+                      ) : (
+                        <span
+                          className={`text-xs leading-relaxed break-words min-w-0 flex-1 pr-2 cursor-text select-text ${
                             note.completed
-                              ? 'text-emerald-500'
-                              : theme === 'cyber'
-                              ? 'hover:text-emerald-400'
-                              : 'hover:text-[#6366f1]'
+                              ? 'text-muted-foreground line-through opacity-60'
+                              : 'text-foreground'
                           }`}
-                          aria-label={note.completed ? "Mark incomplete" : "Mark complete"}
+                          onDoubleClick={() => startEditing(note)}
+                          title="Double-click to edit line"
                         >
-                          {note.completed ? (
-                            <CheckCircle2 className="w-4 h-4" />
-                          ) : (
-                            <Circle className="w-4 h-4" />
-                          )}
-                        </button>
-                        
-                        {editingId === note.id ? (
-                          <input
-                            type="text"
-                            value={editingText}
-                            onChange={(e) => handleInlineTextChange(e.target.value, note.id)}
-                            onKeyDown={(e) => handleInlineEditKeyDown(e, note.id)}
-                            onBlur={() => saveInlineEdit(note.id)}
-                            autoFocus
-                            className={`flex-1 text-xs text-foreground bg-accent/25 px-2.5 py-1 rounded-lg border-2 ${outlineBorder} focus:outline-none ${inputBorderFocus}`}
-                          />
-                        ) : (
-                          <span
-                            className={`text-xs leading-relaxed break-words min-w-0 flex-1 pr-2 cursor-text select-text ${
-                              note.completed
-                                ? 'text-muted-foreground line-through opacity-60'
-                                : 'text-foreground'
-                            }`}
-                            onDoubleClick={() => startEditing(note)}
-                            title="Double-click to edit line"
-                          >
-                            {note.text}
-                          </span>
-                        )}
-                      </div>
+                          {note.text}
+                        </span>
+                      )}
+                    </div>
 
-                      <div className="flex items-center gap-1 text-muted-foreground shrink-0 select-none">
-                        {editingId === note.id ? (
-                          <button
-                            onClick={() => saveInlineEdit(note.id)}
-                            className="text-emerald-400 hover:text-emerald-300 p-1 rounded-lg cursor-pointer transition-all"
-                            title="Save changes"
-                            aria-label="Save changes"
-                          >
-                            <Check className="w-3.5 h-3.5" />
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => startEditing(note)}
-                            className="opacity-100 md:opacity-0 md:group-hover:opacity-100 hover:text-foreground p-1 rounded-lg cursor-pointer transition-all"
-                            title="Edit reminder"
-                            aria-label="Edit reminder"
-                          >
-                            <Edit3 className="w-3.5 h-3.5" />
-                          </button>
-                        )}
+                    <div className="flex items-center gap-1 text-muted-foreground shrink-0 select-none">
+                      {editingId === note.id ? (
                         <button
-                          onClick={() => handleDeleteNote(note.id)}
-                          className="opacity-100 md:opacity-0 md:group-hover:opacity-100 hover:text-rose-500 p-1 rounded-lg cursor-pointer transition-all"
-                          title="Delete"
-                          aria-label="Delete reminder"
+                          onClick={() => saveInlineEdit(note.id)}
+                          className="text-emerald-400 hover:text-emerald-300 p-1 rounded-lg cursor-pointer transition-all"
+                          title="Save changes"
+                          aria-label="Save changes"
                         >
-                          <Trash2 className="w-3.5 h-3.5" />
+                          <Check className="w-3.5 h-3.5" />
                         </button>
-                      </div>
-                    </motion.div>
-                  ))
-                )}
-              </AnimatePresence>
+                      ) : (
+                        <button
+                          onClick={() => startEditing(note)}
+                          className="opacity-100 md:opacity-0 md:group-hover:opacity-100 hover:text-foreground p-1 rounded-lg cursor-pointer transition-all"
+                          title="Edit reminder"
+                          aria-label="Edit reminder"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                      <button
+                        onClick={() => handleDeleteNote(note.id)}
+                        className="opacity-100 md:opacity-0 md:group-hover:opacity-100 hover:text-rose-500 p-1 rounded-lg cursor-pointer transition-all"
+                        title="Delete"
+                        aria-label="Delete reminder"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
 
             {/* Footer counts */}
@@ -465,16 +430,9 @@ const QuickNotes = memo(function QuickNotes({ theme, cardBgClass }: QuickNotesPr
                 )}
               </div>
             )}
-          </motion.div>
+          </div>
         ) : (
-          <motion.div
-            key="scratchpad-tab"
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -5 }}
-            transition={{ duration: 0.15 }}
-            className="space-y-4"
-          >
+          <div className="space-y-4 animate-fade-in">
             {/* Whiteboard / Freeform Text Area */}
             <div className="relative">
               <textarea
@@ -495,9 +453,9 @@ Changes are saved to the persistent database automatically as you type."
               <Sparkles className="w-3 h-3 text-muted-foreground/50 shrink-0" />
               Protip: Double-click items under the "Reminders List" tab to edit them inline. Notes in both tabs are persistent.
             </p>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
+      </div>
     </div>
   );
 });

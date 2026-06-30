@@ -487,18 +487,13 @@ const MockTestTracker = memo(function MockTestTracker({
       </div>
 
       {/* RENDER SELECTED TAB CONTROLLER */}
-      <AnimatePresence mode="wait">
+      <div className="transition-all duration-150">
         
         {/* LOG TEST SCORES TAB */}
         {activeSubTab === 'log' && (
-          <motion.form
-            key="log-form"
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -15 }}
-            transition={{ duration: 0.22 }}
+          <form
             onSubmit={handleAddSubmit}
-            className="space-y-6"
+            className="space-y-6 animate-fade-in"
           >
             {/* Exam Details & Presets Row */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5 bg-accent/5 dark:bg-white/[0.01] p-5 rounded-2xl border border-white/5">
@@ -819,18 +814,13 @@ const MockTestTracker = memo(function MockTestTracker({
                 <Plus className="w-4 h-4" /> Save Mock Test Analysis
               </button>
             </div>
-          </motion.form>
+          </form>
         )}
 
         {/* INTERACTIVE TRENDS & PATTERNS TAB */}
         {activeSubTab === 'analytics' && (
-          <motion.div
-            key="analytics-section"
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -15 }}
-            transition={{ duration: 0.22 }}
-            className="space-y-6"
+          <div
+            className="space-y-6 animate-fade-in"
           >
             {mockTests.length < 2 ? (
               <div className="py-20 text-center border border-dashed border-white/5 rounded-3xl flex flex-col items-center justify-center gap-3">
@@ -1156,18 +1146,13 @@ const MockTestTracker = memo(function MockTestTracker({
 
               </div>
             )}
-          </motion.div>
+          </div>
         )}
 
         {/* HISTORIC LIST & HUMAN COACH FEEDBACK TAB */}
         {activeSubTab === 'history' && (
-          <motion.div
-            key="history-section"
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -15 }}
-            transition={{ duration: 0.22 }}
-            className="space-y-6"
+          <div
+            className="space-y-6 animate-fade-in"
           >
             {mockTests.length === 0 ? (
               <div className="py-20 text-center border border-dashed border-white/5 rounded-3xl flex flex-col items-center justify-center gap-3">
@@ -1304,10 +1289,10 @@ const MockTestTracker = memo(function MockTestTracker({
                 })}
               </div>
             )}
-          </motion.div>
+          </div>
         )}
 
-      </AnimatePresence>
+      </div>
 
     </div>
   );
