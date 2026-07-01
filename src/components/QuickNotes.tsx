@@ -318,7 +318,7 @@ const QuickNotes = memo(function QuickNotes({ theme, cardBgClass }: QuickNotesPr
             </div>
 
             {/* Notes List */}
-            <div className="space-y-2 max-h-[250px] overflow-y-auto pr-1">
+            <div className="space-y-2 max-h-[250px] overflow-y-auto pr-1 dashboard-card-gpu">
               {filteredNotes.length === 0 ? (
                 <div className="py-10 text-center text-xs text-muted-foreground border border-dashed border-white/5 rounded-2xl flex flex-col items-center justify-center gap-2">
                   <Sparkles className="w-5 h-5 text-muted-foreground/30 animate-pulse" />

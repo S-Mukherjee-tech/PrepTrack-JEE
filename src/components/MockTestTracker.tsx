@@ -1169,7 +1169,7 @@ const MockTestTracker = memo(function MockTestTracker({
                 </button>
               </div>
             ) : (
-              <div className="space-y-6 max-h-[800px] overflow-y-auto pr-1">
+              <div className="space-y-6 max-h-[800px] overflow-y-auto pr-1 dashboard-card-gpu">
                 {mockTests.map((test) => {
                   const coach = getCoachAdvice(test);
                   const p = test.physics || { score: 0, correct: 0, incorrect: 0, unattempted: 0 };

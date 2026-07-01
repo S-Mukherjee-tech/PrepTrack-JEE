@@ -471,6 +471,46 @@ input, select, textarea {
 .dashboard-card-gpu {
   will-change: transform, opacity;
   contain: content;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Global scroll styling for extreme smoothness across PC and Mobile */
+html {
+  scroll-behavior: smooth !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Smooth kinetic momentum scrolling for all custom scrollable list elements */
+.overflow-y-auto,
+.overflow-x-auto,
+[class*="overflow-y-"],
+[class*="overflow-x-"] {
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior-y: contain; /* Prevents nested scroll chain propagation jitter on mobile */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(129, 140, 248, 0.2) transparent;
+}
+
+/* Customize scrollbars for a highly polished interactive feel */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(129, 140, 248, 0.15);
+  border-radius: 999px;
+  transition: background 0.2s ease-in-out;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(129, 140, 248, 0.35);
 }
 
 /* Theme Morphing Transition on the Root Element with Filter Effect */

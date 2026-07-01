@@ -245,7 +245,7 @@ const NotesAndErrors = memo(function NotesAndErrors({
               <p className="text-[10px] text-muted-foreground/50 mt-1">No logged traps recorded representing this subject.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[380px] overflow-y-auto pr-1">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[380px] overflow-y-auto pr-1 dashboard-card-gpu">
               {filteredErrors.map((item) => (
                 <div
                   key={item.id}
@@ -395,7 +395,7 @@ const NotesAndErrors = memo(function NotesAndErrors({
               <p className="text-[10px] text-muted-foreground/50 mt-1">No recorded high importance concepts represent this subject.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[380px] overflow-y-auto pr-1">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[380px] overflow-y-auto pr-1 dashboard-card-gpu">
               {filteredImportance.map((item) => (
                 <div
                   key={item.id}

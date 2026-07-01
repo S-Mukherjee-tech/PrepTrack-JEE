@@ -172,7 +172,7 @@ const SyllabusTracker = memo(function SyllabusTracker({ completions, onToggleCha
           <p className="text-[10px] text-muted-foreground/60 mt-1">Try resetting search string or class selectors</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-[380px] overflow-y-auto pr-1">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-[380px] overflow-y-auto pr-1 dashboard-card-gpu">
           {filteredChapters.map((ch) => {
             const isCompleted = completions[ch.id] || false;
             
