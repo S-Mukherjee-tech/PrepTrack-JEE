@@ -144,7 +144,7 @@ export default function App() {
 
     const timer = setTimeout(() => {
       root.classList.remove('theme-morphing');
-    }, 600);
+    }, 350);
 
     return () => clearTimeout(timer);
   }, [settings.theme]);
@@ -649,7 +649,7 @@ export default function App() {
 
   return (
     <div 
-      className={`min-h-screen font-sans transition-all duration-300 ${themeStyles.bg} theme-${settings.theme}`}
+      className={`min-h-screen font-sans transition-colors duration-300 ${themeStyles.bg} theme-${settings.theme}`}
       style={{
         backgroundImage: settings.theme === 'glass'
           ? 'radial-gradient(at 0% 0%, rgba(129, 140, 248, 0.25) 0px, transparent 50%), radial-gradient(at 100% 0%, rgba(236, 72, 153, 0.22) 0px, transparent 50%), radial-gradient(at 50% 100%, rgba(168, 85, 247, 0.18) 0px, transparent 55%), radial-gradient(at 10% 90%, rgba(6, 182, 212, 0.15) 0px, transparent 50%)'
@@ -705,9 +705,9 @@ export default function App() {
       <header className={`${themeStyles.headerBg} relative`}>
         {/* requestAnimationFrame-based dynamic scroll progress bar */}
         <div 
-          className="absolute top-0 left-0 h-[2.5px] z-50 transition-all duration-75"
+          className="absolute top-0 left-0 w-full h-[2.5px] z-50 origin-left will-change-transform transition-transform duration-100 ease-out"
           style={{ 
-            width: `${scrollProgress}%`,
+            transform: `scaleX(${scrollProgress / 100})`,
             background: settings.theme === 'cyber' ? '#10b981' :
                         settings.theme === 'light' ? '#f43f5e' :
                         settings.theme === 'slate' ? '#06b6d4' :
