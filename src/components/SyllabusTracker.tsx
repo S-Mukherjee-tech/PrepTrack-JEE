@@ -10,6 +10,68 @@ interface SyllabusTrackerProps {
   onClearAll: () => void;
 }
 
+const SyllabusChapterItem = memo(function SyllabusChapterItem({
+  ch,
+  isCompleted,
+  onToggleChapter,
+}: {
+  ch: Chapter;
+  isCompleted: boolean;
+  onToggleChapter: (id: string, completed: boolean) => void;
+}) {
+  // Exquisite theme-adaptive color specs for each subject type
+  const subjectStyles = {
+    physics: {
+      stroke: isCompleted ? 'border-l-emerald-500' : 'border-l-indigo-500',
+      text: 'text-indigo-500 dark:text-indigo-400',
+      badgeBg: 'bg-indigo-500/10 text-indigo-500'
+    },
+    chemistry: {
+      stroke: isCompleted ? 'border-l-emerald-500' : 'border-l-emerald-500',
+      text: 'text-emerald-500 dark:text-emerald-400',
+      badgeBg: 'bg-emerald-500/10 text-emerald-500'
+    },
+    math: {
+      stroke: isCompleted ? 'border-l-emerald-500' : 'border-l-purple-500',
+      text: 'text-purple-500 dark:text-purple-400',
+      badgeBg: 'bg-purple-500/10 text-purple-500'
+    }
+  };
+  const currentStyle = subjectStyles[ch.subject] || subjectStyles.physics;
+
+  return (
+    <button
+      onClick={() => onToggleChapter(ch.id, !isCompleted)}
+      className={`p-3.5 rounded-xl border border-l-4 text-left cursor-pointer flex items-start gap-3 select-none transition-all duration-150 hover:scale-[1.01] active:scale-[0.99] ${currentStyle.stroke} ${
+        isCompleted
+          ? 'bg-emerald-500/[0.02] dark:bg-emerald-500/10 border-emerald-500/30 hover:bg-emerald-500/5 hover:border-emerald-500/50 shadow-xs'
+          : 'bg-card border-border hover:bg-accent/15 hover:border-accent shadow-2xs'
+      }`}
+    >
+      <div className="shrink-0 mt-0.5">
+        {isCompleted ? (
+          <CheckSquare className="w-4 h-4 text-emerald-500 fill-emerald-500/20" />
+        ) : (
+          <Square className="w-4 h-4 text-muted-foreground/60" />
+        )}
+      </div>
+
+      <div className="space-y-1">
+        <span className={`text-xs font-semibold block leading-tight ${isCompleted ? 'text-emerald-500 dark:text-emerald-400 line-through opacity-70' : 'text-foreground'}`}>
+          {ch.name}
+        </span>
+        
+        <div className="flex gap-1.5 items-center">
+          <span className={`text-[9px] font-mono font-bold uppercase px-1 rounded ${currentStyle.badgeBg}`}>
+            {ch.subject}
+          </span>
+          <span className="text-[9px] font-mono text-muted-foreground">Class {ch.classLevel}</span>
+        </div>
+      </div>
+    </button>
+  );
+});
+
 const SyllabusTracker = memo(function SyllabusTracker({ completions, onToggleChapter, onClearAll }: SyllabusTrackerProps) {
   const [activeClass, setActiveClass] = useState<'all' | '11' | '12'>('all');
   const [activeSubject, setActiveSubject] = useState<'all' | Subject>('all');
@@ -112,15 +174,15 @@ const SyllabusTracker = memo(function SyllabusTracker({ completions, onToggleCha
           </div>
 
           {/* Class Filter */}
-          <div className="flex bg-accent/15 border border-border rounded-xl p-0.5 text-xs">
+          <div className="flex bg-accent/15 border border-border rounded-xl p-1 text-xs gap-1">
             {(['all', '11', '12'] as const).map((cl) => (
               <button
                 key={cl}
                 onClick={() => setActiveClass(cl)}
                 className={`px-3 py-1.5 rounded-lg font-semibold capitalize cursor-pointer transition-all ${
                   activeClass === cl
-                    ? 'bg-primary text-primary-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
+                    ? 'bg-primary text-primary-foreground shadow-md font-bold scale-[1.01]'
+                    : 'bg-accent/10 border border-border/30 text-muted-foreground hover:text-foreground hover:bg-accent/35 hover:border-border/60'
                 }`}
               >
                 {cl === 'all' ? 'All Classes' : `Class ${cl}`}
@@ -129,15 +191,15 @@ const SyllabusTracker = memo(function SyllabusTracker({ completions, onToggleCha
           </div>
 
           {/* Subject Filter */}
-          <div className="flex bg-accent/15 border border-border rounded-xl p-0.5 text-xs">
+          <div className="flex bg-accent/15 border border-border rounded-xl p-1 text-xs gap-1">
             {(['all', 'physics', 'chemistry', 'math'] as const).map((sub) => (
               <button
                 key={sub}
                 onClick={() => setActiveSubject(sub)}
                 className={`px-3 py-1.5 rounded-lg font-semibold capitalize cursor-pointer transition-all ${
                   activeSubject === sub
-                    ? 'bg-primary text-primary-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
+                    ? 'bg-primary text-primary-foreground shadow-md font-bold scale-[1.01]'
+                    : 'bg-accent/10 border border-border/30 text-muted-foreground hover:text-foreground hover:bg-accent/35 hover:border-border/60'
                 }`}
               >
                 {sub}
@@ -173,62 +235,14 @@ const SyllabusTracker = memo(function SyllabusTracker({ completions, onToggleCha
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-[380px] overflow-y-auto pr-1 dashboard-card-gpu">
-          {filteredChapters.map((ch) => {
-            const isCompleted = completions[ch.id] || false;
-            
-            // Exquisite theme-adaptive color specs for each subject type
-            const subjectStyles = {
-              physics: {
-                stroke: isCompleted ? 'border-l-emerald-500' : 'border-l-indigo-500',
-                text: 'text-indigo-500 dark:text-indigo-400',
-                badgeBg: 'bg-indigo-500/10 text-indigo-500'
-              },
-              chemistry: {
-                stroke: isCompleted ? 'border-l-emerald-500' : 'border-l-emerald-500',
-                text: 'text-emerald-500 dark:text-emerald-400',
-                badgeBg: 'bg-emerald-500/10 text-emerald-500'
-              },
-              math: {
-                stroke: isCompleted ? 'border-l-emerald-500' : 'border-l-purple-500',
-                text: 'text-purple-500 dark:text-purple-400',
-                badgeBg: 'bg-purple-500/10 text-purple-500'
-              }
-            };
-            const currentStyle = subjectStyles[ch.subject] || subjectStyles.physics;
-
-            return (
-              <button
-                key={ch.id}
-                onClick={() => onToggleChapter(ch.id, !isCompleted)}
-                className={`p-3.5 rounded-xl border border-l-4 text-left cursor-pointer flex items-start gap-3 select-none transition-all duration-150 hover:scale-[1.01] active:scale-[0.99] ${currentStyle.stroke} ${
-                  isCompleted
-                    ? 'bg-emerald-500/[0.02] dark:bg-emerald-500/10 border-emerald-500/30 hover:bg-emerald-500/5 hover:border-emerald-500/50 shadow-xs'
-                    : 'bg-card border-border hover:bg-accent/15 hover:border-accent shadow-2xs'
-                }`}
-              >
-                <div className="shrink-0 mt-0.5">
-                  {isCompleted ? (
-                    <CheckSquare className="w-4 h-4 text-emerald-500 fill-emerald-500/20" />
-                  ) : (
-                    <Square className="w-4 h-4 text-muted-foreground/60" />
-                  )}
-                </div>
-
-                <div className="space-y-1">
-                  <span className={`text-xs font-semibold block leading-tight ${isCompleted ? 'text-emerald-500 dark:text-emerald-400 line-through opacity-70' : 'text-foreground'}`}>
-                    {ch.name}
-                  </span>
-                  
-                  <div className="flex gap-1.5 items-center">
-                    <span className={`text-[9px] font-mono font-bold uppercase px-1 rounded ${currentStyle.badgeBg}`}>
-                      {ch.subject}
-                    </span>
-                    <span className="text-[9px] font-mono text-muted-foreground">Class {ch.classLevel}</span>
-                  </div>
-                </div>
-              </button>
-            );
-          })}
+          {filteredChapters.map((ch) => (
+            <SyllabusChapterItem
+              key={ch.id}
+              ch={ch}
+              isCompleted={completions[ch.id] || false}
+              onToggleChapter={onToggleChapter}
+            />
+          ))}
         </div>
       )}
 

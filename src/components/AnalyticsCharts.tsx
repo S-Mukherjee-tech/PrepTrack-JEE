@@ -224,15 +224,15 @@ const AnalyticsCharts = memo(function AnalyticsCharts({ sessions, questions }: A
             </div>
           </div>
 
-          <div className="flex bg-accent/20 border border-border p-0.5 rounded-lg text-xs gap-1">
+          <div className="flex bg-accent/20 border border-border p-1 rounded-lg text-xs gap-1">
             {(['day', 'week', 'month'] as PeriodType[]).map((p) => (
               <button
                 key={p}
                 onClick={() => setSessionPeriod(p)}
-                className={`px-3 py-1.5 rounded-md font-medium capitalize transition-all duration-250 cursor-pointer ${
+                className={`px-3 py-1.5 rounded-md font-medium capitalize transition-all duration-250 cursor-pointer border ${
                   sessionPeriod === p
-                    ? 'bg-primary text-primary-foreground shadow-sm'
-                    : 'text-muted-foreground hover:bg-accent/40 hover:text-foreground'
+                    ? 'bg-primary text-primary-foreground border-primary shadow-md font-bold scale-[1.01]'
+                    : 'bg-accent/10 border-border/30 text-muted-foreground hover:text-foreground hover:bg-accent/35 hover:border-border/60'
                 }`}
               >
                 {p}
@@ -304,15 +304,15 @@ const AnalyticsCharts = memo(function AnalyticsCharts({ sessions, questions }: A
             </div>
           </div>
 
-          <div className="flex bg-accent/20 border border-border p-0.5 rounded-lg text-xs gap-1">
+          <div className="flex bg-accent/20 border border-border p-1 rounded-lg text-xs gap-1">
             {(['day', 'week', 'month'] as PeriodType[]).map((p) => (
               <button
                 key={p}
                 onClick={() => setQuestionsPeriod(p)}
-                className={`px-3 py-1.5 rounded-md font-medium capitalize transition-all duration-250 cursor-pointer ${
+                className={`px-3 py-1.5 rounded-md font-medium capitalize transition-all duration-250 cursor-pointer border ${
                   questionsPeriod === p
-                    ? 'bg-primary text-primary-foreground shadow-sm'
-                    : 'text-muted-foreground hover:bg-accent/40 hover:text-foreground'
+                    ? 'bg-primary text-primary-foreground border-primary shadow-md font-bold scale-[1.01]'
+                    : 'bg-accent/10 border-border/30 text-muted-foreground hover:text-foreground hover:bg-accent/35 hover:border-border/60'
                 }`}
               >
                 {p}

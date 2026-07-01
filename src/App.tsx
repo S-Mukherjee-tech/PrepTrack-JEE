@@ -25,6 +25,7 @@ import MockTestTracker from './components/MockTestTracker';
 import { CLASS_11_SYLLABUS, CLASS_12_SYLLABUS } from './data/syllabus';
 import { BrandingLogo } from './components/BrandingLogo';
 import { WindowedStudyLog } from './components/WindowedStudyLog';
+import { ScrollProgressAndTop } from './components/ScrollProgressAndTop';
 
 // Lucide Icons
 import { 
@@ -98,40 +99,6 @@ export default function App() {
     setLocalStudyGoal(((settings.dailyStudyMinutesGoal ?? 180) / 60).toString());
     setLocalQuestionGoal((settings.dailyQuestionsSolvedGoal ?? 30).toString());
   }, [settings.pomodoroWorkDuration, settings.pomodoroBreakDuration, settings.dailyStudyMinutesGoal, settings.dailyQuestionsSolvedGoal]);
-
-  // requestAnimationFrame-based debouncing scroll listener to maintain constant 120Hz refresh rate
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const [showScrollTop, setShowScrollTop] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
-      if (totalHeight > 0) {
-        setScrollProgress((window.scrollY / totalHeight) * 100);
-      } else {
-        setScrollProgress(0);
-      }
-      setShowScrollTop(window.scrollY > 300);
-    };
-
-    let ticking = false;
-    const scrollListener = () => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          handleScroll();
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-
-    window.addEventListener('scroll', scrollListener, { passive: true });
-    handleScroll();
-
-    return () => {
-      window.removeEventListener('scroll', scrollListener);
-    };
-  }, []);
 
   // Manage high-level CSS classes and single transition morphing filter effect on root documentElement
   useEffect(() => {
@@ -673,7 +640,7 @@ export default function App() {
     >
       
       {/* Dynamic ambient floating backdrops for balanced aesthetic side effects */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none select-none z-0">
+      <div className="hidden md:block absolute inset-0 overflow-hidden pointer-events-none select-none z-0">
         {settings.theme === 'glass' && (
           <>
             <div className="absolute top-[10%] left-[5%] w-[450px] h-[450px] rounded-full bg-indigo-600/12 blur-[130px] animate-[floatGlow_25s_infinite_ease-in-out]" />
@@ -703,23 +670,6 @@ export default function App() {
 
       {/* GLOBAL NAVBAR HEADER */}
       <header className={`${themeStyles.headerBg} relative`}>
-        {/* requestAnimationFrame-based dynamic scroll progress bar */}
-        <div 
-          className="absolute top-0 left-0 w-full h-[2.5px] z-50 origin-left will-change-transform transition-transform duration-100 ease-out"
-          style={{ 
-            transform: `scaleX(${scrollProgress / 100})`,
-            background: settings.theme === 'cyber' ? '#10b981' :
-                        settings.theme === 'light' ? '#f43f5e' :
-                        settings.theme === 'slate' ? '#06b6d4' :
-                        '#818cf8',
-            boxShadow: `0 1px 6px ${
-              settings.theme === 'cyber' ? 'rgba(16,185,129,0.5)' :
-              settings.theme === 'light' ? 'rgba(244,63,94,0.5)' :
-              settings.theme === 'slate' ? 'rgba(6,182,212,0.5)' :
-              'rgba(129,140,248,0.5)'
-            }`
-          }}
-        />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3 select-none">
             {/* Custom high-fidelity branding icon with growth paths, success tick & action arrow */}
@@ -1703,38 +1653,8 @@ export default function App() {
         </div>
       </footer>
 
-      {/* Floating Scroll-to-Top button */}
-      <AnimatePresence>
-        {showScrollTop && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8, y: 15 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: 15 }}
-            transition={{ duration: 0.2 }}
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="fixed bottom-20 md:bottom-8 right-6 p-3.5 rounded-2xl border text-white z-40 shadow-xl cursor-pointer hover:scale-105 transition-transform flex items-center justify-center"
-            style={{
-              background: settings.theme === 'cyber' ? 'rgba(5,26,16,0.9)' :
-                          settings.theme === 'light' ? 'rgba(255,255,255,0.95)' :
-                          settings.theme === 'slate' ? 'rgba(13,18,46,0.9)' :
-                          'rgba(19,21,40,0.9)',
-              borderColor: settings.theme === 'cyber' ? 'rgba(16,185,129,0.45)' :
-                           settings.theme === 'light' ? 'rgba(244,63,94,0.3)' :
-                           settings.theme === 'slate' ? 'rgba(6,182,212,0.4)' :
-                           'rgba(255,255,255,0.12)',
-              color: settings.theme === 'light' ? '#f43f5e' :
-                     settings.theme === 'cyber' ? '#10b981' :
-                     settings.theme === 'slate' ? '#06b6d4' :
-                     '#818cf8',
-              boxShadow: `0 8px 30px rgba(0, 0, 0, 0.35)`
-            }}
-            title="Scroll to Top"
-            aria-label="Scroll to Top"
-          >
-            <ArrowUp className="w-4.5 h-4.5" />
-          </motion.button>
-        )}
-      </AnimatePresence>
+      {/* High-Performance Decoupled Scroll Progress & Top Handler */}
+      <ScrollProgressAndTop theme={settings.theme} />
 
     </div>
   );

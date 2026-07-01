@@ -32,6 +32,7 @@ export interface ErrorBookItem {
   mistake: string;
   correction: string;
   timestamp: number;
+  difficulty?: 'low' | 'medium' | 'high';
 }
 
 export interface SpecialImportanceItem {

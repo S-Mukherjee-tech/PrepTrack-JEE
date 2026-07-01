@@ -439,11 +439,11 @@ const MockTestTracker = memo(function MockTestTracker({
         </div>
 
         {/* Dynamic sub-tab switcher */}
-        <div className="flex bg-accent/15 dark:bg-black/40 p-1.5 rounded-2xl border border-white/5 self-start lg:self-center">
+        <div className="flex bg-accent/15 dark:bg-black/40 p-1 rounded-2xl border border-white/5 self-start lg:self-center gap-1.5">
           <button
             onClick={() => setActiveSubTab('log')}
             className={`flex items-center gap-2 px-4 py-2 text-xs rounded-xl transition-all cursor-pointer ${
-              activeSubTab === 'log' ? activeTabAccent : 'text-muted-foreground hover:text-foreground'
+              activeSubTab === 'log' ? (activeTabAccent + ' scale-[1.01]') : 'bg-accent/10 border border-border/30 text-muted-foreground hover:text-foreground hover:bg-accent/35 hover:border-border/60'
             }`}
           >
             <Plus className="w-3.5 h-3.5" />
@@ -452,7 +452,7 @@ const MockTestTracker = memo(function MockTestTracker({
           <button
             onClick={() => setActiveSubTab('analytics')}
             className={`flex items-center gap-2 px-4 py-2 text-xs rounded-xl transition-all cursor-pointer relative ${
-              activeSubTab === 'analytics' ? activeTabAccent : 'text-muted-foreground hover:text-foreground'
+              activeSubTab === 'analytics' ? (activeTabAccent + ' scale-[1.01]') : 'bg-accent/10 border border-border/30 text-muted-foreground hover:text-foreground hover:bg-accent/35 hover:border-border/60'
             }`}
           >
             <BarChart2 className="w-3.5 h-3.5" />
@@ -477,7 +477,7 @@ const MockTestTracker = memo(function MockTestTracker({
           <button
             onClick={() => setActiveSubTab('history')}
             className={`flex items-center gap-2 px-4 py-2 text-xs rounded-xl transition-all cursor-pointer ${
-              activeSubTab === 'history' ? activeTabAccent : 'text-muted-foreground hover:text-foreground'
+              activeSubTab === 'history' ? (activeTabAccent + ' scale-[1.01]') : 'bg-accent/10 border border-border/30 text-muted-foreground hover:text-foreground hover:bg-accent/35 hover:border-border/60'
             }`}
           >
             <BookOpen className="w-3.5 h-3.5" />
@@ -853,13 +853,13 @@ const MockTestTracker = memo(function MockTestTracker({
                         <button
                           key={pat}
                           onClick={() => setChartFilter(pat)}
-                          className={`px-3 py-1 text-[10px] rounded-lg transition-all cursor-pointer font-sans ${
+                          className={`px-3 py-1 text-[10px] rounded-lg transition-all cursor-pointer font-sans border ${
                             chartFilter === pat
-                              ? theme === 'cyber' ? 'bg-emerald-500/25 text-emerald-400 font-bold' :
-                                theme === 'light' ? 'bg-rose-500/15 text-rose-600 font-bold' :
-                                theme === 'slate' ? 'bg-cyan-500/20 text-cyan-400 font-bold' :
-                                'bg-indigo-500/15 text-[#6366f1] font-bold'
-                              : 'text-muted-foreground hover:text-foreground'
+                              ? theme === 'cyber' ? 'bg-emerald-500 text-black border-emerald-500 font-extrabold shadow-xs scale-[1.01]' :
+                                theme === 'light' ? 'bg-rose-500 text-white border-rose-500 font-bold shadow-xs scale-[1.01]' :
+                                theme === 'slate' ? 'bg-cyan-500 text-slate-950 border-cyan-500 font-bold shadow-xs scale-[1.01]' :
+                                'bg-indigo-600 text-white border-indigo-600 font-bold shadow-xs scale-[1.01]'
+                              : 'bg-accent/10 border-border/30 text-muted-foreground hover:text-foreground hover:bg-accent/35 hover:border-border/60'
                           }`}
                         >
                           {pat}
@@ -878,13 +878,13 @@ const MockTestTracker = memo(function MockTestTracker({
                         <button
                           key={sub.id}
                           onClick={() => setChartSubjectFilter(sub.id as any)}
-                          className={`px-3 py-1 text-[10px] rounded-lg transition-all cursor-pointer font-sans ${
+                          className={`px-3 py-1 text-[10px] rounded-lg transition-all cursor-pointer font-sans border ${
                             chartSubjectFilter === sub.id
-                              ? theme === 'cyber' ? 'bg-emerald-500/25 text-emerald-400 font-bold' :
-                                theme === 'light' ? 'bg-rose-500/15 text-rose-600 font-bold' :
-                                theme === 'slate' ? 'bg-cyan-500/20 text-cyan-400 font-bold' :
-                                'bg-indigo-500/15 text-[#6366f1] font-bold'
-                              : 'text-muted-foreground hover:text-foreground'
+                              ? theme === 'cyber' ? 'bg-emerald-500 text-black border-emerald-500 font-extrabold shadow-xs scale-[1.01]' :
+                                theme === 'light' ? 'bg-rose-500 text-white border-rose-500 font-bold shadow-xs scale-[1.01]' :
+                                theme === 'slate' ? 'bg-cyan-500 text-slate-950 border-cyan-500 font-bold shadow-xs scale-[1.01]' :
+                                'bg-indigo-600 text-white border-indigo-600 font-bold shadow-xs scale-[1.01]'
+                              : 'bg-accent/10 border-border/30 text-muted-foreground hover:text-foreground hover:bg-accent/35 hover:border-border/60'
                           }`}
                         >
                           {sub.label}
