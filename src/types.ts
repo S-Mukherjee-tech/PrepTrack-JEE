@@ -33,6 +33,7 @@ export interface ErrorBookItem {
   correction: string;
   timestamp: number;
   difficulty?: 'low' | 'medium' | 'high';
+  tags?: string[];
 }
 
 export interface SpecialImportanceItem {

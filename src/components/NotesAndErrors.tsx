@@ -23,6 +23,7 @@ const NotesAndErrors = memo(function NotesAndErrors({
   const [activeTab, setActiveTab] = useState<'error' | 'special'>('error');
   const [subjectFilter, setSubjectFilter] = useState<'all' | Subject>('all');
   const [difficultyFilter, setDifficultyFilter] = useState<'all' | 'low' | 'medium' | 'high'>('all');
+  const [tagFilter, setTagFilter] = useState<'all' | string>('all');
 
   // New Error Item form states
   const [errSubject, setErrSubject] = useState<Subject>('physics');
@@ -30,6 +31,8 @@ const NotesAndErrors = memo(function NotesAndErrors({
   const [errMistake, setErrMistake] = useState('');
   const [errCorrection, setErrCorrection] = useState('');
   const [errDifficulty, setErrDifficulty] = useState<'low' | 'medium' | 'high' | undefined>(undefined);
+  const [errTags, setErrTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState('');
   const [showErrorForm, setShowErrorForm] = useState(false);
 
   // New Special Importance Form states
@@ -39,18 +42,55 @@ const NotesAndErrors = memo(function NotesAndErrors({
   const [impContent, setImpContent] = useState('');
   const [showImpForm, setShowImpForm] = useState(false);
 
+  // Get all unique tags from error items for filtering
+  const allExistingTags = useMemo(() => {
+    const tagsSet = new Set<string>();
+    errorItems.forEach((item) => {
+      if (item.tags) {
+        item.tags.forEach((tag) => {
+          if (tag.trim()) tagsSet.add(tag.trim());
+        });
+      }
+    });
+    return Array.from(tagsSet);
+  }, [errorItems]);
+
   // Filtered lists
   const filteredErrors = useMemo(() => {
     return errorItems.filter((item) => {
       const matchSubject = subjectFilter === 'all' || item.subject === subjectFilter;
       const matchDifficulty = difficultyFilter === 'all' || item.difficulty === difficultyFilter;
-      return matchSubject && matchDifficulty;
+      const matchTag = tagFilter === 'all' || (item.tags && item.tags.includes(tagFilter));
+      return matchSubject && matchDifficulty && matchTag;
     });
-  }, [errorItems, subjectFilter, difficultyFilter]);
+  }, [errorItems, subjectFilter, difficultyFilter, tagFilter]);
 
   const filteredImportance = useMemo(() => {
     return importanceItems.filter((item) => subjectFilter === 'all' || item.subject === subjectFilter);
   }, [importanceItems, subjectFilter]);
+
+  const togglePresetTag = (tag: string) => {
+    if (errTags.includes(tag)) {
+      setErrTags(errTags.filter((t) => t !== tag));
+    } else {
+      setErrTags([...errTags, tag]);
+    }
+  };
+
+  const handleAddCustomTag = () => {
+    const trimmed = tagInput.trim();
+    if (trimmed && !errTags.includes(trimmed)) {
+      setErrTags([...errTags, trimmed]);
+      setTagInput('');
+    }
+  };
+
+  const handleKeyDownTag = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleAddCustomTag();
+    }
+  };
 
   const handleCreateErrorItem = (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,6 +107,7 @@ const NotesAndErrors = memo(function NotesAndErrors({
       correction: errCorrection.trim(),
       timestamp: Date.now(),
       difficulty: errDifficulty,
+      tags: errTags.length > 0 ? errTags : undefined,
     };
 
     onAddErrorItem(newItem);
@@ -74,6 +115,8 @@ const NotesAndErrors = memo(function NotesAndErrors({
     setErrMistake('');
     setErrCorrection('');
     setErrDifficulty(undefined);
+    setErrTags([]);
+    setTagInput('');
     setShowErrorForm(false);
   };
 
@@ -255,6 +298,84 @@ const NotesAndErrors = memo(function NotesAndErrors({
                 />
               </div>
 
+              {/* Tag labels input field */}
+              <div className="space-y-3 bg-accent/5 p-3 rounded-xl border border-border/60">
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-bold text-foreground">
+                    Labels / Mistake Classification Tags
+                  </label>
+                  <span className="text-[10px] text-muted-foreground">
+                    Classify your mistake to track and filter your specific weaknesses effectively.
+                  </span>
+                </div>
+
+                {/* Selected tags list */}
+                <div className="flex flex-wrap gap-1.5 min-h-[24px]">
+                  {errTags.map((tag) => (
+                    <span 
+                      key={tag} 
+                      className="inline-flex items-center gap-1 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-2 py-0.5 rounded-lg text-xs font-semibold"
+                    >
+                      #{tag}
+                      <button
+                        type="button"
+                        onClick={() => setErrTags(errTags.filter((t) => t !== tag))}
+                        className="text-muted-foreground hover:text-rose-400 font-bold ml-1 hover:scale-110 active:scale-95 transition-all text-[11px] cursor-pointer"
+                        title="Remove tag"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                  {errTags.length === 0 && (
+                    <span className="text-[11px] text-muted-foreground/50 italic font-mono">No labels selected yet</span>
+                  )}
+                </div>
+
+                {/* Preset suggestions */}
+                <div className="space-y-1.5">
+                  <span className="block text-[10px] font-bold text-muted-foreground/80 uppercase tracking-wider">Quick Suggestions:</span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {['Conceptual', 'Silly Mistake', 'Calculation', 'Formula Error', 'Time Pressure', 'Reading Error'].map((preset) => {
+                      const isSelected = errTags.includes(preset);
+                      return (
+                        <button
+                          type="button"
+                          key={preset}
+                          onClick={() => togglePresetTag(preset)}
+                          className={`px-2.5 py-1 rounded-lg text-[10px] font-bold border transition-all cursor-pointer ${
+                            isSelected 
+                              ? 'bg-indigo-600 text-white border-indigo-500' 
+                              : 'bg-card border-border/80 text-muted-foreground hover:border-indigo-400/50 hover:text-foreground'
+                          }`}
+                        >
+                          {preset}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Custom tag input */}
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Type custom label tag and press Enter/Add"
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    onKeyDown={handleKeyDownTag}
+                    className="flex-1 bg-card border border-border text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500/50"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddCustomTag}
+                    className="bg-accent/30 hover:bg-accent/50 border border-border text-foreground font-semibold text-xs px-3 rounded-lg cursor-pointer transition-all"
+                  >
+                    Add
+                  </button>
+                </div>
+              </div>
+
               <div className="flex justify-end gap-2.5">
                 <button
                   type="button"
@@ -273,33 +394,71 @@ const NotesAndErrors = memo(function NotesAndErrors({
             </form>
           )}
 
-          {/* Difficulty Filter Bar */}
+          {/* Difficulty & Tag Filter Bar */}
           {errorItems.length > 0 && (
-            <div className="flex flex-wrap items-center justify-between gap-2 text-xs border-b border-border/40 pb-3">
-              <div className="flex items-center gap-2">
-                <span className="text-muted-foreground font-semibold flex items-center gap-1">
-                  <Filter className="w-3 h-3 text-rose-500" /> Difficulty:
-                </span>
-                <div className="flex bg-accent/15 border border-border rounded-lg p-1 gap-1">
-                  {(['all', 'low', 'medium', 'high'] as const).map((level) => (
-                    <button
-                      key={level}
-                      type="button"
-                      onClick={() => setDifficultyFilter(level)}
-                      className={`px-2.5 py-1 rounded-md font-bold text-[10px] uppercase cursor-pointer transition-all ${
-                        difficultyFilter === level
-                          ? 'bg-primary text-primary-foreground shadow-xs scale-[1.01]'
-                          : 'bg-accent/10 border border-border/30 text-muted-foreground hover:text-foreground hover:bg-accent/35 hover:border-border/60'
-                      }`}
-                    >
-                      {level}
-                    </button>
-                  ))}
+            <div className="flex flex-col gap-3 text-xs border-b border-border/40 pb-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-muted-foreground font-semibold flex items-center gap-1">
+                    <Filter className="w-3 h-3 text-rose-500" /> Difficulty:
+                  </span>
+                  <div className="flex bg-accent/15 border border-border rounded-lg p-1 gap-1 flex-wrap">
+                    {(['all', 'low', 'medium', 'high'] as const).map((level) => (
+                      <button
+                        key={level}
+                        type="button"
+                        onClick={() => setDifficultyFilter(level)}
+                        className={`px-2.5 py-1 rounded-md font-bold text-[10px] uppercase cursor-pointer transition-all ${
+                          difficultyFilter === level
+                            ? 'bg-primary text-primary-foreground shadow-xs scale-[1.01]'
+                            : 'bg-accent/10 border border-border/30 text-muted-foreground hover:text-foreground hover:bg-accent/35 hover:border-border/60'
+                        }`}
+                      >
+                        {level}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="text-[10px] text-muted-foreground font-mono">
+                  Showing {filteredErrors.length} of {errorItems.length} logged traps
                 </div>
               </div>
-              <div className="text-[10px] text-muted-foreground font-mono">
-                Showing {filteredErrors.length} of {errorItems.length} logged traps
-              </div>
+
+              {/* Tags filter row */}
+              {allExistingTags.length > 0 && (
+                <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-border/10">
+                  <span className="text-muted-foreground font-semibold flex items-center gap-1 shrink-0">
+                    <Filter className="w-3 h-3 text-indigo-500" /> Weakness Label:
+                  </span>
+                  <div className="flex flex-wrap gap-1 items-center">
+                    <button
+                      type="button"
+                      onClick={() => setTagFilter('all')}
+                      className={`px-2.5 py-1 rounded-md font-bold text-[10px] cursor-pointer transition-all ${
+                        tagFilter === 'all'
+                          ? 'bg-indigo-600 text-white shadow-xs'
+                          : 'bg-accent/10 border border-border/30 text-muted-foreground hover:text-indigo-400 hover:bg-accent/35 hover:border-border/60'
+                      }`}
+                    >
+                      All Labels
+                    </button>
+                    {allExistingTags.map((tag) => (
+                      <button
+                        key={tag}
+                        type="button"
+                        onClick={() => setTagFilter(tag)}
+                        className={`px-2.5 py-1 rounded-md font-bold text-[10px] cursor-pointer transition-all ${
+                          tagFilter === tag
+                            ? 'bg-indigo-600 text-white shadow-xs'
+                            : 'bg-accent/10 border border-border/30 text-muted-foreground hover:text-indigo-400 hover:bg-accent/35 hover:border-border/60'
+                        }`}
+                      >
+                        #{tag}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -326,7 +485,7 @@ const NotesAndErrors = memo(function NotesAndErrors({
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
 
-                  <div className="space-y-1">
+                  <div className="space-y-1.5">
                     <div className="flex flex-wrap gap-2 items-center">
                       <span className={`text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded ${
                         item.subject === 'physics' ? 'bg-indigo-500/10 text-indigo-500' :
@@ -348,7 +507,22 @@ const NotesAndErrors = memo(function NotesAndErrors({
                         {new Date(item.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
-                    <h5 className="text-xs font-bold text-foreground pr-6 leading-tight">{item.chapter}</h5>
+
+                    {/* Display Item Tags */}
+                    {item.tags && item.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        {item.tags.map((tag) => (
+                          <span 
+                            key={tag} 
+                            className="bg-indigo-500/5 border border-indigo-500/15 text-[10px] font-semibold text-indigo-400 px-2 py-0.5 rounded-md"
+                          >
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    <h5 className="text-xs font-bold text-foreground pr-6 leading-tight pt-0.5">{item.chapter}</h5>
                   </div>
 
                   <div className="grid grid-cols-1 gap-2 border-t border-border/50 pt-2.5 text-xs">
