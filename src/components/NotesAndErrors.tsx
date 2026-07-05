@@ -2,6 +2,7 @@ import React, { useState, useMemo, memo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Subject, ErrorBookItem, SpecialImportanceItem } from '../types';
 import { Trash2, AlertCircle, BookOpen, Star, Sparkles, Filter, Plus, Check } from 'lucide-react';
+import { sanitizeInput, limitStringLength } from '../utils/security';
 
 interface NotesAndErrorsProps {
   errorItems: ErrorBookItem[];
@@ -102,12 +103,12 @@ const NotesAndErrors = memo(function NotesAndErrors({
     const newItem: ErrorBookItem = {
       id: `err_${Date.now()}_` + Math.floor(Math.random() * 100),
       subject: errSubject,
-      chapter: errChapter.trim(),
-      mistake: errMistake.trim(),
-      correction: errCorrection.trim(),
+      chapter: limitStringLength(sanitizeInput(errChapter.trim()), 200),
+      mistake: limitStringLength(sanitizeInput(errMistake.trim()), 2000),
+      correction: limitStringLength(sanitizeInput(errCorrection.trim()), 2000),
       timestamp: Date.now(),
       difficulty: errDifficulty,
-      tags: errTags.length > 0 ? errTags : undefined,
+      tags: errTags.length > 0 ? errTags.map(t => limitStringLength(sanitizeInput(t.trim()), 50)) : undefined,
     };
 
     onAddErrorItem(newItem);
@@ -130,9 +131,9 @@ const NotesAndErrors = memo(function NotesAndErrors({
     const newItem: SpecialImportanceItem = {
       id: `imp_${Date.now()}_` + Math.floor(Math.random() * 105),
       subject: impSubject,
-      title: impTitle.trim(),
-      topic: impTopic.trim(),
-      content: impContent.trim(),
+      title: limitStringLength(sanitizeInput(impTitle.trim()), 300),
+      topic: limitStringLength(sanitizeInput(impTopic.trim()), 200),
+      content: limitStringLength(sanitizeInput(impContent.trim()), 5000),
       timestamp: Date.now(),
     };
 

@@ -1,18 +1,142 @@
 import { useState, useMemo, memo } from 'react';
 import { motion } from 'motion/react';
-import { StudySession, DailyQuestions } from '../types';
-import { BarChart, Clock, Hash, BookOpen } from 'lucide-react';
+import { StudySession, DailyQuestions, ErrorBookItem } from '../types';
+import { BarChart, Clock, Hash, BookOpen, Target, Sparkles, Award } from 'lucide-react';
 
 interface AnalyticsChartsProps {
   sessions: StudySession[];
   questions: DailyQuestions[];
+  errorItems?: ErrorBookItem[];
 }
 
 type PeriodType = 'day' | 'week' | 'month';
 
-const AnalyticsCharts = memo(function AnalyticsCharts({ sessions, questions }: AnalyticsChartsProps) {
+const AnalyticsCharts = memo(function AnalyticsCharts({ sessions, questions, errorItems = [] }: AnalyticsChartsProps) {
   const [sessionPeriod, setSessionPeriod] = useState<PeriodType>('day');
   const [questionsPeriod, setQuestionsPeriod] = useState<PeriodType>('day');
+
+  // --- MISTAKE BREAKDOWN AGGREGATION ---
+  const mistakeStats = useMemo(() => {
+    const counts: Record<string, number> = {
+      'Silly Mistake': 0,
+      'Conceptual': 0,
+      'Calculation': 0,
+      'Formula Error': 0,
+      'Time Pressure': 0,
+      'Reading Error': 0,
+    };
+    let totalTagsLogged = 0;
+
+    errorItems.forEach((item) => {
+      if (item.tags && item.tags.length > 0) {
+        item.tags.forEach((tag) => {
+          const trimmed = tag.trim();
+          if (trimmed in counts) {
+            counts[trimmed]++;
+          } else {
+            counts[trimmed] = (counts[trimmed] || 0) + 1;
+          }
+          totalTagsLogged++;
+        });
+      }
+    });
+
+    const list = Object.entries(counts).map(([name, count]) => {
+      const pct = totalTagsLogged > 0 ? (count / totalTagsLogged) * 100 : 0;
+      return { name, count, pct };
+    }).sort((a, b) => b.count - a.count);
+
+    const dominantType = list[0]?.count > 0 ? list[0] : null;
+
+    return {
+      list,
+      total: totalTagsLogged,
+      dominantType,
+    };
+  }, [errorItems]);
+
+  const actionableAdvice = useMemo(() => {
+    if (errorItems.length === 0) {
+      return {
+        title: "Log your first mistake pattern",
+        text: "Add logged entries inside the Error Book and tag them. Your Weakness Radar will synthesize high-yield recommendations.",
+        type: "general"
+      };
+    }
+    if (mistakeStats.total === 0) {
+      return {
+        title: "Classify your logged mistakes",
+        text: "Make sure to tag your mistakes (e.g., #Silly Mistake, #Conceptual) in your Error Book. It helps pinpoint exact trap profiles.",
+        type: "general"
+      };
+    }
+
+    const dom = mistakeStats.dominantType;
+    if (!dom) {
+      return {
+        title: "Keep logging and tagging mistakes",
+        text: "Reviewing your corrective approaches weekly will drastically reduce recurring exam errors.",
+        type: "general"
+      };
+    }
+
+    if (dom.name === 'Silly Mistake' && dom.pct >= 30) {
+      return {
+        title: "High Silly Error Rate detected",
+        text: "⚠️ High Silly Error Rate detected. Slow down during the last 30 seconds of solving and re-read the question's final statement carefully.",
+        type: "silly"
+      };
+    } else if (dom.name === 'Conceptual' && dom.pct >= 30) {
+      return {
+        title: "Concept Gaps dominant",
+        text: "📚 Concept Errors dominant. Pause active test-taking and schedule a deep active-recall review session for those specific chapters.",
+        type: "conceptual"
+      };
+    } else if (dom.name === 'Calculation' && dom.pct >= 30) {
+      return {
+        title: "Calculation errors dominant",
+        text: "🧮 Calculation errors detected. Always write steps down clearly on your scratchpad. Avoid solving complex algebraic or numeric steps purely in your head.",
+        type: "calculation"
+      };
+    } else if (dom.name === 'Formula Error' && dom.pct >= 30) {
+      return {
+        title: "Formula memory gaps detected",
+        text: "📝 Formula Error rate high. Spend the first 15 minutes of your study morning doing active-recall writing of active formulas for Physics/Chemistry.",
+        type: "formula"
+      };
+    } else if (dom.name === 'Time Pressure' && dom.pct >= 20) {
+      return {
+        title: "Time management constraint",
+        text: "⏱️ Time pressure errors high. Implement strict 2-minute limit timers per question when doing daily mock logs to reduce anxiety.",
+        type: "time"
+      };
+    } else {
+      return {
+        title: `Primary weakness: ${dom.name}`,
+        text: `Logged ${dom.count} errors in this category (${Math.round(dom.pct)}% of total). Review these specific mistake files before the next mock test.`,
+        type: "other"
+      };
+    }
+  }, [errorItems, mistakeStats]);
+
+  const getTagColor = (tagName: string) => {
+    switch (tagName) {
+      case 'Silly Mistake':
+        return 'from-rose-500 to-pink-500 text-rose-500';
+      case 'Conceptual':
+        return 'from-indigo-500 to-violet-500 text-indigo-500';
+      case 'Calculation':
+        return 'from-amber-500 to-orange-500 text-amber-500';
+      case 'Formula Error':
+        return 'from-emerald-500 to-teal-500 text-emerald-500';
+      case 'Time Pressure':
+        return 'from-purple-500 to-fuchsia-500 text-purple-500';
+      case 'Reading Error':
+        return 'from-sky-500 to-blue-500 text-sky-500';
+      default:
+        return 'from-gray-500 to-slate-500 text-muted-foreground';
+    }
+  };
 
   // --- STUDY SESSIONS AGGREGATION ---
   const studyChartData = useMemo(() => {
@@ -210,7 +334,8 @@ const AnalyticsCharts = memo(function AnalyticsCharts({ sessions, questions }: A
   }, [questionsChartData]);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div className="space-y-8 animate-fade-in">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
       {/* STUDY HOURS CARD */}
       <div className="bg-card border border-border rounded-2xl p-6 shadow-sm hover:border-accent/40 active-scale-99 transition-all duration-300">
         <div className="flex items-center justify-between mb-6">
@@ -392,7 +517,145 @@ const AnalyticsCharts = memo(function AnalyticsCharts({ sessions, questions }: A
         </div>
       </div>
     </div>
-  );
+
+    {/* NEW SECTION: MISTAKE DISTRIBUTION & WEAKNESS RADAR */}
+    <div className="bg-card border border-border rounded-3xl p-6 lg:p-8 shadow-sm space-y-6 hover:border-accent/40 active-scale-99 transition-all duration-300">
+      <div className="border-b border-border/60 pb-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <h3 className="text-lg font-bold font-sans tracking-tight flex items-center gap-2">
+              <Target className="w-5 h-5 text-rose-500 animate-pulse" /> Mistake Distribution & Weakness Radar
+            </h3>
+            <span className="text-[10px] font-bold bg-rose-500/10 text-rose-500 px-2 py-0.5 rounded-full uppercase">
+              Mistake Diagnosis
+            </span>
+          </div>
+          <span className="text-xs text-muted-foreground font-mono">
+            Analyzed {errorItems.length} records
+          </span>
+        </div>
+        <p className="text-xs text-muted-foreground mt-1">
+          Analysis of tagged mistakes inside the Error Book to identify trap types and cognitive gaps.
+        </p>
+      </div>
+
+      {errorItems.length === 0 || mistakeStats.total === 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center py-6">
+          <div className="space-y-4">
+            <span className="text-xs font-bold text-muted-foreground/80 uppercase tracking-widest block">Awaiting Data Streams</span>
+            <h4 className="text-sm font-bold text-foreground">Diagnosis currently uninitialized</h4>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Log and tag your specific errors (e.g. <strong>Silly Mistakes</strong>, <strong>Conceptual Gaps</strong>, <strong>Calculation slips</strong>) in your <strong>Error Book</strong> to bring this radar to life.
+            </p>
+            <div className="p-3.5 bg-accent/10 border border-border/60 rounded-xl space-y-1.5 text-xs text-muted-foreground">
+              <span className="font-bold text-foreground flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-spin" /> Why tag mistakes?
+              </span>
+              <span>JEE is won by correcting errors. Reviewing your specific cognitive error profiles dynamically prevents making the same mistake twice on exam day.</span>
+            </div>
+          </div>
+
+          <div className="border border-border/80 bg-accent/5 rounded-2xl p-6 space-y-4 relative overflow-hidden flex flex-col justify-center min-h-[160px]">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.02] pointer-events-none">
+              <Target className="w-48 h-48" />
+            </div>
+            <div className="space-y-2 opacity-50">
+              <div className="flex justify-between text-[11px] font-semibold text-muted-foreground">
+                <span>#Silly Mistake</span>
+                <span>0%</span>
+              </div>
+              <div className="h-2 bg-border/40 rounded-full w-full" />
+            </div>
+            <div className="space-y-2 opacity-30">
+              <div className="flex justify-between text-[11px] font-semibold text-muted-foreground">
+                <span>#Conceptual</span>
+                <span>0%</span>
+              </div>
+              <div className="h-2 bg-border/40 rounded-full w-full animate-pulse" />
+            </div>
+            <div className="space-y-2 opacity-25">
+              <div className="flex justify-between text-[11px] font-semibold text-muted-foreground">
+                <span>#Calculation</span>
+                <span>0%</span>
+              </div>
+              <div className="h-2 bg-border/40 rounded-full w-full" />
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Left Column: Breakdown Progress Bars */}
+          <div className="space-y-4">
+            <span className="text-xs font-bold text-muted-foreground/80 uppercase tracking-wider block">
+              Error Breakdown Distribution ({mistakeStats.total} tags)
+            </span>
+            <div className="space-y-3.5 max-h-[300px] overflow-y-auto pr-1">
+              {mistakeStats.list.map((m) => {
+                const colors = getTagColor(m.name);
+                const colorGradient = colors.split(' ').slice(0, 2).join(' ');
+                const colorText = colors.split(' ').slice(2).join(' ');
+                return (
+                  <div key={m.name} className="space-y-1">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="font-bold text-foreground">#{m.name}</span>
+                      <div className="space-x-1 font-mono text-muted-foreground text-[11px]">
+                        <span className={`font-bold ${colorText}`}>{m.count} logs</span>
+                        <span>•</span>
+                        <span className="font-bold">{Math.round(m.pct)}%</span>
+                      </div>
+                    </div>
+                    <div className="h-2 bg-accent/10 rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${m.pct}%` }}
+                        transition={{ duration: 0.5, ease: 'easeOut' }}
+                        className={`h-full bg-gradient-to-r ${colorGradient} rounded-full`}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Right Column: Actionable advice & recommendations card */}
+          <div className="bg-accent/15 border border-border p-5 rounded-2xl flex flex-col justify-between space-y-4">
+            <div className="space-y-3">
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block">
+                Diagnosis & Cognitive Advice
+              </span>
+              
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-rose-500/10 text-rose-500 rounded-xl mt-0.5 shrink-0">
+                  <Award className="w-5 h-5 animate-pulse text-rose-500" />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="text-xs font-bold text-foreground font-sans leading-tight">
+                    {actionableAdvice.title}
+                  </h4>
+                  <p className="text-[11px] text-muted-foreground leading-relaxed mt-1">
+                    {actionableAdvice.text}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t border-border/60 pt-4 space-y-2">
+              <span className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                Tactical Action Plan
+              </span>
+              <ul className="text-[11px] text-muted-foreground space-y-1.5 list-disc pl-4 leading-relaxed">
+                <li>Never attempt deep-solving when mentally fatigued; switch to lightweight active-recall or card review.</li>
+                <li>Annotate your draft worksheets explicitly with warning marks on high-danger steps.</li>
+                <li>Review this dynamic diagnosis block before launching mock tests to reduce error-rate.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+);
 });
 
 export default AnalyticsCharts;

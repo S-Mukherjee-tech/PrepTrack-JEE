@@ -50,6 +50,7 @@ export interface Chapter {
   name: string;
   subject: Subject;
   classLevel: '11' | '12';
+  weightage?: 'high' | 'medium' | 'low';
 }
 
 export interface FeedbackItem {

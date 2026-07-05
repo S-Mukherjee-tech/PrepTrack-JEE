@@ -1,4 +1,5 @@
 import { StudySession, DailyQuestions, ErrorBookItem, SpecialImportanceItem, UserSettings, MockTest } from './types';
+import { secureJsonParse, cleanObjectPrototype } from './utils/security';
 
 const DB_NAME = 'PrepTrackDB';
 const DB_VERSION = 2;
@@ -135,12 +136,8 @@ export class PrepTrackDB {
     };
 
     if (this.isFallbackEnabled()) {
-      try {
-        const val = MemoryFallback.getItem('preptrack_settings');
-        return val ? JSON.parse(val) : defaults;
-      } catch {
-        return defaults;
-      }
+      const val = MemoryFallback.getItem('preptrack_settings');
+      return secureJsonParse<UserSettings>(val, defaults);
     }
 
     try {
@@ -152,7 +149,7 @@ export class PrepTrackDB {
 
         request.onsuccess = () => {
           if (request.result) {
-            resolve(request.result);
+            resolve(cleanObjectPrototype<UserSettings>(request.result));
           } else {
             resolve(defaults);
           }
@@ -163,18 +160,15 @@ export class PrepTrackDB {
         };
       });
     } catch {
-      try {
-        const val = MemoryFallback.getItem('preptrack_settings');
-        return val ? JSON.parse(val) : defaults;
-      } catch {
-        return defaults;
-      }
+      const val = MemoryFallback.getItem('preptrack_settings');
+      return secureJsonParse<UserSettings>(val, defaults);
     }
   }
 
   public static async saveSettings(settings: UserSettings): Promise<void> {
+    const cleaned = cleanObjectPrototype<UserSettings>(settings);
     if (this.isFallbackEnabled()) {
-      MemoryFallback.setItem('preptrack_settings', JSON.stringify(settings));
+      MemoryFallback.setItem('preptrack_settings', JSON.stringify(cleaned));
       return;
     }
     try {
@@ -182,25 +176,21 @@ export class PrepTrackDB {
       return new Promise((resolve, reject) => {
         const transaction = db.transaction('settings', 'readwrite');
         const store = transaction.objectStore('settings');
-        const request = store.put({ ...settings, id: 'user_settings' });
+        const request = store.put({ ...cleaned, id: 'user_settings' });
 
         request.onsuccess = () => resolve();
         request.onerror = () => reject('Failed to save settings');
       });
     } catch {
-      MemoryFallback.setItem('preptrack_settings', JSON.stringify(settings));
+      MemoryFallback.setItem('preptrack_settings', JSON.stringify(cleaned));
     }
   }
 
   // --- STUDY SESSION OPERATIONS ---
   public static async getStudySessions(): Promise<StudySession[]> {
     if (this.isFallbackEnabled()) {
-      try {
-        const val = MemoryFallback.getItem('preptrack_study_sessions');
-        return val ? JSON.parse(val) : [];
-      } catch {
-        return [];
-      }
+      const val = MemoryFallback.getItem('preptrack_study_sessions');
+      return secureJsonParse<StudySession[]>(val, []);
     }
     try {
       const db = await this.getDB();
@@ -210,30 +200,29 @@ export class PrepTrackDB {
         const request = store.getAll();
 
         request.onsuccess = () => {
-          const sorted = (request.result || []).sort((a, b) => b.startTime - a.startTime);
+          const items = request.result || [];
+          const cleaned = items.map(item => cleanObjectPrototype<StudySession>(item));
+          const sorted = cleaned.sort((a, b) => b.startTime - a.startTime);
           resolve(sorted);
         };
         request.onerror = () => resolve([]);
       });
     } catch {
-      try {
-        const val = MemoryFallback.getItem('preptrack_study_sessions');
-        return val ? JSON.parse(val) : [];
-      } catch {
-        return [];
-      }
+      const val = MemoryFallback.getItem('preptrack_study_sessions');
+      return secureJsonParse<StudySession[]>(val, []);
     }
   }
 
   public static async saveStudySession(session: StudySession): Promise<void> {
+    const cleanedSession = cleanObjectPrototype<StudySession>(session);
     if (this.isFallbackEnabled()) {
       try {
         const sessions = await this.getStudySessions();
-        const index = sessions.findIndex(s => s.id === session.id);
+        const index = sessions.findIndex(s => s.id === cleanedSession.id);
         if (index > -1) {
-          sessions[index] = session;
+          sessions[index] = cleanedSession;
         } else {
-          sessions.push(session);
+          sessions.push(cleanedSession);
         }
         MemoryFallback.setItem('preptrack_study_sessions', JSON.stringify(sessions));
       } catch (e) {
@@ -246,7 +235,7 @@ export class PrepTrackDB {
       return new Promise((resolve, reject) => {
         const transaction = db.transaction('study_sessions', 'readwrite');
         const store = transaction.objectStore('study_sessions');
-        const request = store.put(session);
+        const request = store.put(cleanedSession);
 
         request.onsuccess = () => resolve();
         request.onerror = () => reject('Failed to save study session');
@@ -254,11 +243,11 @@ export class PrepTrackDB {
     } catch {
       try {
         const sessions = await this.getStudySessions();
-        const index = sessions.findIndex(s => s.id === session.id);
+        const index = sessions.findIndex(s => s.id === cleanedSession.id);
         if (index > -1) {
-          sessions[index] = session;
+          sessions[index] = cleanedSession;
         } else {
-          sessions.push(session);
+          sessions.push(cleanedSession);
         }
         MemoryFallback.setItem('preptrack_study_sessions', JSON.stringify(sessions));
       } catch {}
@@ -298,12 +287,8 @@ export class PrepTrackDB {
   // --- QUESTIONS SOLVED OPERATIONS ---
   public static async getQuestionsSolved(): Promise<DailyQuestions[]> {
     if (this.isFallbackEnabled()) {
-      try {
-        const val = MemoryFallback.getItem('preptrack_questions_solved');
-        return val ? JSON.parse(val) : [];
-      } catch {
-        return [];
-      }
+      const val = MemoryFallback.getItem('preptrack_questions_solved');
+      return secureJsonParse<DailyQuestions[]>(val, []);
     }
     try {
       const db = await this.getDB();
@@ -313,30 +298,29 @@ export class PrepTrackDB {
         const request = store.getAll();
 
         request.onsuccess = () => {
-          const sorted = (request.result || []).sort((a, b) => a.date.localeCompare(b.date));
+          const items = request.result || [];
+          const cleaned = items.map(item => cleanObjectPrototype<DailyQuestions>(item));
+          const sorted = cleaned.sort((a, b) => a.date.localeCompare(b.date));
           resolve(sorted);
         };
         request.onerror = () => resolve([]);
       });
     } catch {
-      try {
-        const val = MemoryFallback.getItem('preptrack_questions_solved');
-        return val ? JSON.parse(val) : [];
-      } catch {
-        return [];
-      }
+      const val = MemoryFallback.getItem('preptrack_questions_solved');
+      return secureJsonParse<DailyQuestions[]>(val, []);
     }
   }
 
   public static async saveQuestionsSolved(record: DailyQuestions): Promise<void> {
+    const cleanedRecord = cleanObjectPrototype<DailyQuestions>(record);
     if (this.isFallbackEnabled()) {
       try {
         const items = await this.getQuestionsSolved();
-        const index = items.findIndex(i => i.date === record.date);
+        const index = items.findIndex(i => i.date === cleanedRecord.date);
         if (index > -1) {
-          items[index] = record;
+          items[index] = cleanedRecord;
         } else {
-          items.push(record);
+          items.push(cleanedRecord);
         }
         MemoryFallback.setItem('preptrack_questions_solved', JSON.stringify(items));
       } catch (e) {
@@ -349,7 +333,7 @@ export class PrepTrackDB {
       return new Promise((resolve, reject) => {
         const transaction = db.transaction('questions_solved', 'readwrite');
         const store = transaction.objectStore('questions_solved');
-        const request = store.put(record);
+        const request = store.put(cleanedRecord);
 
         request.onsuccess = () => resolve();
         request.onerror = () => reject('Failed to save questions solved');
@@ -357,11 +341,11 @@ export class PrepTrackDB {
     } catch {
       try {
         const items = await this.getQuestionsSolved();
-        const index = items.findIndex(i => i.date === record.date);
+        const index = items.findIndex(i => i.date === cleanedRecord.date);
         if (index > -1) {
-          items[index] = record;
+          items[index] = cleanedRecord;
         } else {
-          items.push(record);
+          items.push(cleanedRecord);
         }
         MemoryFallback.setItem('preptrack_questions_solved', JSON.stringify(items));
       } catch {}
@@ -371,12 +355,8 @@ export class PrepTrackDB {
   // --- ERROR BOOK OPERATIONS ---
   public static async getErrorBook(): Promise<ErrorBookItem[]> {
     if (this.isFallbackEnabled()) {
-      try {
-        const val = MemoryFallback.getItem('preptrack_error_book');
-        return val ? JSON.parse(val) : [];
-      } catch {
-        return [];
-      }
+      const val = MemoryFallback.getItem('preptrack_error_book');
+      return secureJsonParse<ErrorBookItem[]>(val, []);
     }
     try {
       const db = await this.getDB();
@@ -386,30 +366,29 @@ export class PrepTrackDB {
         const request = store.getAll();
 
         request.onsuccess = () => {
-          const sorted = (request.result || []).sort((a, b) => b.timestamp - a.timestamp);
+          const items = request.result || [];
+          const cleaned = items.map(item => cleanObjectPrototype<ErrorBookItem>(item));
+          const sorted = cleaned.sort((a, b) => b.timestamp - a.timestamp);
           resolve(sorted);
         };
         request.onerror = () => resolve([]);
       });
     } catch {
-      try {
-        const val = MemoryFallback.getItem('preptrack_error_book');
-        return val ? JSON.parse(val) : [];
-      } catch {
-        return [];
-      }
+      const val = MemoryFallback.getItem('preptrack_error_book');
+      return secureJsonParse<ErrorBookItem[]>(val, []);
     }
   }
 
   public static async saveErrorBookItem(item: ErrorBookItem): Promise<void> {
+    const cleanedItem = cleanObjectPrototype<ErrorBookItem>(item);
     if (this.isFallbackEnabled()) {
       try {
         const items = await this.getErrorBook();
-        const index = items.findIndex(i => i.id === item.id);
+        const index = items.findIndex(i => i.id === cleanedItem.id);
         if (index > -1) {
-          items[index] = item;
+          items[index] = cleanedItem;
         } else {
-          items.push(item);
+          items.push(cleanedItem);
         }
         MemoryFallback.setItem('preptrack_error_book', JSON.stringify(items));
       } catch (e) {
@@ -422,7 +401,7 @@ export class PrepTrackDB {
       return new Promise((resolve, reject) => {
         const transaction = db.transaction('error_book', 'readwrite');
         const store = transaction.objectStore('error_book');
-        const request = store.put(item);
+        const request = store.put(cleanedItem);
 
         request.onsuccess = () => resolve();
         request.onerror = () => reject('Failed to save error book item');
@@ -430,11 +409,11 @@ export class PrepTrackDB {
     } catch {
       try {
         const items = await this.getErrorBook();
-        const index = items.findIndex(i => i.id === item.id);
+        const index = items.findIndex(i => i.id === cleanedItem.id);
         if (index > -1) {
-          items[index] = item;
+          items[index] = cleanedItem;
         } else {
-          items.push(item);
+          items.push(cleanedItem);
         }
         MemoryFallback.setItem('preptrack_error_book', JSON.stringify(items));
       } catch {}
@@ -474,12 +453,8 @@ export class PrepTrackDB {
   // --- SPECIAL IMPORTANCE OPERATIONS ---
   public static async getSpecialImportance(): Promise<SpecialImportanceItem[]> {
     if (this.isFallbackEnabled()) {
-      try {
-        const val = MemoryFallback.getItem('preptrack_special_importance');
-        return val ? JSON.parse(val) : [];
-      } catch {
-        return [];
-      }
+      const val = MemoryFallback.getItem('preptrack_special_importance');
+      return secureJsonParse<SpecialImportanceItem[]>(val, []);
     }
     try {
       const db = await this.getDB();
@@ -489,30 +464,29 @@ export class PrepTrackDB {
         const request = store.getAll();
 
         request.onsuccess = () => {
-          const sorted = (request.result || []).sort((a, b) => b.timestamp - a.timestamp);
+          const items = request.result || [];
+          const cleaned = items.map(item => cleanObjectPrototype<SpecialImportanceItem>(item));
+          const sorted = cleaned.sort((a, b) => b.timestamp - a.timestamp);
           resolve(sorted);
         };
         request.onerror = () => resolve([]);
       });
     } catch {
-      try {
-        const val = MemoryFallback.getItem('preptrack_special_importance');
-        return val ? JSON.parse(val) : [];
-      } catch {
-        return [];
-      }
+      const val = MemoryFallback.getItem('preptrack_special_importance');
+      return secureJsonParse<SpecialImportanceItem[]>(val, []);
     }
   }
 
   public static async saveSpecialImportanceItem(item: SpecialImportanceItem): Promise<void> {
+    const cleanedItem = cleanObjectPrototype<SpecialImportanceItem>(item);
     if (this.isFallbackEnabled()) {
       try {
         const items = await this.getSpecialImportance();
-        const index = items.findIndex(i => i.id === item.id);
+        const index = items.findIndex(i => i.id === cleanedItem.id);
         if (index > -1) {
-          items[index] = item;
+          items[index] = cleanedItem;
         } else {
-          items.push(item);
+          items.push(cleanedItem);
         }
         MemoryFallback.setItem('preptrack_special_importance', JSON.stringify(items));
       } catch (e) {
@@ -525,7 +499,7 @@ export class PrepTrackDB {
       return new Promise((resolve, reject) => {
         const transaction = db.transaction('special_importance', 'readwrite');
         const store = transaction.objectStore('special_importance');
-        const request = store.put(item);
+        const request = store.put(cleanedItem);
 
         request.onsuccess = () => resolve();
         request.onerror = () => reject('Failed to save special importance item');
@@ -533,11 +507,11 @@ export class PrepTrackDB {
     } catch {
       try {
         const items = await this.getSpecialImportance();
-        const index = items.findIndex(i => i.id === item.id);
+        const index = items.findIndex(i => i.id === cleanedItem.id);
         if (index > -1) {
-          items[index] = item;
+          items[index] = cleanedItem;
         } else {
-          items.push(item);
+          items.push(cleanedItem);
         }
         MemoryFallback.setItem('preptrack_special_importance', JSON.stringify(items));
       } catch {}
@@ -577,12 +551,8 @@ export class PrepTrackDB {
   // --- CHAPTER COMPLETION OPERATIONS ---
   public static async getChapterCompletion(): Promise<Record<string, boolean>> {
     if (this.isFallbackEnabled()) {
-      try {
-        const val = MemoryFallback.getItem('preptrack_chapter_completion');
-        return val ? JSON.parse(val) : {};
-      } catch {
-        return {};
-      }
+      const val = MemoryFallback.getItem('preptrack_chapter_completion');
+      return secureJsonParse<Record<string, boolean>>(val, {});
     }
     try {
       const db = await this.getDB();
@@ -595,27 +565,26 @@ export class PrepTrackDB {
           const result: Record<string, boolean> = {};
           const items = request.result || [];
           items.forEach((item: { id: string; completed: boolean }) => {
-            result[item.id] = item.completed;
+            if (item && typeof item.id === 'string') {
+              result[item.id] = !!item.completed;
+            }
           });
-          resolve(result);
+          resolve(cleanObjectPrototype<Record<string, boolean>>(result));
         };
         request.onerror = () => resolve({});
       });
     } catch {
-      try {
-        const val = MemoryFallback.getItem('preptrack_chapter_completion');
-        return val ? JSON.parse(val) : {};
-      } catch {
-        return {};
-      }
+      const val = MemoryFallback.getItem('preptrack_chapter_completion');
+      return secureJsonParse<Record<string, boolean>>(val, {});
     }
   }
 
   public static async saveChapterCompletion(id: string, completed: boolean): Promise<void> {
+    const safeId = String(id).replace(/[^a-zA-Z0-9_\-]/g, '');
     if (this.isFallbackEnabled()) {
       try {
         const completions = await this.getChapterCompletion();
-        completions[id] = completed;
+        completions[safeId] = completed;
         MemoryFallback.setItem('preptrack_chapter_completion', JSON.stringify(completions));
       } catch (e) {
         console.error('Fallback save error:', e);
@@ -627,7 +596,7 @@ export class PrepTrackDB {
       return new Promise((resolve, reject) => {
         const transaction = db.transaction('chapter_completion', 'readwrite');
         const store = transaction.objectStore('chapter_completion');
-        const request = store.put({ id, completed });
+        const request = store.put({ id: safeId, completed });
 
         request.onsuccess = () => resolve();
         request.onerror = () => reject('Failed to save chapter completion');
@@ -635,7 +604,7 @@ export class PrepTrackDB {
     } catch {
       try {
         const completions = await this.getChapterCompletion();
-        completions[id] = completed;
+        completions[safeId] = completed;
         MemoryFallback.setItem('preptrack_chapter_completion', JSON.stringify(completions));
       } catch {}
     }
@@ -664,12 +633,8 @@ export class PrepTrackDB {
   // --- MOCK TEST OPERATIONS ---
   public static async getMockTests(): Promise<MockTest[]> {
     if (this.isFallbackEnabled()) {
-      try {
-        const val = MemoryFallback.getItem('preptrack_mock_tests');
-        return val ? JSON.parse(val) : [];
-      } catch {
-        return [];
-      }
+      const val = MemoryFallback.getItem('preptrack_mock_tests');
+      return secureJsonParse<MockTest[]>(val, []);
     }
     try {
       const db = await this.getDB();
@@ -679,30 +644,29 @@ export class PrepTrackDB {
         const request = store.getAll();
 
         request.onsuccess = () => {
-          const sorted = (request.result || []).sort((a, b) => b.timestamp - a.timestamp);
+          const items = request.result || [];
+          const cleaned = items.map(item => cleanObjectPrototype<MockTest>(item));
+          const sorted = cleaned.sort((a, b) => b.timestamp - a.timestamp);
           resolve(sorted);
         };
         request.onerror = () => resolve([]);
       });
     } catch {
-      try {
-        const val = MemoryFallback.getItem('preptrack_mock_tests');
-        return val ? JSON.parse(val) : [];
-      } catch {
-        return [];
-      }
+      const val = MemoryFallback.getItem('preptrack_mock_tests');
+      return secureJsonParse<MockTest[]>(val, []);
     }
   }
 
   public static async saveMockTest(test: MockTest): Promise<void> {
+    const cleanedMock = cleanObjectPrototype<MockTest>(test);
     if (this.isFallbackEnabled()) {
       try {
         const tests = await this.getMockTests();
-        const index = tests.findIndex(t => t.id === test.id);
+        const index = tests.findIndex(t => t.id === cleanedMock.id);
         if (index > -1) {
-          tests[index] = test;
+          tests[index] = cleanedMock;
         } else {
-          tests.push(test);
+          tests.push(cleanedMock);
         }
         MemoryFallback.setItem('preptrack_mock_tests', JSON.stringify(tests));
       } catch (e) {
@@ -715,7 +679,7 @@ export class PrepTrackDB {
       return new Promise((resolve, reject) => {
         const transaction = db.transaction('mock_tests', 'readwrite');
         const store = transaction.objectStore('mock_tests');
-        const request = store.put(test);
+        const request = store.put(cleanedMock);
 
         request.onsuccess = () => resolve();
         request.onerror = () => reject('Failed to save mock test');
@@ -723,11 +687,11 @@ export class PrepTrackDB {
     } catch {
       try {
         const tests = await this.getMockTests();
-        const index = tests.findIndex(t => t.id === test.id);
+        const index = tests.findIndex(t => t.id === cleanedMock.id);
         if (index > -1) {
-          tests[index] = test;
+          tests[index] = cleanedMock;
         } else {
-          tests.push(test);
+          tests.push(cleanedMock);
         }
         MemoryFallback.setItem('preptrack_mock_tests', JSON.stringify(tests));
       } catch {}

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, KeyboardEvent, memo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Trash2, Plus, CheckCircle2, Circle, ListTodo, Sparkles, FileText, Check, Edit3, Save, Clock } from 'lucide-react';
+import { secureJsonParse, sanitizeInput, limitStringLength } from '../utils/security';
 
 interface QuickNote {
   id: string;
@@ -35,18 +36,16 @@ const QuickNotes = memo(function QuickNotes({ theme, cardBgClass }: QuickNotesPr
   useEffect(() => {
     try {
       const saved = localStorage.getItem('preptrack_quick_notes');
-      if (saved) {
-        setNotes(JSON.parse(saved));
-      }
+      setNotes(secureJsonParse<QuickNote[]>(saved, []));
       
       const savedScratchpad = localStorage.getItem('preptrack_quick_notes_scratchpad');
       if (savedScratchpad) {
-        setScratchpadText(savedScratchpad);
+        setScratchpadText(limitStringLength(sanitizeInput(savedScratchpad), 10000));
       }
 
       const savedDraft = localStorage.getItem('preptrack_quick_notes_draft');
       if (savedDraft) {
-        setInputText(savedDraft);
+        setInputText(limitStringLength(sanitizeInput(savedDraft), 1000));
       }
     } catch (e) {
       console.error('Failed to load quick notes from local storage:', e);
@@ -100,9 +99,10 @@ const QuickNotes = memo(function QuickNotes({ theme, cardBgClass }: QuickNotesPr
     const trimmed = inputText.trim();
     if (!trimmed) return;
 
+    const safeText = limitStringLength(sanitizeInput(trimmed), 1000);
     const newNote: QuickNote = {
       id: crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 9),
-      text: trimmed,
+      text: safeText,
       completed: false,
       timestamp: Date.now(),
     };

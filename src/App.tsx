@@ -53,6 +53,31 @@ import {
   Flame
 } from 'lucide-react';
 
+const dashboardContainerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+      delayChildren: 0.02
+    }
+  }
+};
+
+const dashboardItemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 110,
+      damping: 14,
+      mass: 0.8
+    }
+  }
+};
+
 export default function App() {
   // Database States
   const [settings, setSettings] = useState<UserSettings>({
@@ -99,6 +124,23 @@ export default function App() {
     setLocalStudyGoal(((settings.dailyStudyMinutesGoal ?? 180) / 60).toString());
     setLocalQuestionGoal((settings.dailyQuestionsSolvedGoal ?? 30).toString());
   }, [settings.pomodoroWorkDuration, settings.pomodoroBreakDuration, settings.dailyStudyMinutesGoal, settings.dailyQuestionsSolvedGoal]);
+
+  // Clickjacking and Malicious Hostile Framing Shield
+  useEffect(() => {
+    try {
+      if (window.self !== window.top) {
+        const referrer = document.referrer || '';
+        const safeHosts = ['google.com', 'ai.studio', 'googleusercontent.com', 'localhost', 'run.app', '127.0.0.1'];
+        const isAuthorizedHost = safeHosts.some(host => referrer.includes(host) || window.location.hostname === 'localhost');
+        if (!isAuthorizedHost && referrer !== '') {
+          console.warn('Hostile framing detected. Mitigating clickjacking risk.');
+          window.top!.location.href = window.location.href;
+        }
+      }
+    } catch (e) {
+      console.warn('Framing warning: Strict cross-origin framing detected. Content isolated.');
+    }
+  }, []);
 
   // Manage high-level CSS classes and single transition morphing filter effect on root documentElement
   useEffect(() => {
@@ -875,15 +917,18 @@ export default function App() {
           {/* Keep Dashboard always mounted to preserve active running stopwatch and avoid resetting */}
           <div className={activeTab === 'dashboard' ? 'block' : 'hidden'}>
             <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={activeTab === 'dashboard' ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              variants={dashboardContainerVariants}
+              initial="hidden"
+              animate={activeTab === 'dashboard' ? "visible" : "hidden"}
               className="space-y-8"
             >
               <div className="space-y-8">
                 
                 {/* Dynamic header welcome banner now displayed ONLY inside dashboard workspace */}
-                <div className={`p-6 md:p-8 rounded-3xl bg-gradient-to-r ${themeStyles.bannerGradient} text-white shadow-lg space-y-3 relative overflow-hidden animate-fade-in`}>
+                <motion.div 
+                  variants={dashboardItemVariants}
+                  className={`p-6 md:p-8 rounded-3xl bg-gradient-to-r ${themeStyles.bannerGradient} text-white shadow-lg space-y-3 relative overflow-hidden`}
+                >
                   {/* Subtle logo background */}
                   <div className="absolute right-0 bottom-0 opacity-12 translate-x-12 translate-y-12 select-none pointer-events-none">
                     <BrandingLogo size={280} />
@@ -929,23 +974,28 @@ export default function App() {
                       </span>
                     </div>
                   </div>
-                  </div>                  
+                </motion.div>                  
 
-                  {/* Subtle horizontal section divider */}
-                  <div className={`border-t ${themeStyles.borderStyle} my-8 opacity-65`} />
+                {/* Subtle horizontal section divider */}
+                <div className={`border-t ${themeStyles.borderStyle} my-8 opacity-65`} />
 
-                  {/* Central Study Timer */}
+                {/* Central Study Timer */}
+                <motion.div variants={dashboardItemVariants}>
                   <TimerSection 
                     settings={settings}
                     onSaveSession={handleSaveStudySession}
                     currentSessionsTodayCount={sessionsTodayCount}
                   />
-                  
-                  {/* Subtle horizontal section divider */}
-                  <div className={`border-t ${themeStyles.borderStyle} my-8 opacity-65`} />
-                  
-                  {/* GAMIFIED STUDY STREAK COUNTER */}
-                  <div className={`bg-card border border-border rounded-3xl p-6 shadow-sm ${themeStyles.cardBg} animate-fade-in relative overflow-hidden dashboard-card-gpu`}>
+                </motion.div>
+                
+                {/* Subtle horizontal section divider */}
+                <div className={`border-t ${themeStyles.borderStyle} my-8 opacity-65`} />
+                
+                {/* GAMIFIED STUDY STREAK COUNTER */}
+                <motion.div 
+                  variants={dashboardItemVariants}
+                  className={`bg-card border border-border rounded-3xl p-6 shadow-sm ${themeStyles.cardBg} relative overflow-hidden dashboard-card-gpu`}
+                >
                     
                     {/* Decorative ambient background glow */}
                     <div className="absolute -right-12 -top-12 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl pointer-events-none" />
@@ -1066,13 +1116,16 @@ export default function App() {
                       </div>
 
                     </div>
-                  </div>
+                  </motion.div>
 
                   {/* Subtle horizontal section divider */}
                   <div className={`border-t ${themeStyles.borderStyle} my-8 opacity-65`} />
 
                   {/* TODAY'S GOALS PROGRESS BOARD */}
-                  <div className={`bg-card border border-border rounded-3xl p-6 shadow-sm space-y-6 ${themeStyles.cardBg} animate-fade-in`}>
+                  <motion.div 
+                    variants={dashboardItemVariants}
+                    className={`bg-card border border-border rounded-3xl p-6 shadow-sm space-y-6 ${themeStyles.cardBg}`}
+                  >
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/40 pb-5">
                       <div>
                         <h3 className="text-base font-bold font-display tracking-tight flex items-center gap-2">
@@ -1225,7 +1278,7 @@ export default function App() {
                         </div>
                       </div>
                     ) : null}
-                  </div>
+                  </motion.div>
 
                   {/* Subtle horizontal section divider */}
                   <div className={`border-t ${themeStyles.borderStyle} my-8 opacity-65`} />
@@ -1234,7 +1287,10 @@ export default function App() {
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     
                     {/* Solved ratios quick guide */}
-                    <div className="bg-card border border-border rounded-2xl p-6.5 space-y-4 dashboard-card-gpu">
+                    <motion.div 
+                      variants={dashboardItemVariants}
+                      className="bg-card border border-border rounded-2xl p-6.5 space-y-4 dashboard-card-gpu"
+                    >
                       <h4 className="text-sm font-bold font-display tracking-tight flex items-center gap-1.5 text-foreground">
                         <TrendingUp className="w-4 h-4 text-emerald-500" /> Today's Focus Pulse
                       </h4>
@@ -1258,10 +1314,13 @@ export default function App() {
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </motion.div>
 
                     {/* Study History Snapshot */}
-                    <div className="lg:col-span-2 bg-card border border-border rounded-2xl p-6.5 space-y-4 dashboard-card-gpu">
+                    <motion.div 
+                      variants={dashboardItemVariants}
+                      className="lg:col-span-2 bg-card border border-border rounded-2xl p-6.5 space-y-4 dashboard-card-gpu"
+                    >
                       <div className="flex items-center justify-between">
                         <h4 className="text-sm font-bold font-display tracking-tight flex items-center gap-1.5 text-foreground">
                           <History className="w-4.5 h-4.5 text-indigo-500 animate-spin-slow" /> Recent Actions Study Log
@@ -1280,18 +1339,23 @@ export default function App() {
                         maxHeight="170px"
                         isAnalyticsVariant={false}
                       />
-                    </div>
+                    </motion.div>
 
                   </div>
 
                   {/* QUICK NOTES SECTION */}
-                  <QuickNotes theme={settings.theme} cardBgClass={themeStyles.cardBg} />
+                  <motion.div variants={dashboardItemVariants}>
+                    <QuickNotes theme={settings.theme} cardBgClass={themeStyles.cardBg} />
+                  </motion.div>
 
                   {/* DYNAMIC JEE LIVE TOOL LINKS & TELEGRAM GROUP */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
                     
                     {/* Telegram Community */}
-                    <div className="bg-card border border-border rounded-3xl p-6 shadow-sm flex flex-col justify-between">
+                    <motion.div 
+                      variants={dashboardItemVariants}
+                      className="bg-card border border-border rounded-3xl p-6 shadow-sm flex flex-col justify-between"
+                    >
                       <div className="space-y-1.5">
                         <span className="text-[9px] uppercase font-bold text-indigo-500 bg-indigo-500/10 px-2 py-0.5 rounded-full w-max">Community Sync</span>
                         <h4 className="text-base font-bold font-sans tracking-tight">JEE CIRCLES Telegram</h4>
@@ -1308,10 +1372,13 @@ export default function App() {
                       >
                         Join JEE CIRCLES <ArrowUpRight className="w-4 h-4" />
                       </a>
-                    </div>
+                    </motion.div>
 
                     {/* Exam Countdown timer link */}
-                    <div className="bg-card border border-border rounded-3xl p-6 shadow-sm flex flex-col justify-between">
+                    <motion.div 
+                      variants={dashboardItemVariants}
+                      className="bg-card border border-border rounded-3xl p-6 shadow-sm flex flex-col justify-between"
+                    >
                       <div className="space-y-1.5">
                         <span className="text-[9px] uppercase font-bold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-full w-max">Live Timer App</span>
                         <h4 className="text-base font-bold font-sans tracking-tight">JEE & NEET Exam Clock</h4>
@@ -1328,10 +1395,13 @@ export default function App() {
                       >
                         Access Countdown Timer <ArrowUpRight className="w-4 h-4" />
                       </a>
-                    </div>
+                    </motion.div>
 
                     {/* IIT JEE Guide link */}
-                    <div className="bg-card border border-border rounded-3xl p-6 shadow-sm flex flex-col justify-between">
+                    <motion.div 
+                      variants={dashboardItemVariants}
+                      className="bg-card border border-border rounded-3xl p-6 shadow-sm flex flex-col justify-between"
+                    >
                       <div className="space-y-1.5">
                         <span className="text-[9px] uppercase font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full w-max">Aspirant Guides</span>
                         <h4 className="text-base font-bold font-sans tracking-tight">The IIT JEE Guide Hub</h4>
@@ -1348,7 +1418,7 @@ export default function App() {
                       >
                         View JEE Guides <ArrowUpRight className="w-4 h-4" />
                       </a>
-                    </div>
+                    </motion.div>
 
                   </div>
 
@@ -1358,8 +1428,13 @@ export default function App() {
 
           {/* TAB 2: PROGRESS HISTORY & BAR CHARTS */}
           {activeTab === 'analytics' && (
-            <div className="animate-fade-in space-y-8">
-              <AnalyticsCharts sessions={sessions} questions={questions} />
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              className="space-y-8"
+            >
+              <AnalyticsCharts sessions={sessions} questions={questions} errorItems={errorBook} />
 
               <div className="bg-card border border-border rounded-3xl p-6 lg:p-8 shadow-sm space-y-6">
                 <div className="flex justify-between items-center border-b border-border/60 pb-5">
@@ -1384,33 +1459,45 @@ export default function App() {
                   />
                 )}
               </div>
-            </div>
+            </motion.div>
           )}
 
           {/* TAB 3: QUESTIONS LOGGER */}
           {activeTab === 'questions' && (
-            <div className="animate-fade-in">
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+            >
               <QuestionTrackerForm 
                 questionsList={questions}
                 onSaveQuestions={handleSaveQuestions}
               />
-            </div>
+            </motion.div>
           )}
 
           {/* TAB 4: SYLLABUS TABS */}
           {activeTab === 'syllabus' && (
-            <div className="animate-fade-in">
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+            >
               <SyllabusTracker 
                 completions={chapterCompletions}
                 onToggleChapter={handleToggleChapter}
                 onClearAll={handleClearChapters}
               />
-            </div>
+            </motion.div>
           )}
 
           {/* TAB 5: NOTES & ERROR BOOKS */}
           {activeTab === 'notes' && (
-            <div className="animate-fade-in">
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+            >
               <NotesAndErrors 
                 errorItems={errorBook}
                 importanceItems={specialImportance}
@@ -1419,12 +1506,16 @@ export default function App() {
                 onAddImportanceItem={handleAddImportanceItem}
                 onDeleteImportanceItem={handleDeleteImportanceItem}
               />
-            </div>
+            </motion.div>
           )}
 
           {/* TAB 6: MOCK TEST TRACKER */}
           {activeTab === 'mock_tests' && (
-            <div className="animate-fade-in">
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+            >
               <MockTestTracker 
                 mockTests={mockTests}
                 onAddTest={handleSaveMockTest}
@@ -1432,12 +1523,17 @@ export default function App() {
                 theme={settings.theme}
                 cardBgClass="bg-card/75 backdrop-blur-md"
               />
-            </div>
+            </motion.div>
           )}
 
           {/* TAB 7: SETTINGS & APPEARANCES */}
           {activeTab === 'settings' && (
-            <div className="animate-fade-in bg-card border border-border rounded-3xl p-6 lg:p-8 shadow-sm space-y-8">
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              className="bg-card border border-border rounded-3xl p-6 lg:p-8 shadow-sm space-y-8"
+            >
               <div className="border-b border-border/60 pb-5">
                 <h3 className="text-lg font-bold font-sans tracking-tight">Settings & Appearance</h3>
                 <p className="text-xs text-muted-foreground">Customize your study targets, timer intervals, themes, and local datasets.</p>
@@ -1644,7 +1740,7 @@ export default function App() {
                   </button>
                 )}
               </div>
-            </div>
+            </motion.div>
           )}
 
 

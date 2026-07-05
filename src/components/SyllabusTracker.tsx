@@ -2,7 +2,7 @@ import { useState, useMemo, memo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Chapter, Subject } from '../types';
 import { CLASS_11_SYLLABUS, CLASS_12_SYLLABUS } from '../data/syllabus';
-import { CheckSquare, Square, Search, BookOpen, Download, Trash2, ArrowUpRight, HelpCircle } from 'lucide-react';
+import { CheckSquare, Square, Search, BookOpen, Download, Trash2, ArrowUpRight, HelpCircle, Flame } from 'lucide-react';
 
 interface SyllabusTrackerProps {
   completions: Record<string, boolean>;
@@ -61,11 +61,26 @@ const SyllabusChapterItem = memo(function SyllabusChapterItem({
           {ch.name}
         </span>
         
-        <div className="flex gap-1.5 items-center">
+        <div className="flex flex-wrap gap-1.5 items-center">
           <span className={`text-[9px] font-mono font-bold uppercase px-1 rounded ${currentStyle.badgeBg}`}>
             {ch.subject}
           </span>
-          <span className="text-[9px] font-mono text-muted-foreground">Class {ch.classLevel}</span>
+          <span className="text-[9px] font-mono text-muted-foreground mr-1">Class {ch.classLevel}</span>
+          {ch.weightage === 'high' && (
+            <span className="text-[9px] font-bold bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded flex items-center gap-0.5 shadow-2xs">
+              🔥 High Yield
+            </span>
+          )}
+          {ch.weightage === 'medium' && (
+            <span className="text-[9px] font-bold bg-amber-500/10 text-amber-500 px-1.5 py-0.5 rounded flex items-center gap-0.5 shadow-2xs">
+              ⚡ Medium
+            </span>
+          )}
+          {ch.weightage === 'low' && (
+            <span className="text-[9px] font-bold bg-blue-500/10 text-blue-500 px-1.5 py-0.5 rounded flex items-center gap-0.5 shadow-2xs">
+              ❄️ Low
+            </span>
+          )}
         </div>
       </div>
     </button>
@@ -76,6 +91,7 @@ const SyllabusTracker = memo(function SyllabusTracker({ completions, onToggleCha
   const [activeClass, setActiveClass] = useState<'all' | '11' | '12'>('all');
   const [activeSubject, setActiveSubject] = useState<'all' | Subject>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [focusHighYield, setFocusHighYield] = useState(false);
 
   const fullSyllabus = useMemo(() => {
     return [...CLASS_11_SYLLABUS, ...CLASS_12_SYLLABUS];
@@ -87,9 +103,10 @@ const SyllabusTracker = memo(function SyllabusTracker({ completions, onToggleCha
       const matchClass = activeClass === 'all' || ch.classLevel === activeClass;
       const matchSubject = activeSubject === 'all' || ch.subject === activeSubject;
       const matchSearch = ch.name.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchClass && matchSubject && matchSearch;
+      const matchHighYield = !focusHighYield || ch.weightage === 'high';
+      return matchClass && matchSubject && matchSearch && matchHighYield;
     });
-  }, [fullSyllabus, activeClass, activeSubject, searchQuery]);
+  }, [fullSyllabus, activeClass, activeSubject, searchQuery, focusHighYield]);
 
   // Total syllabus stats
   const stats = useMemo(() => {
@@ -206,6 +223,19 @@ const SyllabusTracker = memo(function SyllabusTracker({ completions, onToggleCha
               </button>
             ))}
           </div>
+
+          {/* High Yield Filter */}
+          <button
+            onClick={() => setFocusHighYield(!focusHighYield)}
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 border ${
+              focusHighYield
+                ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white border-amber-500/30 shadow-md scale-[1.01]'
+                : 'bg-accent/15 border-border text-muted-foreground hover:text-foreground hover:bg-accent/30'
+            }`}
+          >
+            <Flame className={`w-3.5 h-3.5 ${focusHighYield ? 'animate-bounce text-white' : 'text-orange-500'}`} />
+            Focus High-Yield Only (35%)
+          </button>
         </div>
 
         {/* Download links */}
