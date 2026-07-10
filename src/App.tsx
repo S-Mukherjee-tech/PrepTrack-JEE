@@ -22,6 +22,7 @@ import FeedbackModal from './components/FeedbackModal';
 import QuickNotes from './components/QuickNotes';
 import ToastContainer, { Toast } from './components/ToastContainer';
 import MockTestTracker from './components/MockTestTracker';
+import DiagnosticsPanel from './components/DiagnosticsPanel';
 import { CLASS_11_SYLLABUS, CLASS_12_SYLLABUS } from './data/syllabus';
 import { BrandingLogo } from './components/BrandingLogo';
 import { WindowedStudyLog } from './components/WindowedStudyLog';
@@ -47,6 +48,7 @@ import {
   Moon,
   Sun,
   ShieldAlert,
+  ShieldCheck,
   Award,
   CheckCircle,
   Coffee,
@@ -98,6 +100,95 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'analytics' | 'questions' | 'syllabus' | 'notes' | 'mock_tests' | 'settings'>('dashboard');
   const [dbLoading, setDbLoading] = useState(true);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [isDiagnosticsOpen, setIsDiagnosticsOpen] = useState(false);
+
+  // Automatic Client Node Geolocation & Device Audit state (Auto loaded, permission-free)
+  const [autoNodeInfo, setAutoNodeInfo] = useState<{
+    ip: string;
+    city: string;
+    region: string;
+    country: string;
+    device: string;
+    timezone: string;
+    loading: boolean;
+  }>({
+    ip: 'Detecting...',
+    city: 'Detecting node...',
+    region: '',
+    country: '',
+    device: 'Detecting browser...',
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    loading: true
+  });
+
+  useEffect(() => {
+    // 1. Detect device & browser
+    const ua = navigator.userAgent;
+    let deviceStr = 'Device Audit Active';
+    let browserStr = 'Modern Web Browser';
+    
+    if (ua.includes('Win')) deviceStr = 'Windows OS';
+    else if (ua.includes('Mac')) deviceStr = 'macOS Desktop';
+    else if (ua.includes('Linux')) deviceStr = 'Linux Node';
+    else if (ua.includes('Android')) deviceStr = 'Android Device';
+    else if (ua.includes('iPhone') || ua.includes('iPad')) deviceStr = 'iOS Handset';
+
+    if (ua.includes('Chrome')) browserStr = 'Chrome';
+    else if (ua.includes('Safari')) browserStr = 'Safari';
+    else if (ua.includes('Firefox')) browserStr = 'Firefox';
+    else if (ua.includes('Edge')) browserStr = 'Edge';
+
+    const cleanDevice = `${deviceStr} (${browserStr})`;
+
+    // 2. Fetch network geolocation info
+    const fetchGeo = async () => {
+      let ipv4 = 'Unavailable';
+      let city = 'Delhi'; // Sensible defaults
+      let region = 'Delhi';
+      let country = 'India';
+
+      try {
+        const v4Res = await fetch('https://api.ipify.org?format=json');
+        if (v4Res.ok) {
+          const d = await v4Res.json();
+          ipv4 = d.ip;
+        }
+      } catch {}
+
+      try {
+        const geoRes = await fetch('https://ipapi.co/json/');
+        if (geoRes.ok) {
+          const geoData = await geoRes.json();
+          ipv4 = geoData.ip || ipv4;
+          city = geoData.city || city;
+          region = geoData.region || region;
+          country = geoData.country_name || country;
+        } else {
+          // fallback
+          const fbGeo = await fetch('https://ip-api.com/json/');
+          if (fbGeo.ok) {
+            const fbData = await fbGeo.json();
+            ipv4 = fbData.query || ipv4;
+            city = fbData.city || city;
+            region = fbData.regionName || region;
+            country = fbData.country || country;
+          }
+        }
+      } catch {}
+
+      setAutoNodeInfo({
+        ip: ipv4,
+        city,
+        region,
+        country,
+        device: cleanDevice,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        loading: false
+      });
+    };
+
+    fetchGeo();
+  }, []);
 
   // Toast Notifications State
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -817,6 +908,17 @@ export default function App() {
           {/* Quick theme toggler in navbar for supreme accessibility */}
           <div className="flex items-center gap-2.5">
             <button
+              onClick={() => setIsDiagnosticsOpen(true)}
+              className="p-2 border border-border rounded-xl bg-accent/15 hover:bg-accent/30 text-muted-foreground hover:text-foreground transition-all cursor-pointer relative flex items-center justify-center"
+              title="System Diagnostics & Security Console"
+              aria-label="System Diagnostics & Security Console"
+            >
+              <ShieldCheck className="w-4 h-4 text-emerald-500 animate-pulse" />
+              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-500" />
+              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+            </button>
+
+            <button
               onClick={() => {
                 const themes: ThemeType[] = ['glass', 'slate', 'cyber', 'light'];
                 const currentIdx = themes.indexOf(settings.theme);
@@ -942,6 +1044,23 @@ export default function App() {
                     <p className="text-xs text-indigo-100 max-w-xl font-medium leading-relaxed">
                       A comprehensive, elegant workspace to track study hours, practice questions, and chapter progress for JEE Main & Advanced.
                     </p>
+                  </div>
+
+                  {/* Automatic Geolocation Node Status Ribbon */}
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[9px] sm:text-[10px] text-white/90 font-mono bg-black/20 py-2 px-3 rounded-2xl border border-white/5 w-fit select-none shadow-inner">
+                    <span className="flex items-center gap-1 font-bold text-emerald-300">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse inline-block"></span>
+                      SECURE CLIENT NODE:
+                    </span>
+                    <span className="font-semibold text-white">
+                      {autoNodeInfo.city ? `${autoNodeInfo.city}, ${autoNodeInfo.country}` : 'Detecting Node...'}
+                    </span>
+                    <span className="opacity-40">|</span>
+                    <span>IP: {autoNodeInfo.ip}</span>
+                    <span className="opacity-40">|</span>
+                    <span>{autoNodeInfo.device}</span>
+                    <span className="opacity-40 font-bold">|</span>
+                    <span>TZ: {autoNodeInfo.timezone}</span>
                   </div>
 
                   {/* PCM Fast stats panel */}
@@ -1703,6 +1822,32 @@ export default function App() {
                 </div>
               </div>
 
+              {/* System Environment Diagnostics & Security Console */}
+              <div className="space-y-4 border-t border-border/60 pt-6">
+                <div>
+                  <h4 className="text-sm font-bold text-foreground">System Environment Diagnostics</h4>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">Audit live hardware architectures, dual-stack IP nodes, active user agent strings, and precise geolocation parameters.</p>
+                </div>
+                
+                <div className="bg-accent/10 border border-border rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="flex items-start gap-3">
+                    <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0 mt-0.5">
+                      <ShieldCheck className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h5 className="text-xs font-bold text-foreground">Secure Console Interface Active</h5>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">Auditing device specs, viewport boundaries, dual-stack networks (IPv4/IPv6), and browser sensor layers.</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setIsDiagnosticsOpen(true)}
+                    className="self-start sm:self-center bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs py-2.5 px-4 rounded-xl cursor-pointer shadow-md shadow-indigo-600/15 transition-all select-none whitespace-nowrap shrink-0"
+                  >
+                    Open Diagnostics Console
+                  </button>
+                </div>
+              </div>
+
               {/* Reset Device Data Console */}
               <div className="space-y-4 border-t border-border/60 pt-6">
                 <div className="flex items-center gap-3 bg-rose-500/5 border border-rose-500/10 p-4 rounded-2xl">
@@ -1763,6 +1908,13 @@ export default function App() {
 
       {/* High-Performance Decoupled Scroll Progress & Top Handler */}
       <ScrollProgressAndTop theme={settings.theme} />
+
+      {/* Global Diagnostics and Security Console */}
+      <DiagnosticsPanel 
+        isOpen={isDiagnosticsOpen} 
+        onClose={() => setIsDiagnosticsOpen(false)} 
+        theme={settings.theme} 
+      />
 
     </div>
   );
