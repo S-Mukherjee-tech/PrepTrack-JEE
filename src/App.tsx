@@ -588,8 +588,8 @@ export default function App() {
       case 'glass':
         return {
           bg: 'bg-[#060713] text-slate-100 selection:bg-indigo-500/30 selection:text-indigo-200',
-          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-24 md:py-12 space-y-8 relative z-10',
-          headerBg: 'bg-[#0a0c1b]/60 backdrop-blur-2xl border-b border-white/[0.08] sticky top-0 z-40',
+          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-32 md:py-16 space-y-12 md:space-y-14 relative z-10',
+          headerBg: 'bg-[#0a0c1b]/65 backdrop-blur-2xl border-b border-white/[0.08] sticky top-0 z-40',
           accentColor: 'text-[#818cf8]',
           borderStyle: 'border-white/[0.08]',
           cardBg: 'bg-[#131528]/70 backdrop-blur-xl border border-white/[0.1] text-slate-100 shadow-[0_16px_48px_-12px_rgba(99,102,241,0.22)]',
@@ -601,7 +601,7 @@ export default function App() {
       case 'cyber':
         return {
           bg: 'bg-[#020905] text-emerald-100 selection:bg-emerald-500/30 selection:text-emerald-300',
-          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-24 md:py-12 space-y-8',
+          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-32 md:py-16 space-y-12 md:space-y-14',
           headerBg: 'bg-[#03150b]/80 backdrop-blur-md border-b border-emerald-500/25 sticky top-0 z-40',
           accentColor: 'text-emerald-400',
           borderStyle: 'border-emerald-500/20',
@@ -614,7 +614,7 @@ export default function App() {
       case 'light':
         return {
           bg: 'bg-[#fffbf7] text-slate-900 selection:bg-indigo-100 selection:text-indigo-900',
-          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-24 md:py-12 space-y-8',
+          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-32 md:py-16 space-y-12 md:space-y-14',
           headerBg: 'bg-white/80 backdrop-blur-md border-b border-pink-100 sticky top-0 z-40 shadow-sm',
           accentColor: 'text-indigo-600',
           borderStyle: 'border-pink-100/60',
@@ -628,7 +628,7 @@ export default function App() {
       default:
         return {
           bg: 'bg-[#050816] text-slate-100 selection:bg-cyan-500/30 selection:text-cyan-200',
-          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-24 md:py-12 space-y-8',
+          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-32 md:py-16 space-y-12 md:space-y-14',
           headerBg: 'bg-[#090d24]/80 backdrop-blur-md border-b border-cyan-500/25 sticky top-0 z-40',
           accentColor: 'text-cyan-400',
           borderStyle: 'border-cyan-500/20',
@@ -913,16 +913,16 @@ export default function App() {
         )}
 
         {/* --- DYNAMIC RENDER OF THEMES OR TABS --- */}
-        <div className="space-y-8">
+        <div className="space-y-12 md:space-y-14">
           {/* Keep Dashboard always mounted to preserve active running stopwatch and avoid resetting */}
           <div className={activeTab === 'dashboard' ? 'block' : 'hidden'}>
             <motion.div
               variants={dashboardContainerVariants}
               initial="hidden"
               animate={activeTab === 'dashboard' ? "visible" : "hidden"}
-              className="space-y-8"
+              className="space-y-12 md:space-y-14"
             >
-              <div className="space-y-8">
+              <div className="space-y-12 md:space-y-14">
                 
                 {/* Dynamic header welcome banner now displayed ONLY inside dashboard workspace */}
                 <motion.div 
@@ -1432,7 +1432,7 @@ export default function App() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-              className="space-y-8"
+              className="space-y-12 md:space-y-14"
             >
               <AnalyticsCharts sessions={sessions} questions={questions} errorItems={errorBook} />
 
@@ -1532,7 +1532,7 @@ export default function App() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-              className="bg-card border border-border rounded-3xl p-6 lg:p-8 shadow-sm space-y-8"
+              className="bg-card border border-border rounded-3xl p-6 lg:p-8 shadow-sm space-y-10 md:space-y-12"
             >
               <div className="border-b border-border/60 pb-5">
                 <h3 className="text-lg font-bold font-sans tracking-tight">Settings & Appearance</h3>

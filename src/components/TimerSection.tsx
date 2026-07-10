@@ -402,7 +402,33 @@ const TimerSection = memo(function TimerSection({ settings, onSaveSession, curre
     'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20';
 
   return (
-    <div className="bg-card border border-border rounded-3xl p-6 lg:p-8 shadow-sm flex flex-col md:flex-row gap-8 items-center relative overflow-hidden dashboard-card-gpu">
+    <motion.div
+      animate={isRunning && !isPaused ? {
+        boxShadow: isThemeCyber ? [
+          "0 10px 30px -10px rgba(16,185,129,0.15)",
+          "0 16px 40px 2px rgba(16,185,129,0.35)",
+          "0 10px 30px -10px rgba(16,185,129,0.15)"
+        ] : isThemeLight ? [
+          "0 10px 30px -10px rgba(79,70,229,0.1)",
+          "0 16px 40px 2px rgba(79,70,229,0.25)",
+          "0 10px 30px -10px rgba(79,70,229,0.1)"
+        ] : isThemeSlate ? [
+          "0 10px 30px -10px rgba(6,182,212,0.15)",
+          "0 16px 40px 2px rgba(6,182,212,0.35)",
+          "0 10px 30px -10px rgba(6,182,212,0.15)"
+        ] : [
+          "0 10px 30px -10px rgba(99,102,241,0.15)",
+          "0 16px 40px 2px rgba(99,102,241,0.35)",
+          "0 10px 30px -10px rgba(99,102,241,0.15)"
+        ]
+      } : {}}
+      transition={{
+        repeat: Infinity,
+        duration: 3,
+        ease: "easeInOut"
+      }}
+      className="bg-card border border-border rounded-3xl p-6 lg:p-8 shadow-sm flex flex-col md:flex-row gap-8 items-center relative overflow-hidden dashboard-card-gpu"
+    >
       
       {/* Decorative gradient glowing orb - purely aesthetic */}
       <div className="absolute top-0 right-0 w-48 h-48 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
@@ -636,49 +662,71 @@ const TimerSection = memo(function TimerSection({ settings, onSaveSession, curre
         <div className="pt-2 flex flex-wrap gap-3">
           {!isRunning ? (
             <motion.button
-              whileHover={{ scale: 1.02, translateY: -1 }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={{ scale: 1.04, translateY: -2 }}
+              whileTap={{ scale: 0.96 }}
+              animate={{
+                backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+              }}
+              transition={{
+                backgroundPosition: {
+                  duration: 5,
+                  repeat: Infinity,
+                  ease: "linear"
+                }
+              }}
+              style={{
+                backgroundSize: "200% 200%",
+              }}
               onClick={handleStart}
-              className={`flex-1 min-w-[140px] font-extrabold text-sm py-4 px-6 rounded-2xl flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer shadow-lg ${
-                isThemeCyber ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-black shadow-emerald-500/20 hover:shadow-emerald-500/30' :
-                isThemeLight ? 'bg-gradient-to-r from-rose-500 to-pink-500 text-white shadow-rose-500/20 hover:shadow-rose-500/30' :
-                isThemeSlate ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-slate-950 shadow-cyan-500/20 hover:shadow-cyan-500/30' :
-                'bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 text-white shadow-indigo-600/20 hover:shadow-indigo-600/30'
+              className={`flex-1 min-w-[140px] font-extrabold text-sm py-4 px-6 rounded-2xl flex items-center justify-center gap-2 cursor-pointer shadow-xl text-white select-none ${
+                isThemeCyber ? 'bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-600 shadow-emerald-500/30' :
+                isThemeLight ? 'bg-gradient-to-r from-indigo-600 via-violet-500 to-indigo-500 shadow-indigo-500/30' :
+                isThemeSlate ? 'bg-gradient-to-r from-cyan-500 via-indigo-500 to-blue-600 shadow-cyan-500/30' :
+                'bg-gradient-to-r from-indigo-600 via-emerald-500 to-purple-600 shadow-indigo-600/30'
               }`}
             >
-              <Play className="w-4.5 h-4.5 fill-current" /> Start Focused Study
+              <Play className="w-4.5 h-4.5 fill-current animate-pulse" /> Start Focused Study
             </motion.button>
           ) : (
             <>
               {isPaused ? (
                 <motion.button
-                  whileHover={{ scale: 1.03, translateY: -1 }}
-                  whileTap={{ scale: 0.97 }}
+                  whileHover={{ scale: 1.04, translateY: -2 }}
+                  whileTap={{ scale: 0.96 }}
                   animate={{
+                    backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
                     boxShadow: [
                       isThemeCyber ? '0 0 0 0px rgba(16,185,129,0.2)' :
-                      isThemeLight ? '0 0 0 0px rgba(244,63,94,0.2)' :
+                      isThemeLight ? '0 0 0 0px rgba(79,70,229,0.2)' :
                       isThemeSlate ? '0 0 0 0px rgba(6,182,212,0.2)' :
-                      '0 0 0 0px rgba(16,185,129,0.2)',
-                      isThemeCyber ? '0 0 0 8px rgba(16,185,129,0)' :
-                      isThemeLight ? '0 0 0 8px rgba(244,63,94,0)' :
-                      isThemeSlate ? '0 0 0 8px rgba(6,182,212,0)' :
-                      '0 0 0 8px rgba(16,185,129,0)'
+                      '0 0 0 0px rgba(99,102,241,0.2)',
+                      isThemeCyber ? '0 0 0 10px rgba(16,185,129,0)' :
+                      isThemeLight ? '0 0 0 10px rgba(79,70,229,0)' :
+                      isThemeSlate ? '0 0 0 10px rgba(6,182,212,0)' :
+                      '0 0 0 10px rgba(99,102,241,0)'
                     ]
                   }}
                   transition={{
+                    backgroundPosition: {
+                      duration: 4,
+                      repeat: Infinity,
+                      ease: "linear"
+                    },
                     boxShadow: {
                       repeat: Infinity,
                       duration: 2,
                       ease: "easeOut"
                     }
                   }}
+                  style={{
+                    backgroundSize: "200% 200%",
+                  }}
                   onClick={handleStart}
-                  className={`flex-1 font-extrabold text-sm py-4 px-6 rounded-2xl flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer shadow-xl relative overflow-hidden group ${
-                    isThemeCyber ? 'bg-gradient-to-r from-emerald-500 via-green-400 to-emerald-500 text-black shadow-emerald-500/25' :
-                    isThemeLight ? 'bg-gradient-to-r from-rose-500 via-pink-400 to-rose-500 text-white shadow-rose-500/25' :
-                    isThemeSlate ? 'bg-gradient-to-r from-cyan-500 via-sky-400 to-cyan-500 text-slate-950 shadow-cyan-500/25' :
-                    'bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 text-white shadow-emerald-500/25'
+                  className={`flex-1 font-extrabold text-sm py-4 px-6 rounded-2xl flex items-center justify-center gap-2 cursor-pointer shadow-xl relative overflow-hidden group text-white ${
+                    isThemeCyber ? 'bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-600 shadow-emerald-500/25' :
+                    isThemeLight ? 'bg-gradient-to-r from-indigo-600 via-violet-500 to-indigo-500 shadow-indigo-500/25' :
+                    isThemeSlate ? 'bg-gradient-to-r from-cyan-500 via-sky-400 to-cyan-500 shadow-cyan-500/25' :
+                    'bg-gradient-to-r from-indigo-600 via-emerald-500 to-purple-600 shadow-indigo-500/25'
                   }`}
                 >
                   <Play className="w-4.5 h-4.5 fill-current" /> Resume Study
@@ -812,7 +860,7 @@ const TimerSection = memo(function TimerSection({ settings, onSaveSession, curre
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
 });
 

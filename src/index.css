@@ -1,8 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
   --font-sans: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "Outfit", "Plus Jakarta Sans", ui-monospace, monospace;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
   --font-display: "Outfit", "Space Grotesk", sans-serif;
   --color-primary: var(--primary);
   --color-primary-foreground: #ffffff;
@@ -14,24 +15,27 @@
 }
 
 .theme-glass .bg-card {
-  background: linear-gradient(135deg, rgba(18, 20, 37, 0.78), rgba(10, 11, 22, 0.88)) !important;
-  border-color: rgba(255, 255, 255, 0.12) !important;
-  backdrop-filter: blur(28px) saturate(130%);
-  -webkit-backdrop-filter: blur(28px) saturate(130%);
+  background: rgba(17, 19, 36, 0.82) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(28px) saturate(140%);
+  -webkit-backdrop-filter: blur(28px) saturate(140%);
   color: #f8fafc !important;
-  box-shadow: 0 16px 48px -12px rgba(99, 102, 241, 0.18), inset 0 1px 1px rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 20px 50px -12px rgba(99, 102, 241, 0.16), inset 0 1px 1px rgba(255, 255, 255, 0.08) !important;
 }
 
 .theme-glass .text-muted-foreground,
 .theme-glass .text-slate-400,
-.theme-glass .text-gray-400,
+.theme-glass .text-gray-400 {
+  color: #94a3b8 !important; /* Beautiful secondary contrast slate */
+}
+
 .theme-glass .text-slate-500,
 .theme-glass .text-gray-500 {
-  color: #cbd5e1 !important; /* Extremely high contrast light gray */
+  color: #64748b !important; /* Readable tertiary text */
 }
 
 .theme-glass .text-slate-300 {
-  color: #f1f5f9 !important; /* Stunning light silver-white */
+  color: #cbd5e1 !important; /* High fidelity silver-white text */
 }
 
 .theme-glass .text-foreground,
@@ -50,22 +54,25 @@
 }
 
 .theme-slate .bg-card {
-  background: linear-gradient(135deg, #0f132e, #06091b) !important;
-  border-color: rgba(6, 182, 212, 0.28) !important;
+  background: #0b0f24 !important;
+  border-color: rgba(6, 182, 212, 0.14) !important;
   color: #f8fafc !important;
-  box-shadow: 0 16px 40px -12px rgba(6, 182, 212, 0.25) !important;
+  box-shadow: 0 20px 50px -12px rgba(6, 182, 212, 0.18) !important;
 }
 
 .theme-slate .text-muted-foreground,
 .theme-slate .text-slate-400,
-.theme-slate .text-gray-400,
+.theme-slate .text-gray-400 {
+  color: #94a3b8 !important; /* Cool grey for crisp secondary lines */
+}
+
 .theme-slate .text-slate-500,
 .theme-slate .text-gray-500 {
-  color: #e2e8f0 !important; /* Highly polished, bright cyan-ocean contrast */
+  color: #475569 !important; /* Highly legible subtext */
 }
 
 .theme-slate .text-slate-300 {
-  color: #f8fafc !important; /* Brilliant high-fidelity white */
+  color: #e2e8f0 !important; /* High-contrast body elements */
 }
 
 .theme-slate .text-foreground,
@@ -84,22 +91,25 @@
 }
 
 .theme-cyber .bg-card {
-  background: linear-gradient(135deg, #051d11, #020d06) !important;
-  border-color: rgba(16, 185, 129, 0.45) !important;
+  background: #030f08 !important;
+  border-color: rgba(16, 185, 129, 0.25) !important;
   color: #ecfdf5 !important;
-  box-shadow: 0 16px 40px -12px rgba(16, 185, 129, 0.32) !important;
+  box-shadow: 0 20px 50px -12px rgba(16, 185, 129, 0.2) !important;
 }
 
 .theme-cyber .text-muted-foreground,
 .theme-cyber .text-slate-400,
-.theme-cyber .text-gray-400,
+.theme-cyber .text-gray-400 {
+  color: #a7f3d0 !important; /* Luminous light green secondary */
+}
+
 .theme-cyber .text-slate-500,
 .theme-cyber .text-gray-500 {
-  color: #8bfcd1 !important; /* Vibrant bright lime/mint glow for 100% legibility */
+  color: #34d399 !important; /* Highly distinct intermediate tier */
 }
 
 .theme-cyber .text-slate-300 {
-  color: #e6fffa !important; /* Maximum-brightness glowing cyan-emerald tint */
+  color: #e6fffa !important; /* Maximized contrast cyan-emerald body */
 }
 
 .theme-cyber .text-foreground,
@@ -122,22 +132,25 @@
 }
 
 .theme-light .bg-card {
-  background: linear-gradient(135deg, #ffffff, #fffdfb) !important;
-  border-color: rgba(244, 63, 94, 0.18) !important;
+  background: #ffffff !important;
+  border-color: rgba(244, 63, 94, 0.08) !important;
   color: #0f172a !important;
-  box-shadow: 0 16px 40px -12px rgba(244, 63, 94, 0.09) !important;
+  box-shadow: 0 20px 50px -12px rgba(244, 63, 94, 0.05), 0 2px 8px rgba(0, 0, 0, 0.01) !important;
 }
 
 .theme-light .text-muted-foreground,
 .theme-light .text-slate-400,
-.theme-light .text-gray-400,
+.theme-light .text-gray-400 {
+  color: #475569 !important; /* Elegant, premium, WCAG-compliant charcoal slate secondary */
+}
+
 .theme-light .text-slate-500,
 .theme-light .text-gray-500 {
-  color: #334155 !important; /* Deep, high-contrast, fully readable charcoal slate */
+  color: #64748b !important; /* High contrast muted elements */
 }
 
 .theme-light .text-slate-300 {
-  color: #1e293b !important; /* Strong dark indigo-gray */
+  color: #1e293b !important; /* Crisp dark navy body text */
 }
 
 .theme-light .text-foreground,
