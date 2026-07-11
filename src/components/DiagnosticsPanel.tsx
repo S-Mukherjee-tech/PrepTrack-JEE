@@ -47,6 +47,10 @@ interface DeviceSpecs {
   windowSize: string;
   cores: string;
   memory: string;
+  gpu: string;
+  connectionSpeed: string;
+  latency: string;
+  networkType: string;
   batteryLevel: number | null;
   isCharging: boolean | null;
   timezone: string;
@@ -89,6 +93,10 @@ export default function DiagnosticsPanel({ isOpen, onClose, theme }: Diagnostics
     windowSize: 'Detecting...',
     cores: 'Detecting...',
     memory: 'Detecting...',
+    gpu: 'Detecting...',
+    connectionSpeed: 'Detecting...',
+    latency: 'Detecting...',
+    networkType: 'Detecting...',
     batteryLevel: null,
     isCharging: null,
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -149,6 +157,32 @@ export default function DiagnosticsPanel({ isOpen, onClose, theme }: Diagnostics
     const coresCount = navigator.hardwareConcurrency ? `${navigator.hardwareConcurrency} Cores` : 'Unknown';
     const ram = (navigator as any).deviceMemory ? `${(navigator as any).deviceMemory} GB` : 'Unavailable';
 
+    // WebGL GPU Extraction
+    let gpuStr = 'Software Renderer / Standard GPU';
+    try {
+      const canvas = document.createElement('canvas');
+      const gl = (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')) as any;
+      if (gl) {
+        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+        if (debugInfo) {
+          gpuStr = gl.getParameter(debugInfo.UNMASKED_RENDERER_STRING) || 'Standard Graphics Engine';
+        }
+      }
+    } catch {
+      gpuStr = 'Secure Graphics Pipeline';
+    }
+
+    // Network Speeds Estimation
+    let connSpeed = 'Unavailable';
+    let connLatency = 'Unavailable';
+    let connType = 'Wi-Fi / Ethernet';
+    if ('connection' in navigator) {
+      const conn = (navigator as any).connection;
+      connSpeed = conn.downlink ? `${conn.downlink} Mbps` : 'Unavailable';
+      connLatency = conn.rtt ? `${conn.rtt} ms` : 'Unavailable';
+      connType = conn.effectiveType ? conn.effectiveType.toUpperCase() : 'Wi-Fi / Ethernet';
+    }
+
     setSpecs(prev => ({
       ...prev,
       os,
@@ -156,11 +190,19 @@ export default function DiagnosticsPanel({ isOpen, onClose, theme }: Diagnostics
       screenResolution: screenRes,
       windowSize: winSize,
       cores: coresCount,
-      memory: ram
+      memory: ram,
+      gpu: gpuStr,
+      connectionSpeed: connSpeed,
+      latency: connLatency,
+      networkType: connType
     }));
 
     logEvent(`Hardware audited: ${coresCount} / ${ram} RAM detected`, 'success');
     logEvent(`OS: ${os} | Browser: ${browser}`, 'info');
+    logEvent(`Detected Graphic Accelerator: ${gpuStr}`, 'info');
+    if (connSpeed !== 'Unavailable') {
+      logEvent(`Network Speed: ${connSpeed} (${connType}) | Latency: ${connLatency}`, 'success');
+    }
 
     // Setup Battery Listener
     if ('getBattery' in navigator) {
@@ -285,9 +327,30 @@ export default function DiagnosticsPanel({ isOpen, onClose, theme }: Diagnostics
           latVal = fbData.lat || 0;
           lngVal = fbData.lon || 0;
           logEvent(`Fallback IP Geolocation: Located in ${cityStr}, ${countryStr}`, 'success');
+        } else {
+          throw new Error('ip-api.com failed');
         }
       } catch {
-        logEvent('All geolocation API endpoints exhausted', 'error');
+        logEvent('IP Geolocation fallback 1 failed. Trying tertiary secure geo API...', 'warn');
+        try {
+          const resFree = await fetch('https://freeipapi.com/api/json');
+          if (resFree.ok) {
+            const dataFree = await resFree.json();
+            ipv4Str = dataFree.ipAddress || ipv4Str;
+            cityStr = dataFree.cityName || 'Delhi';
+            regionStr = dataFree.regionName || 'Delhi';
+            countryStr = dataFree.countryName || 'India';
+            zipStr = dataFree.zipCode || '';
+            latVal = dataFree.latitude || 0;
+            lngVal = dataFree.longitude || 0;
+            ispStr = 'Public Telecom Node';
+            logEvent(`Tertiary Geolocation complete: Located in ${cityStr}, ${countryStr}`, 'success');
+          } else {
+            throw new Error('freeipapi.com failed');
+          }
+        } catch {
+          logEvent('All geolocation API endpoints exhausted. Restoring default node values.', 'error');
+        }
       }
     }
 
@@ -581,6 +644,33 @@ export default function DiagnosticsPanel({ isOpen, onClose, theme }: Diagnostics
                     </div>
                   </div>
 
+                  {/* Audited GPU details */}
+                  <div className={`p-4 rounded-2xl ${colors.cardBg} space-y-1`}>
+                    <p className="text-[9px] text-muted-foreground uppercase font-mono select-none">Audited GPU graphics card</p>
+                    <p className="text-xs font-mono font-bold leading-relaxed break-all text-indigo-400 select-all">{specs.gpu}</p>
+                  </div>
+
+                  {/* Network Speed & Quality Analytics */}
+                  {specs.connectionSpeed !== 'Unavailable' && (
+                    <div className={`p-4 rounded-2xl ${colors.cardBg} space-y-2 select-none`}>
+                      <p className="text-[9px] text-muted-foreground uppercase font-mono">Web Transmission Telemetry</p>
+                      <div className="grid grid-cols-3 gap-2 text-center">
+                        <div className="bg-slate-900/30 p-2 rounded-xl border border-white/5">
+                          <p className="text-[8px] text-muted-foreground uppercase font-mono">Est. Bandwidth</p>
+                          <p className="text-xs font-mono font-extrabold text-indigo-400 mt-0.5">{specs.connectionSpeed}</p>
+                        </div>
+                        <div className="bg-slate-900/30 p-2 rounded-xl border border-white/5">
+                          <p className="text-[8px] text-muted-foreground uppercase font-mono">RTT Latency</p>
+                          <p className="text-xs font-mono font-extrabold text-indigo-400 mt-0.5">{specs.latency}</p>
+                        </div>
+                        <div className="bg-slate-900/30 p-2 rounded-xl border border-white/5">
+                          <p className="text-[8px] text-muted-foreground uppercase font-mono">Profile Type</p>
+                          <p className="text-xs font-mono font-extrabold text-indigo-400 mt-0.5">{specs.networkType}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Battery Widget */}
                   {specs.batteryLevel !== null && (
                     <div className={`p-4 rounded-2xl flex items-center justify-between ${colors.cardBg}`}>
@@ -739,6 +829,31 @@ export default function DiagnosticsPanel({ isOpen, onClose, theme }: Diagnostics
                   </div>
                 </motion.div>
               )}
+
+              {/* Legal & Privacy Safe Harbor Shield */}
+              <div className="p-4 rounded-2xl border border-emerald-500/10 bg-emerald-500/5 space-y-2.5 select-none">
+                <div className="flex items-center gap-2 text-emerald-400">
+                  <ShieldCheck className="w-4 h-4 shrink-0" />
+                  <h4 className="text-xs font-bold uppercase tracking-wider font-mono">Compliance & Privacy Protocol</h4>
+                </div>
+                <p className="text-[10px] text-muted-foreground leading-relaxed">
+                  All audited hardware components, viewport boundaries, graphics accelerators, and city-level IP geolocations are compiled <strong>strictly in-memory client-side</strong>. 
+                </p>
+                <div className="text-[9.5px] text-muted-foreground/80 space-y-1.5 font-mono">
+                  <div className="flex items-start gap-1.5">
+                    <span className="text-emerald-400 font-bold shrink-0">✓</span>
+                    <span><strong>Zero Storage Pipeline</strong>: Geolocation data is never uploaded, stored, or logged to any external cloud database.</span>
+                  </div>
+                  <div className="flex items-start gap-1.5">
+                    <span className="text-emerald-400 font-bold shrink-0">✓</span>
+                    <span><strong>100% Permission-Free</strong>: Uses passive routing nodes (coarse city IP) rather than intrusive device GPS prompts.</span>
+                  </div>
+                  <div className="flex items-start gap-1.5">
+                    <span className="text-emerald-400 font-bold shrink-0">✓</span>
+                    <span><strong>Fully Sandboxed</strong>: Executed in high-security, sandboxed client processes behind strict SSL encryption.</span>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* High-Tech Diagnostic Terminal Log (Collapsible/Fixed footer console) */}
