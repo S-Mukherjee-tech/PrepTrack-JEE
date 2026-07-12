@@ -1,4 +1,4 @@
-export type Subject = 'physics' | 'chemistry' | 'math';
+export type Subject = 'physics' | 'chemistry' | 'math' | 'general';
 export type StudyMode = 'normal' | 'pomodoro' | 'test';
 
 export interface StudySession {

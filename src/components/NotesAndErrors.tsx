@@ -179,8 +179,8 @@ const NotesAndErrors = memo(function NotesAndErrors({
             <Filter className="w-3.5 h-3.5 text-indigo-500" /> Filter Subject:
           </span>
 
-          <div className="flex bg-accent/15 border border-border rounded-xl p-1 text-xs gap-1">
-            {(['all', 'physics', 'chemistry', 'math'] as const).map((sub) => (
+          <div className="flex flex-wrap bg-accent/15 border border-border rounded-xl p-1 text-xs gap-1">
+            {(['all', 'physics', 'chemistry', 'math', 'general'] as const).map((sub) => (
               <button
                 key={sub}
                 onClick={() => setSubjectFilter(sub)}
@@ -190,7 +190,7 @@ const NotesAndErrors = memo(function NotesAndErrors({
                     : 'bg-accent/10 border border-border/30 text-muted-foreground hover:text-foreground hover:bg-accent/35 hover:border-border/60'
                 }`}
               >
-                {sub}
+                {sub === 'general' ? 'general / common' : sub}
               </button>
             ))}
           </div>
@@ -228,11 +228,12 @@ const NotesAndErrors = memo(function NotesAndErrors({
                     id="err-subject-select"
                     value={errSubject}
                     onChange={(e) => setErrSubject(e.target.value as Subject)}
-                    className="w-full bg-card border border-border text-xs rounded-lg px-3 py-2 outline-none"
+                    className="w-full bg-card border border-border text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500/50"
                   >
                     <option value="physics">Physics</option>
                     <option value="chemistry">Chemistry</option>
                     <option value="math">Math</option>
+                    <option value="general">General / Common</option>
                   </select>
                 </div>
 
@@ -491,9 +492,10 @@ const NotesAndErrors = memo(function NotesAndErrors({
                       <span className={`text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded ${
                         item.subject === 'physics' ? 'bg-indigo-500/10 text-indigo-500' :
                         item.subject === 'chemistry' ? 'bg-emerald-500/10 text-emerald-500' :
-                        'bg-purple-500/10 text-purple-500'
+                        item.subject === 'math' ? 'bg-purple-500/10 text-purple-500' :
+                        'bg-pink-500/10 text-pink-500 border border-pink-500/20'
                       }`}>
-                        {item.subject}
+                        {item.subject === 'general' ? 'general / common' : item.subject}
                       </span>
                       {item.difficulty && (
                         <span className={`text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded border ${
@@ -575,11 +577,12 @@ const NotesAndErrors = memo(function NotesAndErrors({
                     id="imp-subject-select"
                     value={impSubject}
                     onChange={(e) => setImpSubject(e.target.value as Subject)}
-                    className="w-full bg-card border border-border text-xs rounded-lg px-3 py-2"
+                    className="w-full bg-card border border-border text-xs rounded-lg px-3 py-2 focus:border-amber-500/50"
                   >
                     <option value="physics">Physics</option>
                     <option value="chemistry">Chemistry</option>
                     <option value="math">Math</option>
+                    <option value="general">General / Common</option>
                   </select>
                 </div>
 
@@ -666,9 +669,10 @@ const NotesAndErrors = memo(function NotesAndErrors({
                         <span className={`text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded ${
                           item.subject === 'physics' ? 'bg-indigo-500/10 text-indigo-500' :
                           item.subject === 'chemistry' ? 'bg-emerald-500/10 text-emerald-500' :
-                          'bg-purple-500/10 text-purple-500'
+                          item.subject === 'math' ? 'bg-purple-500/10 text-purple-500' :
+                          'bg-pink-500/10 text-pink-500 border border-pink-500/20'
                         }`}>
-                          {item.subject}
+                          {item.subject === 'general' ? 'general / common' : item.subject}
                         </span>
                         <span className="text-[9px] font-mono text-muted-foreground">{item.topic}</span>
                       </div>
