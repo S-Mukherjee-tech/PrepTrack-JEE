@@ -186,11 +186,18 @@
   border-radius: 14px !important;
 }
 
-/* Ensure ultra-crisp fonts globally across all elements during transitions */
+/* Ensure ultra-crisp fonts globally across all elements during transitions and instant touch response */
 * {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  -webkit-tap-highlight-color: transparent !important;
+  outline: none !important;
+}
+
+/* Eliminate native mobile click delay (the 300ms delay for double-tap zoom check) on interactive components */
+button, a, select, input, textarea, [role="button"], .clickable-item {
+  touch-action: manipulation !important;
 }
 
 /* High-performance responsive hover effects for all cards inside main content area */
@@ -240,38 +247,40 @@ main .rounded-3xl:not(header):not(footer):not(.sticky):not(nav) {
   }
 }
 
-/* Dynamic glow effects on hover styled according to the active theme */
-.theme-glass main .bg-card:hover,
-.theme-glass main .rounded-2xl:hover,
-.theme-glass main .rounded-3xl:hover {
-  border-color: rgba(129, 140, 248, 0.7) !important;
-  box-shadow: 0 22px 48px -10px rgba(129, 140, 248, 0.36), 
-              0 0 24px rgba(129, 140, 248, 0.22), 
-              inset 0 1px 2px rgba(255, 255, 255, 0.25) !important;
-}
+/* Dynamic glow effects on hover styled according to the active theme - strictly limited to desktop pointers to maximize mobile scroll/touch framerate */
+@media (hover: hover) {
+  .theme-glass main .bg-card:hover,
+  .theme-glass main .rounded-2xl:hover,
+  .theme-glass main .rounded-3xl:hover {
+    border-color: rgba(129, 140, 248, 0.7) !important;
+    box-shadow: 0 22px 48px -10px rgba(129, 140, 248, 0.36), 
+                0 0 24px rgba(129, 140, 248, 0.22), 
+                inset 0 1px 2px rgba(255, 255, 255, 0.25) !important;
+  }
 
-.theme-slate main .bg-card:hover,
-.theme-slate main .rounded-2xl:hover,
-.theme-slate main .rounded-3xl:hover {
-  border-color: rgba(6, 182, 212, 0.75) !important;
-  box-shadow: 0 22px 48px -10px rgba(6, 182, 212, 0.42), 
-              0 0 24px rgba(6, 182, 212, 0.25) !important;
-}
+  .theme-slate main .bg-card:hover,
+  .theme-slate main .rounded-2xl:hover,
+  .theme-slate main .rounded-3xl:hover {
+    border-color: rgba(6, 182, 212, 0.75) !important;
+    box-shadow: 0 22px 48px -10px rgba(6, 182, 212, 0.42), 
+                0 0 24px rgba(6, 182, 212, 0.25) !important;
+  }
 
-.theme-cyber main .bg-card:hover,
-.theme-cyber main .rounded-2xl:hover,
-.theme-cyber main .rounded-3xl:hover {
-  border-color: rgba(16, 185, 129, 0.85) !important;
-  box-shadow: 0 22px 48px -10px rgba(16, 185, 129, 0.52), 
-              0 0 26px rgba(16, 185, 129, 0.32) !important;
-}
+  .theme-cyber main .bg-card:hover,
+  .theme-cyber main .rounded-2xl:hover,
+  .theme-cyber main .rounded-3xl:hover {
+    border-color: rgba(16, 185, 129, 0.85) !important;
+    box-shadow: 0 22px 48px -10px rgba(16, 185, 129, 0.52), 
+                0 0 26px rgba(16, 185, 129, 0.32) !important;
+  }
 
-.theme-light main .bg-card:hover,
-.theme-light main .rounded-2xl:hover,
-.theme-light main .rounded-3xl:hover {
-  border-color: rgba(244, 63, 94, 0.5) !important;
-  box-shadow: 0 20px 42px -10px rgba(244, 63, 94, 0.18), 
-              0 0 18px rgba(244, 63, 94, 0.1) !important;
+  .theme-light main .bg-card:hover,
+  .theme-light main .rounded-2xl:hover,
+  .theme-light main .rounded-3xl:hover {
+    border-color: rgba(244, 63, 94, 0.5) !important;
+    box-shadow: 0 20px 42px -10px rgba(244, 63, 94, 0.18), 
+                0 0 18px rgba(244, 63, 94, 0.1) !important;
+  }
 }
 
 /* Modern inputs, buttons & interactable controls response */
@@ -554,9 +563,14 @@ html {
   will-change: background-color;
 }
 
-/* Apply highly optimized transitions to background, border, and colors during active transition */
+/* Apply highly optimized transitions to major structural layouts during active transition to avoid wildcard * render stalls */
 html.theme-morphing,
-html.theme-morphing * {
+html.theme-morphing body,
+html.theme-morphing main,
+html.theme-morphing .bg-card,
+html.theme-morphing header,
+html.theme-morphing nav,
+html.theme-morphing footer {
   transition: background-color var(--theme-transition-duration) cubic-bezier(0.4, 0, 0.2, 1),
               border-color var(--theme-transition-duration) cubic-bezier(0.4, 0, 0.2, 1),
               color var(--theme-transition-duration) cubic-bezier(0.4, 0, 0.2, 1),
