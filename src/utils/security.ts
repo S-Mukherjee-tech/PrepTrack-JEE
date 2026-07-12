@@ -12,8 +12,8 @@ export function sanitizeInput(input: unknown): string {
     return input ? String(input) : '';
   }
 
-  // 1. Strip HTML tags completely using a secure regular expression that avoids catastrophic backtracking
-  let clean = input.replace(/<[^>]*>?/gm, '');
+  // 1. Strip valid HTML tags completely while preserving mathematical inequality operators (e.g., < or >)
+  let clean = input.replace(/<[a-zA-Z\/][^>]*>/g, '');
 
   // 2. Remove common malicious XSS patterns and script references
   clean = clean.replace(/javascript\s*:/gi, '[safe-protocol]:');

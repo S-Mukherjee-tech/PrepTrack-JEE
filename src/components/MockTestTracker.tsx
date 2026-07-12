@@ -41,7 +41,13 @@ const MockTestTracker = memo(function MockTestTracker({
   const [activeSubTab, setActiveSubTab] = useState<'log' | 'analytics' | 'history'>('log');
   
   // Test Form States
-  const [date, setDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [date, setDate] = useState<string>(() => {
+    const d = new Date();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  });
   const [pattern, setPattern] = useState<'JEE Main' | 'JEE Advanced'>('JEE Main');
   const [fullMarks, setFullMarks] = useState<number | string>(300);
   const [totalMarksScored, setTotalMarksScored] = useState<number>(0);

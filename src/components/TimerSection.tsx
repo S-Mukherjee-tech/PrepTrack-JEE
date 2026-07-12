@@ -64,6 +64,17 @@ const TimerSection = memo(function TimerSection({ settings, onSaveSession, curre
     parseInt(localStorage.getItem('preptrack_timer_pauseStartTimeRef') || '0', 10) || 0
   );
 
+  const segmentStartTimeRef = useRef<number>(Date.now());
+  const baseTimeElapsedRef = useRef<number>(0);
+
+  // Initialize refs on mount if already running
+  useEffect(() => {
+    if (isRunning && !isPaused) {
+      segmentStartTimeRef.current = Date.now();
+      baseTimeElapsedRef.current = timeElapsed;
+    }
+  }, []);
+
   const alarmSoundRef = useRef(alarmSound);
   const isMutedRef = useRef(isMuted);
 
@@ -224,56 +235,14 @@ const TimerSection = memo(function TimerSection({ settings, onSaveSession, curre
     }
   };
 
+  // Poll & sync elapsed time from system clock to prevent background timer drift and ensure butter-smooth accuracy
   useEffect(() => {
     if (isRunning && !isPaused) {
       timerRef.current = setInterval(() => {
-        setTimeElapsed((prev) => {
-          const next = prev + 1;
-          const goal = currentDurationGoal();
-          if (goal > 0 && next >= goal) {
-            if (mode === 'pomodoro') {
-              if (pomodoroStage === 'work') {
-                playAudibleNotification('work_done');
-                setVisualNotification({
-                  type: 'work_done',
-                  title: '🎯 Work Block Complete!',
-                  message: `Splendid! You have finished your dedicated ${settings.pomodoroWorkDuration}-minute study milestone. It is now time for a refreshing rest break.`,
-                  duration: goal
-                });
-                setPomodoroStage('break');
-                // Auto save study session
-                saveSession(goal, true);
-                setTimeElapsed(0);
-                return 0;
-              } else {
-                playAudibleNotification('break_done');
-                setVisualNotification({
-                  type: 'break_done',
-                  title: '💪 Break Completed! Back to Study',
-                  message: `Your rest period is over. Let's start the next Pomodoro interval with fresh focus and energy!`,
-                  duration: goal
-                });
-                setPomodoroStage('work');
-                setTimeElapsed(0);
-                setIsRunning(false);
-                return 0;
-              }
-            } else if (mode === 'test') {
-              playAudibleNotification('test_done');
-              setVisualNotification({
-                type: 'test_done',
-                title: '🛑 Examination Countdown Expired!',
-                message: `The 3-hour mock block has concluded. Your study data has been successfully saved to your historical logs.`,
-                duration: goal
-              });
-              saveSession(goal, false);
-              setIsRunning(false);
-              return 0;
-            }
-          }
-          return next;
-        });
-      }, 1000);
+        const secondsPassed = Math.floor((Date.now() - segmentStartTimeRef.current) / 1000);
+        const exactElapsed = baseTimeElapsedRef.current + secondsPassed;
+        setTimeElapsed(exactElapsed);
+      }, 250);
     } else {
       if (timerRef.current) clearInterval(timerRef.current);
     }
@@ -281,18 +250,71 @@ const TimerSection = memo(function TimerSection({ settings, onSaveSession, curre
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [isRunning, isPaused, mode, pomodoroStage, settings]);
+  }, [isRunning, isPaused]);
+
+  // Monitor session goal completion side effects in a dedicated, StrictMode-safe useEffect
+  useEffect(() => {
+    if (!isRunning || isPaused) return;
+
+    const goal = currentDurationGoal();
+    if (goal > 0 && timeElapsed >= goal) {
+      if (mode === 'pomodoro') {
+        if (pomodoroStage === 'work') {
+          playAudibleNotification('work_done');
+          setVisualNotification({
+            type: 'work_done',
+            title: '🎯 Work Block Complete!',
+            message: `Splendid! You have finished your dedicated ${settings.pomodoroWorkDuration}-minute study milestone. It is now time for a refreshing rest break.`,
+            duration: goal
+          });
+          setPomodoroStage('break');
+          saveSession(goal, true);
+          setTimeElapsed(0);
+          baseTimeElapsedRef.current = 0;
+          segmentStartTimeRef.current = Date.now();
+        } else {
+          playAudibleNotification('break_done');
+          setVisualNotification({
+            type: 'break_done',
+            title: '💪 Break Completed! Back to Study',
+            message: `Your rest period is over. Let's start the next Pomodoro interval with fresh focus and energy!`,
+            duration: goal
+          });
+          setPomodoroStage('work');
+          setTimeElapsed(0);
+          baseTimeElapsedRef.current = 0;
+          setIsRunning(false);
+        }
+      } else if (mode === 'test') {
+        playAudibleNotification('test_done');
+        setVisualNotification({
+          type: 'test_done',
+          title: '🛑 Examination Countdown Expired!',
+          message: `The 3-hour mock block has concluded. Your study data has been successfully saved to your historical logs.`,
+          duration: goal
+        });
+        saveSession(goal, false);
+        setTimeElapsed(0);
+        baseTimeElapsedRef.current = 0;
+        setIsRunning(false);
+      }
+    }
+  }, [timeElapsed, isRunning, isPaused, mode, pomodoroStage, settings]);
 
   const handleStart = () => {
     if (!isRunning) {
       sessionStartTimeRef.current = Date.now();
       totalPausedTimeRef.current = 0;
       setTimeElapsed(0);
+      baseTimeElapsedRef.current = 0;
+      segmentStartTimeRef.current = Date.now();
       setIsRunning(true);
       setIsPaused(false);
     } else if (isPaused) {
       const pausedDuration = Math.floor((Date.now() - pauseStartTimeRef.current) / 1000);
       totalPausedTimeRef.current += pausedDuration;
+      baseTimeElapsedRef.current = timeElapsed;
+      segmentStartTimeRef.current = Date.now();
       setIsPaused(false);
     }
   };
@@ -300,6 +322,7 @@ const TimerSection = memo(function TimerSection({ settings, onSaveSession, curre
   const handlePause = () => {
     setIsPaused(true);
     pauseStartTimeRef.current = Date.now();
+    baseTimeElapsedRef.current = timeElapsed;
   };
 
   const handleReset = () => {
@@ -307,6 +330,7 @@ const TimerSection = memo(function TimerSection({ settings, onSaveSession, curre
       setIsRunning(false);
       setIsPaused(false);
       setTimeElapsed(0);
+      baseTimeElapsedRef.current = 0;
       setPomodoroStage('work');
     }
   };
@@ -353,6 +377,7 @@ const TimerSection = memo(function TimerSection({ settings, onSaveSession, curre
     setIsRunning(false);
     setIsPaused(false);
     setTimeElapsed(0);
+    baseTimeElapsedRef.current = 0;
   };
 
   // Time conversion
