@@ -2,6 +2,21 @@ import React, { useState, useEffect, memo } from 'react';
 import { UserSettings, ThemeType } from '../types';
 import { ShieldAlert, Sun, Moon } from 'lucide-react';
 
+const COMMON_TIMEZONES = [
+  { value: 'Asia/Kolkata', label: '🇮🇳 India Standard Time (IST - Asia/Kolkata)' },
+  { value: 'America/New_York', label: '🇺🇸 US Eastern Time (EST/EDT - America/New_York)' },
+  { value: 'America/Chicago', label: '🇺🇸 US Central Time (CST/CDT - America/Chicago)' },
+  { value: 'America/Denver', label: '🇺🇸 US Mountain Time (MST/MDT - America/Denver)' },
+  { value: 'America/Los_Angeles', label: '🇺🇸 US Pacific Time (PST/PDT - America/Los_Angeles)' },
+  { value: 'Europe/London', label: '🇬🇧 United Kingdom Time (GMT/BST - Europe/London)' },
+  { value: 'Europe/Paris', label: '🇫🇷 Central European Time (CET/CEST - Europe/Paris)' },
+  { value: 'Asia/Tokyo', label: '🇯🇵 Japan Standard Time (JST - Asia/Tokyo)' },
+  { value: 'Asia/Singapore', label: '🇸🇬 Singapore Standard Time (SGT - Asia/Singapore)' },
+  { value: 'Asia/Dubai', label: '🇦🇪 Gulf Standard Time (GST - Asia/Dubai)' },
+  { value: 'Australia/Sydney', label: '🇦🇺 Australian Eastern Time (AEST/AEDT - Australia/Sydney)' },
+  { value: 'UTC', label: '🌐 Coordinated Universal Time (UTC)' },
+];
+
 interface SettingsTabProps {
   settings: UserSettings;
   onSaveSettings: (settings: UserSettings) => Promise<void>;
@@ -123,6 +138,85 @@ const SettingsTab = memo(function SettingsTab({
               className="w-full bg-accent/20 border border-border text-xs rounded-xl px-3 py-2.5 font-medium text-foreground outline-none focus:border-indigo-500/50"
             />
           </div>
+        </div>
+      </div>
+
+      {/* Clock Format Configurations */}
+      <div className="space-y-4 border-t border-border/60 pt-6">
+        <div>
+          <h4 className="text-sm font-bold text-foreground">Clock Format Preference</h4>
+          <p className="text-[11px] text-muted-foreground mt-0.5">Customize how the real-time system clock is displayed in the main header (hidden on small mobile screens).</p>
+        </div>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <button
+            onClick={() => onSaveSettings({ ...settings, clockFormat: '12' })}
+            className={`p-4 rounded-xl text-left transition-all border outline-none cursor-pointer duration-200 flex items-center justify-between ${
+              (settings.clockFormat || '12') === '12'
+                ? 'border-indigo-500 bg-indigo-500/5 ring-2 ring-indigo-500/20'
+                : 'border-border bg-accent/15 hover:bg-accent/25'
+            }`}
+          >
+            <div>
+              <span className="text-xs font-bold text-foreground block">12-Hour Format</span>
+              <span className="text-[10px] text-muted-foreground">Display with AM/PM (e.g. 12:50 PM)</span>
+            </div>
+            <div className="text-xs font-mono font-bold bg-accent/20 px-2 py-1 rounded-md">
+              12H
+            </div>
+          </button>
+
+          <button
+            onClick={() => onSaveSettings({ ...settings, clockFormat: '24' })}
+            className={`p-4 rounded-xl text-left transition-all border outline-none cursor-pointer duration-200 flex items-center justify-between ${
+              settings.clockFormat === '24'
+                ? 'border-indigo-500 bg-indigo-500/5 ring-2 ring-indigo-500/20'
+                : 'border-border bg-accent/15 hover:bg-accent/25'
+            }`}
+          >
+            <div>
+              <span className="text-xs font-bold text-foreground block">24-Hour Format</span>
+              <span className="text-[10px] text-muted-foreground">Display without AM/PM (e.g. 12:50)</span>
+            </div>
+            <div className="text-xs font-mono font-bold bg-accent/20 px-2 py-1 rounded-md">
+              24H
+            </div>
+          </button>
+        </div>
+      </div>
+
+      {/* Local Timezone Configuration */}
+      <div className="space-y-4 border-t border-border/60 pt-6">
+        <div>
+          <h4 className="text-sm font-bold text-foreground">Local Timezone Selection</h4>
+          <p className="text-[11px] text-muted-foreground mt-0.5">Choose your local region timezone to keep the dashboard and header clocks accurately calibrated.</p>
+        </div>
+        
+        <div className="max-w-md">
+          <select
+            value={settings.timezone || (Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Kolkata')}
+            onChange={(e) => onSaveSettings({ ...settings, timezone: e.target.value })}
+            className="w-full bg-accent/20 border border-border text-xs rounded-xl px-3.5 py-3 font-medium text-foreground outline-none focus:border-indigo-500/50 cursor-pointer"
+          >
+            {(() => {
+              const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Kolkata';
+              const hasBrowserTzInList = COMMON_TIMEZONES.some(tz => tz.value === browserTimezone);
+              return (
+                <>
+                  {!hasBrowserTzInList && browserTimezone && (
+                    <option value={browserTimezone} className="bg-background text-foreground text-xs">
+                      🔄 Auto-Detected System ({browserTimezone})
+                    </option>
+                  )}
+                  {COMMON_TIMEZONES.map((tz) => (
+                    <option key={tz.value} value={tz.value} className="bg-background text-foreground text-xs">
+                      {tz.value === browserTimezone ? `🔄 ${tz.label} (System)` : tz.label}
+                    </option>
+                  ))}
+                </>
+              );
+            })()}
+          </select>
         </div>
       </div>
 

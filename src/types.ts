@@ -68,6 +68,8 @@ export interface UserSettings {
   pomodoroBreakDuration: number; // minutes
   dailyStudyMinutesGoal?: number; // target minutes of study per day
   dailyQuestionsSolvedGoal?: number; // target questions solved per day
+  clockFormat?: '12' | '24'; // clock format preference
+  timezone?: string; // timezone preference (e.g. 'Asia/Kolkata')
 }
 
 export interface SubjectStats {

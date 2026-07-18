@@ -133,6 +133,8 @@ export class PrepTrackDB {
       pomodoroBreakDuration: 5,
       dailyStudyMinutesGoal: 180,
       dailyQuestionsSolvedGoal: 30,
+      clockFormat: '12',
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Kolkata',
     };
 
     if (this.isFallbackEnabled()) {

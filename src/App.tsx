@@ -25,6 +25,7 @@ import MockTestTracker from './components/MockTestTracker';
 import { CLASS_11_SYLLABUS, CLASS_12_SYLLABUS } from './data/syllabus';
 import DashboardTab from './components/DashboardTab';
 import SettingsTab from './components/SettingsTab';
+import HeaderClock from './components/HeaderClock';
 import { BrandingLogo } from './components/BrandingLogo';
 import { WindowedStudyLog } from './components/WindowedStudyLog';
 import { ScrollProgressAndTop } from './components/ScrollProgressAndTop';
@@ -89,6 +90,8 @@ export default function App() {
     pomodoroBreakDuration: 5,
     dailyStudyMinutesGoal: 180,
     dailyQuestionsSolvedGoal: 30,
+    clockFormat: '12',
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Kolkata',
   });
   const [sessions, setSessions] = useState<StudySession[]>([]);
   const [questions, setQuestions] = useState<DailyQuestions[]>([]);
@@ -101,6 +104,28 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'analytics' | 'questions' | 'syllabus' | 'notes' | 'mock_tests' | 'settings'>('dashboard');
   const [dbLoading, setDbLoading] = useState(true);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [isBannerClockScrolledOut, setIsBannerClockScrolledOut] = useState(false);
+
+  // Track scroll position to dynamically show/hide the header clock
+  useEffect(() => {
+    const handleScroll = () => {
+      // If the scroll is past 150px, we consider the banner clock scrolled out of view
+      const scrolled = window.scrollY > 150;
+      setIsBannerClockScrolledOut((prev) => {
+        if (prev !== scrolled) {
+          return scrolled;
+        }
+        return prev;
+      });
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   // Toast Notifications State
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -805,6 +830,11 @@ export default function App() {
 
           {/* Quick theme toggler in navbar for supreme accessibility */}
           <div className="flex items-center gap-2.5">
+            <HeaderClock 
+              clockFormat={settings.clockFormat} 
+              timezone={settings.timezone}
+              visible={activeTab !== 'dashboard' || isBannerClockScrolledOut} 
+            />
             <button
               onClick={() => {
                 const themes: ThemeType[] = ['glass', 'slate', 'cyber', 'light'];

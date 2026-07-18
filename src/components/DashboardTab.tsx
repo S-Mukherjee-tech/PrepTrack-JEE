@@ -1,4 +1,4 @@
-import React, { useMemo, memo } from 'react';
+import React, { useMemo, memo, useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { UserSettings, StudySession, DailyQuestions } from '../types';
 import { 
@@ -39,6 +39,78 @@ interface DashboardTabProps {
   onDeleteStudySession: (id: string) => Promise<void>;
   onTabChange: (tab: 'dashboard' | 'analytics' | 'questions' | 'syllabus' | 'notes' | 'mock_tests' | 'settings') => void;
 }
+
+const BannerClock = memo(function BannerClock({ clockFormat = '12', timezone }: { clockFormat?: '12' | '24'; timezone?: string }) {
+  const [time, setTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  let hours = time.getHours();
+  let minutes = time.getMinutes();
+  let seconds = time.getSeconds();
+
+  if (timezone) {
+    try {
+      const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone: timezone,
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric',
+        hour12: false,
+      });
+      const parts = formatter.formatToParts(time);
+      const hPart = parts.find(p => p.type === 'hour');
+      const mPart = parts.find(p => p.type === 'minute');
+      const sPart = parts.find(p => p.type === 'second');
+      if (hPart) hours = parseInt(hPart.value, 10);
+      if (mPart) minutes = parseInt(mPart.value, 10);
+      if (sPart) seconds = parseInt(sPart.value, 10);
+    } catch (e) {
+      console.warn("Invalid timezone or failed to format: ", timezone, e);
+    }
+  }
+  
+  const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+
+  let displayHours = hours;
+  let ampm = '';
+
+  if (clockFormat === '12') {
+    ampm = hours >= 12 ? 'PM' : 'AM';
+    displayHours = hours % 12;
+    displayHours = displayHours ? displayHours : 12;
+  }
+
+  const formattedHours = clockFormat === '24' 
+    ? (displayHours < 10 ? `0${displayHours}` : displayHours)
+    : displayHours;
+
+  return (
+    <div id="banner-clock-widget" className="flex flex-col items-center sm:items-end select-none">
+      <div className="flex items-start font-sans drop-shadow-[0_2px_12px_rgba(255,255,255,0.2)]">
+        <span className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-white leading-none">
+          {formattedHours}
+          <span className={`mx-0.5 transition-opacity duration-500 ${seconds % 2 === 0 ? 'opacity-100' : 'opacity-35'}`}>:</span>
+          {formattedMinutes}
+        </span>
+        {clockFormat === '12' ? (
+          <span className="text-xs md:text-sm font-black tracking-wider text-indigo-200/90 ml-1.5 uppercase select-none pt-0.5">
+            {ampm}
+          </span>
+        ) : (
+          <span className="text-[10px] font-black tracking-widest text-indigo-200/70 ml-2 uppercase select-none pt-1">
+            24H
+          </span>
+        )}
+      </div>
+    </div>
+  );
+});
 
 const dashboardContainerVariants = {
   hidden: { opacity: 0 },
@@ -267,50 +339,59 @@ const DashboardTab = memo(function DashboardTab({
       {/* Dynamic header welcome banner */}
       <motion.div 
         variants={dashboardItemVariants}
-        className={`p-6 md:p-8 rounded-3xl bg-gradient-to-r ${themeStyles.bannerGradient} text-white shadow-lg space-y-3 relative overflow-hidden`}
+        className={`p-6 md:p-8 rounded-3xl bg-gradient-to-r ${themeStyles.bannerGradient} text-white shadow-lg relative overflow-hidden`}
       >
         <div className="absolute right-0 bottom-0 opacity-12 translate-x-12 translate-y-12 select-none pointer-events-none">
           <BrandingLogo size={280} />
         </div>
 
-        <div className="space-y-1.5">
-          <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-150 bg-white/10 px-2.5 py-1 rounded-full w-max">
-            JEE Preparation Companion • Pure & Focused Tracker
-          </span>
-          <h2 className="text-2xl md:text-3xl font-display font-black leading-tight tracking-tight">Focus. Track. Crack JEE.</h2>
-          <p className="text-xs text-indigo-100 max-w-xl font-medium leading-relaxed">
-            A comprehensive, elegant workspace to track study hours, practice questions, and chapter progress for JEE Main & Advanced.
-          </p>
-        </div>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 relative z-10">
+          <div className="space-y-3 flex-1">
+            <div className="space-y-1.5">
+              <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-150 bg-white/10 px-2.5 py-1 rounded-full w-max">
+                JEE Preparation Companion • Pure & Focused Tracker
+              </span>
+              <h2 className="text-2xl md:text-3xl font-display font-black leading-tight tracking-tight">Focus. Track. Crack JEE.</h2>
+              <p className="text-xs text-indigo-100 max-w-xl font-medium leading-relaxed">
+                A comprehensive, elegant workspace to track study hours, practice questions, and chapter progress for JEE Main & Advanced.
+              </p>
+            </div>
 
-        {/* PCM Fast stats panel */}
-        <div className="pt-4 grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 max-w-lg">
-          <div className="bg-white/10 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl text-center border border-white/5 shadow-sm relative group" title="Today's focused study minutes translated to hours (resets daily)">
-            <span className="block text-[9px] uppercase font-bold text-indigo-150">Study Hrs (Today)</span>
-            <span className="text-sm sm:text-base font-bold font-mono tracking-tight text-white mt-1 block">
-              {(studyMinutesToday / 60).toFixed(1)}h
-            </span>
+            {/* PCM Fast stats panel */}
+            <div className="pt-2 grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 max-w-lg">
+              <div className="bg-white/10 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl text-center border border-white/5 shadow-sm relative group" title="Today's focused study minutes translated to hours (resets daily)">
+                <span className="block text-[9px] uppercase font-bold text-indigo-150">Study Hrs (Today)</span>
+                <span className="text-sm sm:text-base font-bold font-mono tracking-tight text-white mt-1 block">
+                  {(studyMinutesToday / 60).toFixed(1)}h
+                </span>
+              </div>
+
+              <div className="bg-white/10 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl text-center border border-white/5 shadow-sm relative group" title="Today's total questions solved (resets daily)">
+                <span className="block text-[9px] uppercase font-bold text-indigo-150">Qs Solved (Today)</span>
+                <span className="text-sm sm:text-base font-bold font-mono tracking-tight text-white mt-1 block">
+                  {questionsSolvedToday}
+                </span>
+              </div>
+
+              <div className="bg-white/10 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl text-center border border-white/5 shadow-sm">
+                <span className="block text-[9px] uppercase font-bold text-indigo-150">NCERT Done</span>
+                <span className="text-sm sm:text-base font-bold font-mono tracking-tight text-white mt-1 block">
+                  {syllabusStats.percentage}%
+                </span>
+              </div>
+
+              <div className="bg-white/10 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl text-center border border-white/5 shadow-sm">
+                <span className="block text-[9px] uppercase font-bold text-indigo-150">Streak 🔥</span>
+                <span className="text-sm sm:text-base font-bold font-mono tracking-tight text-white mt-1 block">
+                  {streakStats.currentStreak}d
+                </span>
+              </div>
+            </div>
           </div>
 
-          <div className="bg-white/10 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl text-center border border-white/5 shadow-sm relative group" title="Today's total questions solved (resets daily)">
-            <span className="block text-[9px] uppercase font-bold text-indigo-150">Qs Solved (Today)</span>
-            <span className="text-sm sm:text-base font-bold font-mono tracking-tight text-white mt-1 block">
-              {questionsSolvedToday}
-            </span>
-          </div>
-
-          <div className="bg-white/10 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl text-center border border-white/5 shadow-sm">
-            <span className="block text-[9px] uppercase font-bold text-indigo-150">NCERT Done</span>
-            <span className="text-sm sm:text-base font-bold font-mono tracking-tight text-white mt-1 block">
-              {syllabusStats.percentage}%
-            </span>
-          </div>
-
-          <div className="bg-white/10 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl text-center border border-white/5 shadow-sm">
-            <span className="block text-[9px] uppercase font-bold text-indigo-150">Streak 🔥</span>
-            <span className="text-sm sm:text-base font-bold font-mono tracking-tight text-white mt-1 block">
-              {streakStats.currentStreak}d
-            </span>
+          {/* Clock Widget on the Right (Tablet, Laptop, PC only - hidden on mobile) */}
+          <div className="hidden sm:flex flex-col items-center sm:items-end justify-center shrink-0 pr-2 lg:pr-6 border-l border-white/10 sm:pl-6">
+            <BannerClock clockFormat={settings.clockFormat} timezone={settings.timezone} />
           </div>
         </div>
       </motion.div>                  
