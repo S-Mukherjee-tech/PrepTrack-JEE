@@ -214,7 +214,7 @@ export default function App() {
   // Set active tab scroll safely
   const handleTabChange = useCallback((tab: typeof activeTab) => {
     setActiveTab(tab);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'auto' });
   }, []);
 
   // --- SAVE CALLBACKS UNIFYING DB AND REACT STATE ---
@@ -606,6 +606,28 @@ export default function App() {
     };
   }, [sessions, questions, settings]);
 
+  useEffect(() => {
+    // Sync the HTML/Body background and classes with current theme
+    const themes = ['theme-glass', 'theme-slate', 'theme-cyber', 'theme-light'];
+    themes.forEach(t => {
+      document.documentElement.classList.remove(t);
+      document.body.classList.remove(t);
+    });
+    
+    document.documentElement.classList.add(`theme-${settings.theme}`);
+    document.body.classList.add(`theme-${settings.theme}`);
+    
+    // Set background color of body explicitly to match theme
+    let bgColor = '#050816'; // Default slate
+    if (settings.theme === 'glass') bgColor = '#060713';
+    else if (settings.theme === 'cyber') bgColor = '#020905';
+    else if (settings.theme === 'light') bgColor = '#fffbf7';
+    else if (settings.theme === 'slate') bgColor = '#050816';
+    
+    document.body.style.backgroundColor = bgColor;
+    document.documentElement.style.backgroundColor = bgColor;
+  }, [settings.theme]);
+
   // Dynamic Theme Definitions
   // We compute tailwind body color bindings
   const themeStyles = useMemo(() => {
@@ -614,7 +636,7 @@ export default function App() {
         return {
           bg: 'bg-[#060713] text-slate-100 selection:bg-indigo-500/30 selection:text-indigo-200',
           container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-32 lg:py-16 space-y-12 md:space-y-14 relative z-10',
-          headerBg: 'bg-[#0a0c1b]/65 backdrop-blur-2xl border-b border-white/[0.08] sticky top-0 z-40',
+          headerBg: 'bg-[#0a0c1b]/65 backdrop-blur-2xl border-b border-white/[0.08] sticky top-0 z-50',
           accentColor: 'text-[#818cf8]',
           borderStyle: 'border-white/[0.08]',
           cardBg: 'bg-[#131528]/70 backdrop-blur-xl border border-white/[0.1] text-slate-100 shadow-[0_16px_48px_-12px_rgba(99,102,241,0.22)]',
@@ -627,7 +649,7 @@ export default function App() {
         return {
           bg: 'bg-[#020905] text-emerald-100 selection:bg-emerald-500/30 selection:text-emerald-300',
           container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-32 lg:py-16 space-y-12 md:space-y-14',
-          headerBg: 'bg-[#03150b]/80 backdrop-blur-md border-b border-emerald-500/25 sticky top-0 z-40',
+          headerBg: 'bg-[#03150b]/80 backdrop-blur-md border-b border-emerald-500/25 sticky top-0 z-50',
           accentColor: 'text-emerald-400',
           borderStyle: 'border-emerald-500/20',
           cardBg: 'bg-[#051a10]/95 border border-emerald-500/35 text-emerald-50 shadow-[0_16px_48px_-12px_rgba(16,185,129,0.25)]',
@@ -640,7 +662,7 @@ export default function App() {
         return {
           bg: 'bg-[#fffbf7] text-slate-900 selection:bg-indigo-100 selection:text-indigo-900',
           container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-32 lg:py-16 space-y-12 md:space-y-14',
-          headerBg: 'bg-white/80 backdrop-blur-md border-b border-pink-100 sticky top-0 z-40 shadow-sm',
+          headerBg: 'bg-white/80 backdrop-blur-md border-b border-pink-100 sticky top-0 z-50 shadow-sm',
           accentColor: 'text-indigo-600',
           borderStyle: 'border-pink-100/60',
           cardBg: 'bg-white border border-pink-100 text-slate-950 shadow-[0_16px_40px_-12px_rgba(244,63,94,0.06)]',
@@ -654,7 +676,7 @@ export default function App() {
         return {
           bg: 'bg-[#050816] text-slate-100 selection:bg-cyan-500/30 selection:text-cyan-200',
           container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-32 lg:py-16 space-y-12 md:space-y-14',
-          headerBg: 'bg-[#090d24]/80 backdrop-blur-md border-b border-cyan-500/25 sticky top-0 z-40',
+          headerBg: 'bg-[#090d24]/80 backdrop-blur-md border-b border-cyan-500/25 sticky top-0 z-50',
           accentColor: 'text-cyan-400',
           borderStyle: 'border-cyan-500/20',
           cardBg: 'bg-[#0d122e]/95 border border-cyan-500/30 text-slate-100 shadow-[0_16px_48px_-12px_rgba(6,182,212,0.25)]',
@@ -683,7 +705,7 @@ export default function App() {
 
   return (
     <div 
-      className={`min-h-screen font-sans transition-colors duration-300 ${themeStyles.bg} theme-${settings.theme}`}
+      className={`min-h-screen font-sans transition-colors duration-300 relative ${themeStyles.bg} theme-${settings.theme}`}
       style={{
         backgroundImage: settings.theme === 'glass'
           ? 'radial-gradient(at 0% 0%, rgba(129, 140, 248, 0.25) 0px, transparent 50%), radial-gradient(at 100% 0%, rgba(236, 72, 153, 0.22) 0px, transparent 50%), radial-gradient(at 50% 100%, rgba(168, 85, 247, 0.18) 0px, transparent 55%), radial-gradient(at 10% 90%, rgba(6, 182, 212, 0.15) 0px, transparent 50%)'
@@ -946,16 +968,23 @@ export default function App() {
         <div className="space-y-12 md:space-y-14">
           {/* Keep Dashboard always mounted to preserve active running stopwatch and avoid resetting */}
           <div className={activeTab === 'dashboard' ? 'block' : 'hidden'}>
-            <DashboardTab
-              settings={settings}
-              sessions={sessions}
-              questions={questions}
-              chapterCompletions={chapterCompletions}
-              themeStyles={themeStyles}
-              onSaveStudySession={handleSaveStudySession}
-              onDeleteStudySession={handleDeleteStudySession}
-              onTabChange={handleTabChange}
-            />
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={activeTab === 'dashboard' ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
+              transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+              className="will-change-transform"
+            >
+              <DashboardTab
+                settings={settings}
+                sessions={sessions}
+                questions={questions}
+                chapterCompletions={chapterCompletions}
+                themeStyles={themeStyles}
+                onSaveStudySession={handleSaveStudySession}
+                onDeleteStudySession={handleDeleteStudySession}
+                onTabChange={handleTabChange}
+              />
+            </motion.div>
           </div>
 
           {/* DEPRECATED INLINE DASHBOARD CODE GUARDED */}
@@ -1473,12 +1502,12 @@ export default function App() {
           )}
 
           {/* TAB 2: PROGRESS HISTORY & BAR CHARTS */}
-          {activeTab === 'analytics' && (
+          <div className={activeTab === 'analytics' ? 'block' : 'hidden'}>
             <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-              className="space-y-12 md:space-y-14"
+              initial={{ opacity: 0, y: 12 }}
+              animate={activeTab === 'analytics' ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
+              transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+              className="space-y-12 md:space-y-14 will-change-transform"
             >
               <AnalyticsCharts sessions={sessions} questions={questions} errorItems={errorBook} />
 
@@ -1506,28 +1535,30 @@ export default function App() {
                 )}
               </div>
             </motion.div>
-          )}
+          </div>
 
           {/* TAB 3: QUESTIONS LOGGER */}
-          {activeTab === 'questions' && (
+          <div className={activeTab === 'questions' ? 'block' : 'hidden'}>
             <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              initial={{ opacity: 0, y: 12 }}
+              animate={activeTab === 'questions' ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
+              transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+              className="will-change-transform"
             >
               <QuestionTrackerForm 
                 questionsList={questions}
                 onSaveQuestions={handleSaveQuestions}
               />
             </motion.div>
-          )}
+          </div>
 
           {/* TAB 4: SYLLABUS TABS */}
-          {activeTab === 'syllabus' && (
+          <div className={activeTab === 'syllabus' ? 'block' : 'hidden'}>
             <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              initial={{ opacity: 0, y: 12 }}
+              animate={activeTab === 'syllabus' ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
+              transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+              className="will-change-transform"
             >
               <SyllabusTracker 
                 completions={chapterCompletions}
@@ -1535,14 +1566,15 @@ export default function App() {
                 onClearAll={handleClearChapters}
               />
             </motion.div>
-          )}
+          </div>
 
           {/* TAB 5: NOTES & ERROR BOOKS */}
-          {activeTab === 'notes' && (
+          <div className={activeTab === 'notes' ? 'block' : 'hidden'}>
             <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              initial={{ opacity: 0, y: 12 }}
+              animate={activeTab === 'notes' ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
+              transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+              className="will-change-transform"
             >
               <NotesAndErrors 
                 errorItems={errorBook}
@@ -1553,14 +1585,15 @@ export default function App() {
                 onDeleteImportanceItem={handleDeleteImportanceItem}
               />
             </motion.div>
-          )}
+          </div>
 
           {/* TAB 6: MOCK TEST TRACKER */}
-          {activeTab === 'mock_tests' && (
+          <div className={activeTab === 'mock_tests' ? 'block' : 'hidden'}>
             <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              initial={{ opacity: 0, y: 12 }}
+              animate={activeTab === 'mock_tests' ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
+              transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+              className="will-change-transform"
             >
               <MockTestTracker 
                 mockTests={mockTests}
@@ -1570,15 +1603,15 @@ export default function App() {
                 cardBgClass="bg-card/75 backdrop-blur-md"
               />
             </motion.div>
-          )}
+          </div>
 
           {/* TAB 7: SETTINGS & APPEARANCES */}
-          {activeTab === 'settings' && (
+          <div className={activeTab === 'settings' ? 'block' : 'hidden'}>
             <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-              className="bg-card border border-border rounded-3xl p-6 lg:p-8 shadow-sm space-y-10 md:space-y-12"
+              initial={{ opacity: 0, y: 12 }}
+              animate={activeTab === 'settings' ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
+              transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+              className="bg-card border border-border rounded-3xl p-6 lg:p-8 shadow-sm space-y-10 md:space-y-12 will-change-transform"
             >
               <div className="border-b border-border/60 pb-5">
                 <h3 className="text-lg font-bold font-sans tracking-tight">Settings & Appearance</h3>
@@ -1593,7 +1626,7 @@ export default function App() {
                 setShowResetConfirm={setShowResetConfirm}
               />
             </motion.div>
-          )}
+          </div>
 
 
 
