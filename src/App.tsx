@@ -736,7 +736,7 @@ export default function App() {
       </div>
 
       {/* GLOBAL NAVBAR HEADER */}
-      <header className={`${themeStyles.headerBg} relative`}>
+      <header className={themeStyles.headerBg}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3 select-none">
             {/* Custom high-fidelity branding icon with growth paths, success tick & action arrow */}
