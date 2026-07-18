@@ -59,10 +59,10 @@ export const HeaderClock = memo(function HeaderClock({ clockFormat = '12', timez
   return (
     <div 
       id="header-clock"
-      className={`hidden sm:flex items-center gap-1.5 bg-accent/10 border border-border/40 backdrop-blur-md px-3 py-1.5 rounded-2xl select-none shadow-sm transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] transform-gpu will-change-[transform,opacity] ${
+      className={`hidden sm:flex items-center gap-1.5 bg-accent/10 border border-border/40 backdrop-blur-md px-3 py-1.5 rounded-2xl select-none shadow-sm transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] transform-gpu will-change-[transform,opacity] ${
         visible 
           ? 'opacity-100 scale-100 translate-x-0 pointer-events-auto' 
-          : 'opacity-0 scale-90 translate-x-2 pointer-events-none'
+          : 'opacity-0 scale-95 translate-x-3 pointer-events-none'
       }`}
       title={`Current System Time (${timezone || 'Local'})`}
     >

@@ -121,7 +121,7 @@ const dashboardContainerVariants = {
       delayChildren: 0.02
     }
   }
-};
+} as const;
 
 const dashboardItemVariants = {
   hidden: { opacity: 0, y: 15 },
@@ -129,13 +129,13 @@ const dashboardItemVariants = {
     opacity: 1,
     y: 0,
     transition: {
-      type: "spring",
+      type: "spring" as const,
       stiffness: 110,
       damping: 14,
       mass: 0.8
     }
   }
-};
+} as const;
 
 const DashboardTab = memo(function DashboardTab({
   settings,

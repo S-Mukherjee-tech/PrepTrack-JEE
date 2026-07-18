@@ -66,7 +66,7 @@ const dashboardContainerVariants = {
       delayChildren: 0.02
     }
   }
-};
+} as const;
 
 const dashboardItemVariants = {
   hidden: { opacity: 0, y: 15 },
@@ -74,13 +74,13 @@ const dashboardItemVariants = {
     opacity: 1,
     y: 0,
     transition: {
-      type: "spring",
+      type: "spring" as const,
       stiffness: 110,
       damping: 14,
       mass: 0.8
     }
   }
-};
+} as const;
 
 export default function App() {
   // Database States
@@ -108,8 +108,9 @@ export default function App() {
 
   // Track scroll position to dynamically show/hide the header clock
   useEffect(() => {
+    let ticking = false;
+
     const handleScroll = () => {
-      // If the scroll is past 150px, we consider the banner clock scrolled out of view
       const scrolled = window.scrollY > 150;
       setIsBannerClockScrolledOut((prev) => {
         if (prev !== scrolled) {
@@ -119,11 +120,21 @@ export default function App() {
       });
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    const scrollListener = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', scrollListener, { passive: true });
     handleScroll();
 
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('scroll', scrollListener);
     };
   }, []);
 
@@ -602,7 +613,7 @@ export default function App() {
       case 'glass':
         return {
           bg: 'bg-[#060713] text-slate-100 selection:bg-indigo-500/30 selection:text-indigo-200',
-          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-32 md:py-16 space-y-12 md:space-y-14 relative z-10',
+          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-32 lg:py-16 space-y-12 md:space-y-14 relative z-10',
           headerBg: 'bg-[#0a0c1b]/65 backdrop-blur-2xl border-b border-white/[0.08] sticky top-0 z-40',
           accentColor: 'text-[#818cf8]',
           borderStyle: 'border-white/[0.08]',
@@ -615,7 +626,7 @@ export default function App() {
       case 'cyber':
         return {
           bg: 'bg-[#020905] text-emerald-100 selection:bg-emerald-500/30 selection:text-emerald-300',
-          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-32 md:py-16 space-y-12 md:space-y-14',
+          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-32 lg:py-16 space-y-12 md:space-y-14',
           headerBg: 'bg-[#03150b]/80 backdrop-blur-md border-b border-emerald-500/25 sticky top-0 z-40',
           accentColor: 'text-emerald-400',
           borderStyle: 'border-emerald-500/20',
@@ -628,7 +639,7 @@ export default function App() {
       case 'light':
         return {
           bg: 'bg-[#fffbf7] text-slate-900 selection:bg-indigo-100 selection:text-indigo-900',
-          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-32 md:py-16 space-y-12 md:space-y-14',
+          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-32 lg:py-16 space-y-12 md:space-y-14',
           headerBg: 'bg-white/80 backdrop-blur-md border-b border-pink-100 sticky top-0 z-40 shadow-sm',
           accentColor: 'text-indigo-600',
           borderStyle: 'border-pink-100/60',
@@ -642,7 +653,7 @@ export default function App() {
       default:
         return {
           bg: 'bg-[#050816] text-slate-100 selection:bg-cyan-500/30 selection:text-cyan-200',
-          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-32 md:py-16 space-y-12 md:space-y-14',
+          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-32 lg:py-16 space-y-12 md:space-y-14',
           headerBg: 'bg-[#090d24]/80 backdrop-blur-md border-b border-cyan-500/25 sticky top-0 z-40',
           accentColor: 'text-cyan-400',
           borderStyle: 'border-cyan-500/20',
@@ -776,12 +787,12 @@ export default function App() {
               <div className="flex items-center gap-1.5">
                 <h1 className="text-base font-bold font-display tracking-tight text-foreground leading-none">PrepTrack</h1>
               </div>
-              <p className="text-[10px] text-muted-foreground font-medium mt-1">Your JEE preparation Tracker.</p>
+              <p className="text-[10px] text-muted-foreground font-medium mt-1 hidden xl:block">Your JEE preparation Tracker.</p>
             </div>
           </div>
 
           {/* Nav Links for PC */}
-          <nav className="hidden md:flex items-center h-full gap-1">
+          <nav className="hidden lg:flex items-center h-full gap-0.5 xl:gap-1.5">
             {[
               { id: 'dashboard', label: 'Dashboard', icon: Timer },
               { id: 'analytics', label: 'Analytics', icon: BarChart },
@@ -800,7 +811,7 @@ export default function App() {
                 <button
                   key={tab.id}
                   onClick={() => handleTabChange(tab.id as any)}
-                  className={`h-16 px-4 flex items-center gap-2 text-xs font-semibold relative transition-all duration-300 cursor-pointer outline-none rounded-t-lg ${textClass}`}
+                  className={`h-16 px-1.5 xl:px-4 flex items-center gap-1 xl:gap-2 text-[10.5px] xl:text-xs font-semibold relative transition-all duration-300 cursor-pointer outline-none rounded-t-lg ${textClass}`}
                 >
                   <Icon className="w-4 h-4 shrink-0 z-10" />
                   <span className="z-10">{tab.label}</span>
@@ -857,7 +868,7 @@ export default function App() {
       </header>
 
       {/* MOBILE CONSOLE TABS - FIXED BOTTOM NAV BAR FOR NATIVE APP EXPERIENCE */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-card/90 backdrop-blur-xl border-t border-border z-40 flex items-center justify-around px-2 h-16 pb-safe gap-1 shadow-[0_-8px_32px_rgba(0,0,0,0.12)]">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-card/90 backdrop-blur-xl border-t border-border z-40 flex items-center justify-around px-2 h-16 pb-safe gap-1 shadow-[0_-8px_32px_rgba(0,0,0,0.12)]">
         {[
           { id: 'dashboard', label: 'Home', icon: Timer },
           { id: 'analytics', label: 'Stats', icon: BarChart },

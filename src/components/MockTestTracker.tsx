@@ -773,7 +773,7 @@ const MockTestTracker = memo(function MockTestTracker({
                 <span className={`text-base md:text-xl font-bold font-display ${accentColorText}`}>
                   {computedTotalScored} <span className="text-xs font-normal text-muted-foreground">/ {fullMarks}</span>
                 </span>
-                <span className="text-[10px] text-muted-foreground block mt-0.5 font-bold uppercase tracking-wide">({((computedTotalScored / (fullMarks || 1)) * 100).toFixed(0)}% accuracy)</span>
+                <span className="text-[10px] text-muted-foreground block mt-0.5 font-bold uppercase tracking-wide">({((computedTotalScored / (safeNum(fullMarks) || 1)) * 100).toFixed(0)}% accuracy)</span>
               </div>
               <div>
                 <span className="text-[11px] font-extrabold uppercase tracking-wider text-muted-foreground block mb-1">Total Correct Questions</span>
