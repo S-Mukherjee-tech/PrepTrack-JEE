@@ -1,7 +1,11 @@
 import DOMPurify from 'dompurify';
 import CryptoJS from 'crypto-js';
 
-const ENCRYPTION_KEY = 'preptrack_secure_storage_salt_836109';
+const ENCRYPTION_KEY = import.meta.env.VITE_ENCRYPTION_KEY || 'preptrack_secure_storage_salt_836109';
+
+if (import.meta.env.PROD && !import.meta.env.VITE_ENCRYPTION_KEY) {
+  console.warn('⚠️ CRITICAL: VITE_ENCRYPTION_KEY is not set in production!');
+}
 
 /**
  * Mirror of localStorage that transparently encrypts saved values and decrypts them,
