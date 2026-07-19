@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PrepTrackDB } from './db';
+import { RateLimiter } from './utils/rateLimit';
 import { 
   StudySession, 
   DailyQuestions, 
@@ -105,6 +106,15 @@ export default function App() {
   const [dbLoading, setDbLoading] = useState(true);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [isBannerClockScrolledOut, setIsBannerClockScrolledOut] = useState(false);
+
+  // Client-side rate limiters to prevent localStorage/IndexedDB write spamming
+  const saveSettingsLimiter = useMemo(() => new RateLimiter(1000), []);
+  const saveSessionLimiter = useMemo(() => new RateLimiter(1000), []);
+  const saveQuestionsLimiter = useMemo(() => new RateLimiter(1000), []);
+  const addErrorLimiter = useMemo(() => new RateLimiter(1000), []);
+  const addImportanceLimiter = useMemo(() => new RateLimiter(1000), []);
+  const saveMockTestLimiter = useMemo(() => new RateLimiter(1000), []);
+  const toggleChapterLimiter = useMemo(() => new RateLimiter(300), []);
 
   // Track scroll position to dynamically show/hide the header clock
   useEffect(() => {
@@ -220,22 +230,35 @@ export default function App() {
   // --- SAVE CALLBACKS UNIFYING DB AND REACT STATE ---
   const handleSaveSettings = useCallback(async (nextSettings: UserSettings) => {
     try {
-      await PrepTrackDB.saveSettings(nextSettings);
-      setSettings(nextSettings);
+      const saved = await saveSettingsLimiter.throttle(async () => {
+        await PrepTrackDB.saveSettings(nextSettings);
+        return true;
+      });
+      if (saved) {
+        setSettings(nextSettings);
+      } else {
+        addToast('⚠️ Action Rate-Limited', 'You are updating settings too fast. Please wait a second.', 'info');
+      }
     } catch (e) {
       console.error(e);
     }
-  }, []);
+  }, [saveSettingsLimiter, addToast]);
 
   const handleSaveStudySession = useCallback(async (session: StudySession) => {
     try {
-      await PrepTrackDB.saveStudySession(session);
-      // Prepend to show immediately
-      setSessions((prev) => [session, ...prev]);
+      const saved = await saveSessionLimiter.throttle(async () => {
+        await PrepTrackDB.saveStudySession(session);
+        return true;
+      });
+      if (saved) {
+        setSessions((prev) => [session, ...prev]);
+      } else {
+        addToast('⚠️ Action Rate-Limited', 'You are saving study sessions too fast. Please wait a second.', 'info');
+      }
     } catch (e) {
       console.error(e);
     }
-  }, []);
+  }, [saveSessionLimiter, addToast]);
 
   const handleDeleteStudySession = useCallback(async (id: string) => {
     if (confirm('Delete this study log entry permanently?')) {
@@ -250,29 +273,43 @@ export default function App() {
 
   const handleSaveQuestions = useCallback(async (record: DailyQuestions) => {
     try {
-      await PrepTrackDB.saveQuestionsSolved(record);
-      setQuestions((prev) => {
-        const existingIdx = prev.findIndex((q) => q.date === record.date);
-        if (existingIdx > -1) {
-          const updated = [...prev];
-          updated[existingIdx] = record;
-          return updated;
-        }
-        return [...prev, record].sort((a, b) => a.date.localeCompare(b.date));
+      const saved = await saveQuestionsLimiter.throttle(async () => {
+        await PrepTrackDB.saveQuestionsSolved(record);
+        return true;
       });
+      if (saved) {
+        setQuestions((prev) => {
+          const existingIdx = prev.findIndex((q) => q.date === record.date);
+          if (existingIdx > -1) {
+            const updated = [...prev];
+            updated[existingIdx] = record;
+            return updated;
+          }
+          return [...prev, record].sort((a, b) => a.date.localeCompare(b.date));
+        });
+      } else {
+        addToast('⚠️ Action Rate-Limited', 'You are saving questions too fast. Please wait a second.', 'info');
+      }
     } catch (e) {
       console.error(e);
     }
-  }, []);
+  }, [saveQuestionsLimiter, addToast]);
 
   const handleAddErrorItem = useCallback(async (item: ErrorBookItem) => {
     try {
-      await PrepTrackDB.saveErrorBookItem(item);
-      setErrorBook((prev) => [item, ...prev]);
+      const saved = await addErrorLimiter.throttle(async () => {
+        await PrepTrackDB.saveErrorBookItem(item);
+        return true;
+      });
+      if (saved) {
+        setErrorBook((prev) => [item, ...prev]);
+      } else {
+        addToast('⚠️ Action Rate-Limited', 'You are saving error book items too fast. Please wait a second.', 'info');
+      }
     } catch (e) {
       console.error(e);
     }
-  }, []);
+  }, [addErrorLimiter, addToast]);
 
   const handleDeleteErrorItem = useCallback(async (id: string) => {
     try {
@@ -285,12 +322,19 @@ export default function App() {
 
   const handleAddImportanceItem = useCallback(async (item: SpecialImportanceItem) => {
     try {
-      await PrepTrackDB.saveSpecialImportanceItem(item);
-      setSpecialImportance((prev) => [item, ...prev]);
+      const saved = await addImportanceLimiter.throttle(async () => {
+        await PrepTrackDB.saveSpecialImportanceItem(item);
+        return true;
+      });
+      if (saved) {
+        setSpecialImportance((prev) => [item, ...prev]);
+      } else {
+        addToast('⚠️ Action Rate-Limited', 'You are saving importance notes too fast. Please wait a second.', 'info');
+      }
     } catch (e) {
       console.error(e);
     }
-  }, []);
+  }, [addImportanceLimiter, addToast]);
 
   const handleDeleteImportanceItem = useCallback(async (id: string) => {
     try {
@@ -303,17 +347,24 @@ export default function App() {
 
   const handleSaveMockTest = useCallback(async (test: MockTest) => {
     try {
-      await PrepTrackDB.saveMockTest(test);
-      setMockTests((prev) => [test, ...prev]);
-      addToast(
-        '🏆 Mock Test Logged!',
-        `Your ${test.pattern} score of ${test.totalMarksScored}/${test.fullMarks} has been saved. Go to the Interactive Trend tab to map your progress!`,
-        'success'
-      );
+      const saved = await saveMockTestLimiter.throttle(async () => {
+        await PrepTrackDB.saveMockTest(test);
+        return true;
+      });
+      if (saved) {
+        setMockTests((prev) => [test, ...prev]);
+        addToast(
+          '🏆 Mock Test Logged!',
+          `Your ${test.pattern} score of ${test.totalMarksScored}/${test.fullMarks} has been saved. Go to the Interactive Trend tab to map your progress!`,
+          'success'
+        );
+      } else {
+        addToast('⚠️ Action Rate-Limited', 'You are logging mock tests too fast. Please wait a second.', 'info');
+      }
     } catch (e) {
       console.error(e);
     }
-  }, [addToast]);
+  }, [saveMockTestLimiter, addToast]);
 
   const handleDeleteMockTest = useCallback(async (id: string) => {
     if (confirm('Are you sure you want to delete this mock test log entry permanently?')) {
