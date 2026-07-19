@@ -232,14 +232,12 @@ export default function App() {
   // --- SAVE CALLBACKS UNIFYING DB AND REACT STATE ---
   const handleSaveSettings = useCallback(async (nextSettings: UserSettings) => {
     try {
-      const saved = await saveSettingsLimiter.throttle(async () => {
+      const result = await saveSettingsLimiter.throttle(async () => {
         await PrepTrackDB.saveSettings(nextSettings);
-        return true;
-      });
-      if (saved) {
         setSettings(nextSettings);
-      } else {
-        addToast('⚠️ Action Rate-Limited', 'You are updating settings too fast. Please wait a second.', 'info');
+      });
+      if (result === null) {
+        addToast('⚠️ Rate Limited', 'Please wait before saving again', 'info');
       }
     } catch (e) {
       console.error(e);
@@ -248,14 +246,12 @@ export default function App() {
 
   const handleSaveStudySession = useCallback(async (session: StudySession) => {
     try {
-      const saved = await saveSessionLimiter.throttle(async () => {
+      const result = await saveSessionLimiter.throttle(async () => {
         await PrepTrackDB.saveStudySession(session);
-        return true;
-      });
-      if (saved) {
         setSessions((prev) => [session, ...prev]);
-      } else {
-        addToast('⚠️ Action Rate-Limited', 'You are saving study sessions too fast. Please wait a second.', 'info');
+      });
+      if (result === null) {
+        addToast('⚠️ Rate Limited', 'Please wait before saving again', 'info');
       }
     } catch (e) {
       console.error(e);
@@ -287,11 +283,8 @@ export default function App() {
         chemistry_pyq_main: validateNumber(record.chemistry_pyq_main, 0, 1000),
         chemistry_pyq_adv: validateNumber(record.chemistry_pyq_adv, 0, 1000),
       };
-      const saved = await saveQuestionsLimiter.throttle(async () => {
+      const result = await saveQuestionsLimiter.throttle(async () => {
         await PrepTrackDB.saveQuestionsSolved(validated);
-        return true;
-      });
-      if (saved) {
         setQuestions((prev) => {
           const existingIdx = prev.findIndex((q) => q.date === validated.date);
           if (existingIdx > -1) {
@@ -301,8 +294,9 @@ export default function App() {
           }
           return [...prev, validated].sort((a, b) => a.date.localeCompare(b.date));
         });
-      } else {
-        addToast('⚠️ Action Rate-Limited', 'You are saving questions too fast. Please wait a second.', 'info');
+      });
+      if (result === null) {
+        addToast('⚠️ Rate Limited', 'Please wait before saving again', 'info');
       }
     } catch (e) {
       console.error(e);
@@ -320,14 +314,12 @@ export default function App() {
         tags: Array.isArray(item.tags) ? item.tags.map((t) => validateString(t, 50)) : [],
         timestamp: typeof item.timestamp === 'number' ? item.timestamp : Date.now()
       };
-      const saved = await addErrorLimiter.throttle(async () => {
+      const result = await addErrorLimiter.throttle(async () => {
         await PrepTrackDB.saveErrorBookItem(validated);
-        return true;
-      });
-      if (saved) {
         setErrorBook((prev) => [validated, ...prev]);
-      } else {
-        addToast('⚠️ Action Rate-Limited', 'You are saving error book items too fast. Please wait a second.', 'info');
+      });
+      if (result === null) {
+        addToast('⚠️ Rate Limited', 'Please wait before saving again', 'info');
       }
     } catch (e) {
       console.error(e);
@@ -353,14 +345,12 @@ export default function App() {
         subject: (['physics', 'chemistry', 'math', 'general'].includes(item.subject) ? item.subject : 'general') as Subject,
         timestamp: typeof item.timestamp === 'number' ? item.timestamp : Date.now()
       };
-      const saved = await addImportanceLimiter.throttle(async () => {
+      const result = await addImportanceLimiter.throttle(async () => {
         await PrepTrackDB.saveSpecialImportanceItem(validated);
-        return true;
-      });
-      if (saved) {
         setSpecialImportance((prev) => [validated, ...prev]);
-      } else {
-        addToast('⚠️ Action Rate-Limited', 'You are saving importance notes too fast. Please wait a second.', 'info');
+      });
+      if (result === null) {
+        addToast('⚠️ Rate Limited', 'Please wait before saving again', 'info');
       }
     } catch (e) {
       console.error(e);
@@ -414,19 +404,17 @@ export default function App() {
         timestamp: typeof test.timestamp === 'number' ? test.timestamp : Date.now()
       };
 
-      const saved = await saveMockTestLimiter.throttle(async () => {
+      const result = await saveMockTestLimiter.throttle(async () => {
         await PrepTrackDB.saveMockTest(validated);
-        return true;
-      });
-      if (saved) {
         setMockTests((prev) => [validated, ...prev]);
         addToast(
           '🏆 Mock Test Logged!',
           `Your ${validated.pattern} score of ${validated.totalMarksScored}/${validated.fullMarks} has been saved. Go to the Interactive Trend tab to map your progress!`,
           'success'
         );
-      } else {
-        addToast('⚠️ Action Rate-Limited', 'You are logging mock tests too fast. Please wait a second.', 'info');
+      });
+      if (result === null) {
+        addToast('⚠️ Rate Limited', 'Please wait before saving again', 'info');
       }
     } catch (e) {
       console.error(e);
