@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, KeyboardEvent, memo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Trash2, Plus, CheckCircle2, Circle, ListTodo, Sparkles, FileText, Check, Edit3, Save, Clock } from 'lucide-react';
-import { secureJsonParse, sanitizeInput, limitStringLength } from '../utils/security';
+import { secureJsonParse, sanitizeInput, limitStringLength, secureStorage } from '../utils/security';
 
 interface QuickNote {
   id: string;
@@ -35,15 +35,15 @@ const QuickNotes = memo(function QuickNotes({ theme, cardBgClass }: QuickNotesPr
   // Load from local storage on mount
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('preptrack_quick_notes');
+      const saved = secureStorage.getItem('preptrack_quick_notes');
       setNotes(secureJsonParse<QuickNote[]>(saved, []));
       
-      const savedScratchpad = localStorage.getItem('preptrack_quick_notes_scratchpad');
+      const savedScratchpad = secureStorage.getItem('preptrack_quick_notes_scratchpad');
       if (savedScratchpad) {
         setScratchpadText(limitStringLength(sanitizeInput(savedScratchpad), 10000));
       }
 
-      const savedDraft = localStorage.getItem('preptrack_quick_notes_draft');
+      const savedDraft = secureStorage.getItem('preptrack_quick_notes_draft');
       if (savedDraft) {
         setInputText(limitStringLength(sanitizeInput(savedDraft), 1000));
       }
@@ -56,7 +56,7 @@ const QuickNotes = memo(function QuickNotes({ theme, cardBgClass }: QuickNotesPr
   const saveNotes = (updatedNotes: QuickNote[]) => {
     setNotes(updatedNotes);
     try {
-      localStorage.setItem('preptrack_quick_notes', JSON.stringify(updatedNotes));
+      secureStorage.setItem('preptrack_quick_notes', JSON.stringify(updatedNotes));
     } catch (e) {
       console.error('Failed to save quick notes:', e);
     }
@@ -66,7 +66,7 @@ const QuickNotes = memo(function QuickNotes({ theme, cardBgClass }: QuickNotesPr
   const handleInputChange = (val: string) => {
     setInputText(val);
     try {
-      localStorage.setItem('preptrack_quick_notes_draft', val);
+      secureStorage.setItem('preptrack_quick_notes_draft', val);
     } catch (e) {
       console.error('Failed to save quick draft:', e);
     }
@@ -82,7 +82,7 @@ const QuickNotes = memo(function QuickNotes({ theme, cardBgClass }: QuickNotesPr
     setIsSaving(true);
     const timer = setTimeout(() => {
       try {
-        localStorage.setItem('preptrack_quick_notes_scratchpad', scratchpadText);
+        secureStorage.setItem('preptrack_quick_notes_scratchpad', scratchpadText);
         const now = new Date();
         setLastSaved(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
       } catch (e) {
@@ -110,7 +110,7 @@ const QuickNotes = memo(function QuickNotes({ theme, cardBgClass }: QuickNotesPr
     saveNotes([newNote, ...notes]);
     setInputText('');
     try {
-      localStorage.removeItem('preptrack_quick_notes_draft');
+      secureStorage.removeItem('preptrack_quick_notes_draft');
     } catch {
       // Ignore
     }

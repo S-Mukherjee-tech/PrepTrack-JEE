@@ -1,5 +1,5 @@
 import { StudySession, DailyQuestions, ErrorBookItem, SpecialImportanceItem, UserSettings, MockTest } from './types';
-import { secureJsonParse, cleanObjectPrototype } from './utils/security';
+import { secureJsonParse, cleanObjectPrototype, secureStorage } from './utils/security';
 
 const DB_NAME = 'PrepTrackDB';
 const DB_VERSION = 2;
@@ -9,7 +9,7 @@ class MemoryFallback {
 
   public static getItem(key: string): string | null {
     try {
-      return localStorage.getItem(key);
+      return secureStorage.getItem(key);
     } catch {
       return this.storage[key] || null;
     }
@@ -17,7 +17,7 @@ class MemoryFallback {
 
   public static setItem(key: string, value: string): void {
     try {
-      localStorage.setItem(key, value);
+      secureStorage.setItem(key, value);
     } catch {
       this.storage[key] = value;
     }
@@ -25,7 +25,7 @@ class MemoryFallback {
 
   public static removeItem(key: string): void {
     try {
-      localStorage.removeItem(key);
+      secureStorage.removeItem(key);
     } catch {
       delete this.storage[key];
     }
@@ -33,7 +33,7 @@ class MemoryFallback {
 
   public static clear(): void {
     try {
-      localStorage.clear();
+      secureStorage.clear();
     } catch {
       this.storage = {};
     }
