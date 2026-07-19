@@ -1,6 +1,7 @@
 import { useState, useEffect, memo } from 'react';
 import { DailyQuestions } from '../types';
 import { Hash, Plus, Calendar, Save, Trash2, CheckCircle } from 'lucide-react';
+import { validateNumber, validateDate } from '../utils/validators';
 
 interface QuestionTrackerFormProps {
   questionsList: DailyQuestions[];
@@ -68,12 +69,15 @@ const QuestionTrackerForm = memo(function QuestionTrackerForm({ questionsList, o
       setter('');
       return;
     }
-    const cleaned = val.replace(/[^0-9]/g, '');
+    // Limit inputs to maximum 3 digits (max 999 questions per day category is a very safe limit)
+    const sliced = val.slice(0, 3);
+    const cleaned = sliced.replace(/[^0-9]/g, '');
     if (cleaned === '') {
       setter('');
       return;
     }
-    setter(parseInt(cleaned, 10));
+    const num = validateNumber(cleaned, 0, 1000);
+    setter(num === 0 ? '' : num);
   };
 
   const mathTotal = parseNum(mathNormal) + parseNum(mathMain) + parseNum(mathAdv);
@@ -90,16 +94,16 @@ const QuestionTrackerForm = memo(function QuestionTrackerForm({ questionsList, o
 
   const handleSave = () => {
     const record: DailyQuestions = {
-      date: selectedDate,
-      math: parseNum(mathNormal),
-      physics: parseNum(physicsNormal),
-      chemistry: parseNum(chemistryNormal),
-      math_pyq_main: parseNum(mathMain),
-      math_pyq_adv: parseNum(mathAdv),
-      physics_pyq_main: parseNum(phyMain),
-      physics_pyq_adv: parseNum(phyAdv),
-      chemistry_pyq_main: parseNum(chemMain),
-      chemistry_pyq_adv: parseNum(chemAdv),
+      date: validateDate(selectedDate),
+      math: validateNumber(mathNormal, 0, 1000),
+      physics: validateNumber(physicsNormal, 0, 1000),
+      chemistry: validateNumber(chemistryNormal, 0, 1000),
+      math_pyq_main: validateNumber(mathMain, 0, 1000),
+      math_pyq_adv: validateNumber(mathAdv, 0, 1000),
+      physics_pyq_main: validateNumber(phyMain, 0, 1000),
+      physics_pyq_adv: validateNumber(phyAdv, 0, 1000),
+      chemistry_pyq_main: validateNumber(chemMain, 0, 1000),
+      chemistry_pyq_adv: validateNumber(chemAdv, 0, 1000),
     };
 
     onSaveQuestions(record);

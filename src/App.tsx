@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PrepTrackDB } from './db';
 import { RateLimiter } from './utils/rateLimit';
+import { validateNumber, validateString, validateDate } from './utils/validators';
 import { 
   StudySession, 
   DailyQuestions, 
@@ -10,7 +11,8 @@ import {
   UserSettings, 
   ThemeType,
   FeedbackItem,
-  MockTest
+  MockTest,
+  Subject
 } from './types';
 
 // Subcomponents
@@ -273,19 +275,31 @@ export default function App() {
 
   const handleSaveQuestions = useCallback(async (record: DailyQuestions) => {
     try {
+      const validated: DailyQuestions = {
+        date: validateDate(record.date),
+        math: validateNumber(record.math, 0, 1000),
+        physics: validateNumber(record.physics, 0, 1000),
+        chemistry: validateNumber(record.chemistry, 0, 1000),
+        math_pyq_main: validateNumber(record.math_pyq_main, 0, 1000),
+        math_pyq_adv: validateNumber(record.math_pyq_adv, 0, 1000),
+        physics_pyq_main: validateNumber(record.physics_pyq_main, 0, 1000),
+        physics_pyq_adv: validateNumber(record.physics_pyq_adv, 0, 1000),
+        chemistry_pyq_main: validateNumber(record.chemistry_pyq_main, 0, 1000),
+        chemistry_pyq_adv: validateNumber(record.chemistry_pyq_adv, 0, 1000),
+      };
       const saved = await saveQuestionsLimiter.throttle(async () => {
-        await PrepTrackDB.saveQuestionsSolved(record);
+        await PrepTrackDB.saveQuestionsSolved(validated);
         return true;
       });
       if (saved) {
         setQuestions((prev) => {
-          const existingIdx = prev.findIndex((q) => q.date === record.date);
+          const existingIdx = prev.findIndex((q) => q.date === validated.date);
           if (existingIdx > -1) {
             const updated = [...prev];
-            updated[existingIdx] = record;
+            updated[existingIdx] = validated;
             return updated;
           }
-          return [...prev, record].sort((a, b) => a.date.localeCompare(b.date));
+          return [...prev, validated].sort((a, b) => a.date.localeCompare(b.date));
         });
       } else {
         addToast('⚠️ Action Rate-Limited', 'You are saving questions too fast. Please wait a second.', 'info');
@@ -297,12 +311,21 @@ export default function App() {
 
   const handleAddErrorItem = useCallback(async (item: ErrorBookItem) => {
     try {
+      const validated: ErrorBookItem = {
+        id: validateString(item.id, 100),
+        subject: (['physics', 'chemistry', 'math', 'general'].includes(item.subject) ? item.subject : 'general') as Subject,
+        chapter: validateString(item.chapter, 200),
+        mistake: validateString(item.mistake, 2000),
+        correction: validateString(item.correction, 2000),
+        tags: Array.isArray(item.tags) ? item.tags.map((t) => validateString(t, 50)) : [],
+        timestamp: typeof item.timestamp === 'number' ? item.timestamp : Date.now()
+      };
       const saved = await addErrorLimiter.throttle(async () => {
-        await PrepTrackDB.saveErrorBookItem(item);
+        await PrepTrackDB.saveErrorBookItem(validated);
         return true;
       });
       if (saved) {
-        setErrorBook((prev) => [item, ...prev]);
+        setErrorBook((prev) => [validated, ...prev]);
       } else {
         addToast('⚠️ Action Rate-Limited', 'You are saving error book items too fast. Please wait a second.', 'info');
       }
@@ -322,12 +345,20 @@ export default function App() {
 
   const handleAddImportanceItem = useCallback(async (item: SpecialImportanceItem) => {
     try {
+      const validated: SpecialImportanceItem = {
+        id: validateString(item.id, 100),
+        title: validateString(item.title, 200),
+        topic: validateString(item.topic, 200),
+        content: validateString(item.content, 5000),
+        subject: (['physics', 'chemistry', 'math', 'general'].includes(item.subject) ? item.subject : 'general') as Subject,
+        timestamp: typeof item.timestamp === 'number' ? item.timestamp : Date.now()
+      };
       const saved = await addImportanceLimiter.throttle(async () => {
-        await PrepTrackDB.saveSpecialImportanceItem(item);
+        await PrepTrackDB.saveSpecialImportanceItem(validated);
         return true;
       });
       if (saved) {
-        setSpecialImportance((prev) => [item, ...prev]);
+        setSpecialImportance((prev) => [validated, ...prev]);
       } else {
         addToast('⚠️ Action Rate-Limited', 'You are saving importance notes too fast. Please wait a second.', 'info');
       }
@@ -347,15 +378,51 @@ export default function App() {
 
   const handleSaveMockTest = useCallback(async (test: MockTest) => {
     try {
+      const validatedPhysics = test.physics ? {
+        score: validateNumber(test.physics.score, -360, 1000),
+        correct: validateNumber(test.physics.correct, 0, 200),
+        incorrect: validateNumber(test.physics.incorrect, 0, 200),
+        unattempted: validateNumber(test.physics.unattempted, 0, 200),
+      } : { score: 0, correct: 0, incorrect: 0, unattempted: 0 };
+
+      const validatedChemistry = test.chemistry ? {
+        score: validateNumber(test.chemistry.score, -360, 1000),
+        correct: validateNumber(test.chemistry.correct, 0, 200),
+        incorrect: validateNumber(test.chemistry.incorrect, 0, 200),
+        unattempted: validateNumber(test.chemistry.unattempted, 0, 200),
+      } : { score: 0, correct: 0, incorrect: 0, unattempted: 0 };
+
+      const validatedMath = test.math ? {
+        score: validateNumber(test.math.score, -360, 1000),
+        correct: validateNumber(test.math.correct, 0, 200),
+        incorrect: validateNumber(test.math.incorrect, 0, 200),
+        unattempted: validateNumber(test.math.unattempted, 0, 200),
+      } : { score: 0, correct: 0, incorrect: 0, unattempted: 0 };
+
+      const totalScored = validatedPhysics.score + validatedChemistry.score + validatedMath.score;
+
+      const validated: MockTest = {
+        id: validateString(test.id, 100),
+        date: validateDate(test.date),
+        pattern: test.pattern === 'JEE Advanced' ? 'JEE Advanced' : 'JEE Main',
+        fullMarks: validateNumber(test.fullMarks, 1, 2000),
+        totalMarksScored: totalScored,
+        physics: validatedPhysics,
+        chemistry: validatedChemistry,
+        math: validatedMath,
+        notes: test.notes ? validateString(test.notes, 1000) : undefined,
+        timestamp: typeof test.timestamp === 'number' ? test.timestamp : Date.now()
+      };
+
       const saved = await saveMockTestLimiter.throttle(async () => {
-        await PrepTrackDB.saveMockTest(test);
+        await PrepTrackDB.saveMockTest(validated);
         return true;
       });
       if (saved) {
-        setMockTests((prev) => [test, ...prev]);
+        setMockTests((prev) => [validated, ...prev]);
         addToast(
           '🏆 Mock Test Logged!',
-          `Your ${test.pattern} score of ${test.totalMarksScored}/${test.fullMarks} has been saved. Go to the Interactive Trend tab to map your progress!`,
+          `Your ${validated.pattern} score of ${validated.totalMarksScored}/${validated.fullMarks} has been saved. Go to the Interactive Trend tab to map your progress!`,
           'success'
         );
       } else {

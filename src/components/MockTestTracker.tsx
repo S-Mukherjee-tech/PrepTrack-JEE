@@ -1,5 +1,6 @@
 import React, { useState, useMemo, memo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { validateNumber, validateString, validateDate } from '../utils/validators';
 import { 
   Plus, 
   Trash2, 
@@ -88,10 +89,16 @@ const MockTestTracker = memo(function MockTestTracker({
       setter('-');
       return;
     }
+    // Limit inputs to maximum 4 characters (e.g., -300 or 1000)
+    const sliced = val.slice(0, 4);
     // Allow standard negative integers
-    const cleaned = val.replace(/(?!^-)[^0-9]/g, '');
+    const cleaned = sliced.replace(/(?!^-)[^0-9]/g, '');
     const parsed = parseInt(cleaned, 10);
-    setter(isNaN(parsed) ? '' : parsed);
+    if (isNaN(parsed)) {
+      setter('');
+    } else {
+      setter(validateNumber(parsed, -360, 1000));
+    }
   };
 
   // Helper handler for positive integers only
@@ -100,14 +107,17 @@ const MockTestTracker = memo(function MockTestTracker({
       setter('');
       return;
     }
-    const cleaned = val.replace(/[^0-9]/g, '');
+    // Limit inputs to maximum 3 characters to prevent overflow
+    const sliced = val.slice(0, 3);
+    const cleaned = sliced.replace(/[^0-9]/g, '');
     if (cleaned === '') {
       setter('');
       return;
     }
     const parsed = parseInt(cleaned, 10);
     if (!isNaN(parsed)) {
-      setter(maxVal !== undefined ? Math.min(maxVal, parsed) : parsed);
+      const allowedMax = maxVal !== undefined ? maxVal : 1000;
+      setter(validateNumber(parsed, 0, allowedMax));
     }
   };
   
@@ -145,38 +155,44 @@ const MockTestTracker = memo(function MockTestTracker({
   const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const validatedDate = validateDate(date);
+    const validatedFullMarks = validateNumber(fullMarks, 1, 2000);
+    const validatedNotes = validateString(notes, 1000);
+
     const pStats: SubjectStats = {
-      score: safeNum(pScore),
-      correct: safeNum(pCorrect),
-      incorrect: safeNum(pIncorrect),
-      unattempted: safeNum(pUnattempted)
+      score: validateNumber(pScore, -360, 1000),
+      correct: validateNumber(pCorrect, 0, 200),
+      incorrect: validateNumber(pIncorrect, 0, 200),
+      unattempted: validateNumber(pUnattempted, 0, 200)
     };
 
     const cStats: SubjectStats = {
-      score: safeNum(cScore),
-      correct: safeNum(cCorrect),
-      incorrect: safeNum(cIncorrect),
-      unattempted: safeNum(cUnattempted)
+      score: validateNumber(cScore, -360, 1000),
+      correct: validateNumber(cCorrect, 0, 200),
+      incorrect: validateNumber(cIncorrect, 0, 200),
+      unattempted: validateNumber(cUnattempted, 0, 200)
     };
 
     const mStats: SubjectStats = {
-      score: safeNum(mScore),
-      correct: safeNum(mCorrect),
-      incorrect: safeNum(mIncorrect),
-      unattempted: safeNum(mUnattempted)
+      score: validateNumber(mScore, -360, 1000),
+      correct: validateNumber(mCorrect, 0, 200),
+      incorrect: validateNumber(mIncorrect, 0, 200),
+      unattempted: validateNumber(mUnattempted, 0, 200)
     };
+
+    const validatedTotalScored = pStats.score + cStats.score + mStats.score;
 
     const nextTest: MockTest = {
       id: Math.random().toString(36).substring(2, 9),
-      date,
+      date: validatedDate,
       pattern,
-      fullMarks: safeNum(fullMarks),
-      totalMarksScored: computedTotalScored,
+      fullMarks: validatedFullMarks,
+      totalMarksScored: validatedTotalScored,
       physics: pStats,
       chemistry: cStats,
       math: mStats,
-      notes: notes.trim() || undefined,
-      timestamp: new Date(date).getTime()
+      notes: validatedNotes || undefined,
+      timestamp: new Date(validatedDate).getTime()
     };
 
     await onAddTest(nextTest);
