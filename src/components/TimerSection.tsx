@@ -79,20 +79,24 @@ const TimerSection = memo(function TimerSection({ settings, onSaveSession, curre
   const alarmSoundRef = useRef(alarmSound);
   const isMutedRef = useRef(isMuted);
 
-  // Persistence to localstorage on every update reactive stream
+  // Persistence to localstorage on every update reactive stream (Only for static settings/modes)
   useEffect(() => {
     secureStorage.setItem('preptrack_timer_mode', mode);
     secureStorage.setItem('preptrack_timer_nameInput', sessionNameInput);
     secureStorage.setItem('preptrack_timer_selected', sessionSelected);
     secureStorage.setItem('preptrack_timer_isRunning', isRunning.toString());
     secureStorage.setItem('preptrack_timer_isPaused', isPaused.toString());
-    secureStorage.setItem('preptrack_timer_timeElapsed', timeElapsed.toString());
     secureStorage.setItem('preptrack_timer_pomodoroStage', pomodoroStage);
     secureStorage.setItem('preptrack_timer_startTimeRef', sessionStartTimeRef.current.toString());
     secureStorage.setItem('preptrack_timer_totalPausedTimeRef', totalPausedTimeRef.current.toString());
     secureStorage.setItem('preptrack_timer_pauseStartTimeRef', pauseStartTimeRef.current.toString());
+  }, [mode, sessionNameInput, sessionSelected, isRunning, isPaused, pomodoroStage]);
+
+  // High-frequency persistence (timeElapsed and lastTS) separated to prevent redundant storage writes of static fields
+  useEffect(() => {
+    secureStorage.setItem('preptrack_timer_timeElapsed', timeElapsed.toString());
     secureStorage.setItem('preptrack_timer_lastTS', Date.now().toString());
-  }, [mode, sessionNameInput, sessionSelected, isRunning, isPaused, timeElapsed, pomodoroStage]);
+  }, [timeElapsed]);
 
   // Screen Wake Lock API to prevent lockscreen sleep when stopwatch is ticking
   const wakeLockRef = useRef<any>(null);

@@ -30,7 +30,7 @@ const QuickNotes = memo(function QuickNotes({ theme, cardBgClass }: QuickNotesPr
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingText, setEditingText] = useState('');
 
-  const isInitialMount = useRef(true);
+  const [loaded, setLoaded] = useState(false);
 
   // Load from local storage on mount
   useEffect(() => {
@@ -49,35 +49,58 @@ const QuickNotes = memo(function QuickNotes({ theme, cardBgClass }: QuickNotesPr
       }
     } catch (e) {
       console.error('Failed to load quick notes from local storage:', e);
+    } finally {
+      setLoaded(true);
     }
   }, []);
+
+  // Save to local storage when notes change (Debounced to avoid storage lag on typing)
+  useEffect(() => {
+    if (!loaded) return;
+
+    const timer = setTimeout(() => {
+      try {
+        secureStorage.setItem('preptrack_quick_notes', JSON.stringify(notes));
+      } catch (e) {
+        console.error('Failed to save quick notes:', e);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [notes, loaded]);
+
+  // Debounced auto-save for the input draft text
+  useEffect(() => {
+    if (!loaded) return;
+
+    const timer = setTimeout(() => {
+      try {
+        if (inputText) {
+          secureStorage.setItem('preptrack_quick_notes_draft', inputText);
+        } else {
+          secureStorage.removeItem('preptrack_quick_notes_draft');
+        }
+      } catch (e) {
+        console.error('Failed to save quick draft:', e);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [inputText, loaded]);
 
   // Save to local storage when notes change
   const saveNotes = (updatedNotes: QuickNote[]) => {
     setNotes(updatedNotes);
-    try {
-      secureStorage.setItem('preptrack_quick_notes', JSON.stringify(updatedNotes));
-    } catch (e) {
-      console.error('Failed to save quick notes:', e);
-    }
   };
 
   // Auto-save the input draft text as the user types
   const handleInputChange = (val: string) => {
     setInputText(val);
-    try {
-      secureStorage.setItem('preptrack_quick_notes_draft', val);
-    } catch (e) {
-      console.error('Failed to save quick draft:', e);
-    }
   };
 
   // Debounced auto-save for the freeform whiteboard scratchpad
   useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-      return;
-    }
+    if (!loaded) return;
 
     setIsSaving(true);
     const timer = setTimeout(() => {
@@ -90,10 +113,10 @@ const QuickNotes = memo(function QuickNotes({ theme, cardBgClass }: QuickNotesPr
       } finally {
         setIsSaving(false);
       }
-    }, 500); // 550ms debounce after typing ceases
+    }, 500); // 500ms debounce after typing ceases
 
     return () => clearTimeout(timer);
-  }, [scratchpadText]);
+  }, [scratchpadText, loaded]);
 
   const handleAddNote = () => {
     const trimmed = inputText.trim();

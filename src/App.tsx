@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { PrepTrackDB } from './db';
 import { RateLimiter } from './utils/rateLimit';
@@ -17,21 +17,37 @@ import {
 
 // Subcomponents
 import TimerSection from './components/TimerSection';
-import AnalyticsCharts from './components/AnalyticsCharts';
-import QuestionTrackerForm from './components/QuestionTrackerForm';
-import SyllabusTracker from './components/SyllabusTracker';
-import NotesAndErrors from './components/NotesAndErrors';
 import FeedbackModal from './components/FeedbackModal';
 import QuickNotes from './components/QuickNotes';
 import ToastContainer, { Toast } from './components/ToastContainer';
-import MockTestTracker from './components/MockTestTracker';
 import { CLASS_11_SYLLABUS, CLASS_12_SYLLABUS } from './data/syllabus';
 import DashboardTab from './components/DashboardTab';
-import SettingsTab from './components/SettingsTab';
 import HeaderClock from './components/HeaderClock';
 import { BrandingLogo } from './components/BrandingLogo';
 import { WindowedStudyLog } from './components/WindowedStudyLog';
 import { ScrollProgressAndTop } from './components/ScrollProgressAndTop';
+
+// Lazy loaded workspace features for loading performance
+const AnalyticsCharts = lazy(() => import('./components/AnalyticsCharts'));
+const QuestionTrackerForm = lazy(() => import('./components/QuestionTrackerForm'));
+const SyllabusTracker = lazy(() => import('./components/SyllabusTracker'));
+const NotesAndErrors = lazy(() => import('./components/NotesAndErrors'));
+const MockTestTracker = lazy(() => import('./components/MockTestTracker'));
+const SettingsTab = lazy(() => import('./components/SettingsTab'));
+
+// High-performance loading fallback component
+const LoadingFallback = () => (
+  <div className="flex flex-col items-center justify-center py-24 px-4 text-center space-y-4">
+    <div className="relative flex items-center justify-center">
+      <div className="w-12 h-12 rounded-full border-4 border-indigo-500/15 border-t-indigo-500 animate-spin"></div>
+      <div className="absolute w-6 h-6 rounded-full border-4 border-emerald-500/10 border-b-emerald-400 animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1s' }}></div>
+    </div>
+    <div className="space-y-1">
+      <h4 className="text-sm font-bold tracking-tight text-foreground/80">Loading workspace...</h4>
+      <p className="text-[11px] text-muted-foreground max-w-[200px]">Retrieving secure local logs & charts.</p>
+    </div>
+  </div>
+);
 
 // Lucide Icons
 import { 
@@ -190,7 +206,7 @@ export default function App() {
 
     const timer = setTimeout(() => {
       root.classList.remove('theme-morphing');
-    }, 350);
+    }, 200);
 
     return () => clearTimeout(timer);
   }, [settings.theme]);
@@ -1074,12 +1090,7 @@ export default function App() {
         <div className="space-y-12 md:space-y-14">
           {/* Keep Dashboard always mounted to preserve active running stopwatch and avoid resetting */}
           <div className={activeTab === 'dashboard' ? 'block' : 'hidden'}>
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={activeTab === 'dashboard' ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
-              transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-              className="will-change-transform"
-            >
+            <div className={activeTab === 'dashboard' ? 'animate-tab-fade-in' : 'opacity-0'}>
               <DashboardTab
                 settings={settings}
                 sessions={sessions}
@@ -1090,7 +1101,7 @@ export default function App() {
                 onDeleteStudySession={handleDeleteStudySession}
                 onTabChange={handleTabChange}
               />
-            </motion.div>
+            </div>
           </div>
 
           {/* DEPRECATED INLINE DASHBOARD CODE GUARDED */}
@@ -1609,13 +1620,10 @@ export default function App() {
 
           {/* TAB 2: PROGRESS HISTORY & BAR CHARTS */}
           <div className={activeTab === 'analytics' ? 'block' : 'hidden'}>
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={activeTab === 'analytics' ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
-              transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-              className="space-y-12 md:space-y-14 will-change-transform"
-            >
-              <AnalyticsCharts sessions={sessions} questions={questions} errorItems={errorBook} />
+            <div className={`space-y-12 md:space-y-14 ${activeTab === 'analytics' ? 'animate-tab-fade-in' : 'opacity-0'}`}>
+              <Suspense fallback={<LoadingFallback />}>
+                <AnalyticsCharts sessions={sessions} questions={questions} errorItems={errorBook} />
+              </Suspense>
 
               <div className="bg-card border border-border rounded-3xl p-6 lg:p-8 shadow-sm space-y-6">
                 <div className="flex justify-between items-center border-b border-border/60 pb-5">
@@ -1640,98 +1648,83 @@ export default function App() {
                   />
                 )}
               </div>
-            </motion.div>
+            </div>
           </div>
 
           {/* TAB 3: QUESTIONS LOGGER */}
           <div className={activeTab === 'questions' ? 'block' : 'hidden'}>
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={activeTab === 'questions' ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
-              transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-              className="will-change-transform"
-            >
-              <QuestionTrackerForm 
-                questionsList={questions}
-                onSaveQuestions={handleSaveQuestions}
-              />
-            </motion.div>
+            <div className={activeTab === 'questions' ? 'animate-tab-fade-in' : 'opacity-0'}>
+              <Suspense fallback={<LoadingFallback />}>
+                <QuestionTrackerForm 
+                  questionsList={questions}
+                  onSaveQuestions={handleSaveQuestions}
+                />
+              </Suspense>
+            </div>
           </div>
 
           {/* TAB 4: SYLLABUS TABS */}
           <div className={activeTab === 'syllabus' ? 'block' : 'hidden'}>
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={activeTab === 'syllabus' ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
-              transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-              className="will-change-transform"
-            >
-              <SyllabusTracker 
-                completions={chapterCompletions}
-                onToggleChapter={handleToggleChapter}
-                onClearAll={handleClearChapters}
-              />
-            </motion.div>
+            <div className={activeTab === 'syllabus' ? 'animate-tab-fade-in' : 'opacity-0'}>
+              <Suspense fallback={<LoadingFallback />}>
+                <SyllabusTracker 
+                  completions={chapterCompletions}
+                  onToggleChapter={handleToggleChapter}
+                  onClearAll={handleClearChapters}
+                />
+              </Suspense>
+            </div>
           </div>
 
           {/* TAB 5: NOTES & ERROR BOOKS */}
           <div className={activeTab === 'notes' ? 'block' : 'hidden'}>
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={activeTab === 'notes' ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
-              transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-              className="will-change-transform"
-            >
-              <NotesAndErrors 
-                errorItems={errorBook}
-                importanceItems={specialImportance}
-                onAddErrorItem={handleAddErrorItem}
-                onDeleteErrorItem={handleDeleteErrorItem}
-                onAddImportanceItem={handleAddImportanceItem}
-                onDeleteImportanceItem={handleDeleteImportanceItem}
-              />
-            </motion.div>
+            <div className={activeTab === 'notes' ? 'animate-tab-fade-in' : 'opacity-0'}>
+              <Suspense fallback={<LoadingFallback />}>
+                <NotesAndErrors 
+                  errorItems={errorBook}
+                  importanceItems={specialImportance}
+                  onAddErrorItem={handleAddErrorItem}
+                  onDeleteErrorItem={handleDeleteErrorItem}
+                  onAddImportanceItem={handleAddImportanceItem}
+                  onDeleteImportanceItem={handleDeleteImportanceItem}
+                />
+              </Suspense>
+            </div>
           </div>
 
           {/* TAB 6: MOCK TEST TRACKER */}
           <div className={activeTab === 'mock_tests' ? 'block' : 'hidden'}>
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={activeTab === 'mock_tests' ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
-              transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-              className="will-change-transform"
-            >
-              <MockTestTracker 
-                mockTests={mockTests}
-                onAddTest={handleSaveMockTest}
-                onDeleteTest={handleDeleteMockTest}
-                theme={settings.theme}
-                cardBgClass="bg-card/75 backdrop-blur-md"
-              />
-            </motion.div>
+            <div className={activeTab === 'mock_tests' ? 'animate-tab-fade-in' : 'opacity-0'}>
+              <Suspense fallback={<LoadingFallback />}>
+                <MockTestTracker 
+                  mockTests={mockTests}
+                  onAddTest={handleSaveMockTest}
+                  onDeleteTest={handleDeleteMockTest}
+                  theme={settings.theme}
+                  cardBgClass="bg-card/75 backdrop-blur-md"
+                />
+              </Suspense>
+            </div>
           </div>
 
           {/* TAB 7: SETTINGS & APPEARANCES */}
           <div className={activeTab === 'settings' ? 'block' : 'hidden'}>
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={activeTab === 'settings' ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
-              transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-              className="bg-card border border-border rounded-3xl p-6 lg:p-8 shadow-sm space-y-10 md:space-y-12 will-change-transform"
-            >
+            <div className={`bg-card border border-border rounded-3xl p-6 lg:p-8 shadow-sm space-y-10 md:space-y-12 ${activeTab === 'settings' ? 'animate-tab-fade-in' : 'opacity-0'}`}>
               <div className="border-b border-border/60 pb-5">
                 <h3 className="text-lg font-bold font-sans tracking-tight">Settings & Appearance</h3>
                 <p className="text-xs text-muted-foreground">Customize your study targets, timer intervals, themes, and local datasets.</p>
               </div>
 
-              <SettingsTab
-                settings={settings}
-                onSaveSettings={handleSaveSettings}
-                onResetAllData={handleResetAllData}
-                showResetConfirm={showResetConfirm}
-                setShowResetConfirm={setShowResetConfirm}
-              />
-            </motion.div>
+              <Suspense fallback={<LoadingFallback />}>
+                <SettingsTab
+                  settings={settings}
+                  onSaveSettings={handleSaveSettings}
+                  onResetAllData={handleResetAllData}
+                  showResetConfirm={showResetConfirm}
+                  setShowResetConfirm={setShowResetConfirm}
+                />
+              </Suspense>
+            </div>
           </div>
 
 
