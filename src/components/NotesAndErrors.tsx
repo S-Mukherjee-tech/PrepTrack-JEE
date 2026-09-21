@@ -1,7 +1,20 @@
 import React, { useState, useMemo, memo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Subject, ErrorBookItem, SpecialImportanceItem } from '../types';
-import { Trash2, AlertCircle, BookOpen, Star, Sparkles, Filter, Plus, Check } from 'lucide-react';
+import { 
+  Trash2, 
+  AlertCircle, 
+  BookOpen, 
+  Star, 
+  Sparkles, 
+  Filter, 
+  Plus, 
+  Check, 
+  AlertTriangle, 
+  CheckCircle2, 
+  Tag as TagIcon,
+  Bookmark
+} from 'lucide-react';
 import { sanitizeInput, limitStringLength } from '../utils/security';
 
 interface NotesAndErrorsProps {
@@ -35,6 +48,7 @@ const NotesAndErrors = memo(function NotesAndErrors({
   const [errTags, setErrTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState('');
   const [showErrorForm, setShowErrorForm] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
 
   // New Special Importance Form states
   const [impSubject, setImpSubject] = useState<Subject>('physics');
@@ -96,9 +110,10 @@ const NotesAndErrors = memo(function NotesAndErrors({
   const handleCreateErrorItem = (e: React.FormEvent) => {
     e.preventDefault();
     if (!errChapter.trim() || !errMistake.trim() || !errCorrection.trim()) {
-      alert('Please fill out all the item fields.');
+      setFormError('Please fill out all the item fields.');
       return;
     }
+    setFormError(null);
 
     const newItem: ErrorBookItem = {
       id: `err_${Date.now()}_` + Math.floor(Math.random() * 100),
@@ -124,9 +139,10 @@ const NotesAndErrors = memo(function NotesAndErrors({
   const handleCreateImportanceItem = (e: React.FormEvent) => {
     e.preventDefault();
     if (!impTitle.trim() || !impContent.trim() || !impTopic.trim()) {
-      alert('Please fill out all the fields.');
+      setFormError('Please fill out all the fields.');
       return;
     }
+    setFormError(null);
 
     const newItem: SpecialImportanceItem = {
       id: `imp_${Date.now()}_` + Math.floor(Math.random() * 105),
@@ -220,6 +236,11 @@ const NotesAndErrors = memo(function NotesAndErrors({
           {showErrorForm && (
             <form onSubmit={handleCreateErrorItem} className="bg-accent/10 border border-border/80 rounded-2xl p-5 space-y-4 animate-[fadeIn_0.2s_ease-out]">
               <h4 className="text-sm font-bold text-foreground">Log Mistake & Trap Info</h4>
+              {formError && (
+                <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs font-semibold text-rose-400">
+                  {formError}
+                </div>
+              )}
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
@@ -528,14 +549,18 @@ const NotesAndErrors = memo(function NotesAndErrors({
                     <h5 className="text-xs font-bold text-foreground pr-6 leading-tight pt-0.5">{item.chapter}</h5>
                   </div>
 
-                  <div className="grid grid-cols-1 gap-2 border-t border-border/50 pt-2.5 text-xs">
-                    <div className="bg-rose-500/5 border border-rose-500/10 p-2 rounded-xl">
-                      <span className="block text-[9px] font-bold text-rose-500 uppercase tracking-wider mb-0.5">⚠️ The Mistake</span>
+                  <div className="grid grid-cols-1 gap-2.5 border-t border-border/50 pt-3 text-xs">
+                    <div className="bg-rose-500/5 border border-rose-500/15 p-2.5 rounded-xl">
+                      <span className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-rose-400 uppercase tracking-wider mb-1">
+                        <AlertTriangle className="w-3 h-3 text-rose-400 shrink-0" /> Pitfall / Misconception
+                      </span>
                       <p className="text-muted-foreground font-medium leading-relaxed">{item.mistake}</p>
                     </div>
 
-                    <div className="bg-emerald-500/5 border border-emerald-500/10 p-2 rounded-xl">
-                      <span className="block text-[9px] font-bold text-emerald-500 uppercase tracking-wider mb-0.5">✅ Corrective Formula / Crux</span>
+                    <div className="bg-emerald-500/5 border border-emerald-500/15 p-2.5 rounded-xl">
+                      <span className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-wider mb-1">
+                        <CheckCircle2 className="w-3 h-3 text-emerald-400 shrink-0" /> Key Crux & Formulation
+                      </span>
                       <p className="text-muted-foreground font-medium leading-relaxed">{item.correction}</p>
                     </div>
                   </div>
@@ -569,6 +594,11 @@ const NotesAndErrors = memo(function NotesAndErrors({
           {showImpForm && (
             <form onSubmit={handleCreateImportanceItem} className="bg-accent/10 border border-border/80 rounded-2xl p-5 space-y-4 animate-[fadeIn_0.2s_ease-out]">
               <h4 className="text-sm font-bold text-foreground">Record Special Concept formula</h4>
+              {formError && (
+                <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs font-semibold text-rose-400">
+                  {formError}
+                </div>
+              )}
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>

@@ -48,7 +48,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
         }
         window.location.reload();
       } catch (err) {
-        alert('Failed to clear some local databases. We will reload the app anyway.');
+        console.warn('Failed to clear some local databases. Proceeding with reload.', err);
         window.location.reload();
       }
     }

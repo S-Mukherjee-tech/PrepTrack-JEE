@@ -47,6 +47,7 @@ const TimerSection = memo(function TimerSection({ settings, onSaveSession, curre
   // Audio & Notification Custom Configurations
   const [alarmSound, setAlarmSound] = useState<'chime' | 'beep' | 'zen'>('chime');
   const [isMuted, setIsMuted] = useState(false);
+  const [minTimeNotice, setMinTimeNotice] = useState<string | null>(null);
   const [visualNotification, setVisualNotification] = useState<{
     type: 'work_done' | 'break_done' | 'test_done';
     title: string;
@@ -373,9 +374,11 @@ const TimerSection = memo(function TimerSection({ settings, onSaveSession, curre
 
   const handleStopAndSave = () => {
     if (timeElapsed < 5) {
-      alert('Keep studying! Log study sessions of at least 5 seconds.');
+      setMinTimeNotice('Keep studying! Log study sessions of at least 5 seconds.');
+      setTimeout(() => setMinTimeNotice(null), 3500);
       return;
     }
+    setMinTimeNotice(null);
 
     const durationToSave = timeElapsed;
     saveSession(durationToSave, false);
@@ -625,9 +628,9 @@ const TimerSection = memo(function TimerSection({ settings, onSaveSession, curre
               onChange={(e) => setAlarmSound(e.target.value as any)}
               className="bg-accent/20 hover:bg-accent/35 border border-border text-[11px] rounded-lg px-2 py-1 outline-none font-bold text-foreground cursor-pointer transition-all"
             >
-              <option value="chime">🎵 Electronic Chimes</option>
-              <option value="beep">🌌 Classic Alert Beeps</option>
-              <option value="zen">🧘 Cosmic Zen Gong</option>
+              <option value="chime">Chime Synthesizer</option>
+              <option value="beep">Precision Beep</option>
+              <option value="zen">Harmonic Resonance</option>
             </select>
           </div>
 
@@ -687,6 +690,13 @@ const TimerSection = memo(function TimerSection({ settings, onSaveSession, curre
             />
           </div>
         </div>
+
+        {/* Minimum time notice */}
+        {minTimeNotice && (
+          <div className="w-full py-2.5 px-3.5 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-400 text-xs font-semibold text-center animate-fade-in">
+            {minTimeNotice}
+          </div>
+        )}
 
         {/* Timer Control CTA Buttons */}
         <div className="pt-2 flex flex-wrap gap-3">

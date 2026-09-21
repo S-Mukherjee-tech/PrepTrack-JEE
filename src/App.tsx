@@ -493,7 +493,7 @@ export default function App() {
       setMockTests([]);
       setShowResetConfirm(false);
       setActiveTab('dashboard');
-      alert('All PrepTrack device data was successfully deleted. App has been reset!');
+      addToast('Data Reset', 'All PrepTrack device data was successfully deleted. App has been reset!', 'info');
     } catch (e) {
       console.error('Failed to reset local workspace', e);
     }
@@ -756,56 +756,56 @@ export default function App() {
     switch (settings.theme) {
       case 'glass':
         return {
-          bg: 'bg-[#060713] text-slate-100 selection:bg-indigo-500/30 selection:text-indigo-200',
-          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-32 lg:py-16 space-y-12 md:space-y-14 relative z-10',
-          headerBg: 'bg-[#0a0c1b]/65 backdrop-blur-2xl border-b border-white/[0.08] sticky top-0 z-50',
-          accentColor: 'text-[#818cf8]',
+          bg: 'bg-[#080b14] text-slate-100 selection:bg-indigo-500/30 selection:text-indigo-200',
+          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-32 lg:py-12 space-y-10 md:space-y-12 relative z-10',
+          headerBg: 'bg-[#080b14]/85 backdrop-blur-xl border-b border-white/[0.08] sticky top-0 z-50',
+          accentColor: 'text-indigo-400',
           borderStyle: 'border-white/[0.08]',
-          cardBg: 'bg-[#131528]/70 backdrop-blur-xl border border-white/[0.1] text-slate-100 shadow-[0_16px_48px_-12px_rgba(99,102,241,0.22)]',
-          navActive: 'bg-white/10 text-white border-b-2 border-indigo-400 font-bold',
-          navInactive: 'text-slate-300 hover:text-white hover:bg-white/5 font-medium',
-          bannerGradient: 'from-indigo-600 via-purple-600 to-pink-500 border border-white/15 shadow-xl',
-          themeBrand: '🌌 Aurora Glass Theme'
+          cardBg: 'bg-[#0e1322]/85 backdrop-blur-xl border border-white/[0.08] text-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.4)]',
+          navActive: 'bg-white/10 text-white font-semibold',
+          navInactive: 'text-slate-400 hover:text-white hover:bg-white/[0.04] font-medium',
+          bannerGradient: 'from-slate-900 via-indigo-950 to-slate-900 border border-white/10 shadow-xl',
+          themeBrand: '🌌 Obsidian Indigo'
         };
       case 'cyber':
         return {
-          bg: 'bg-[#020905] text-emerald-100 selection:bg-emerald-500/30 selection:text-emerald-300',
-          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-32 lg:py-16 space-y-12 md:space-y-14',
-          headerBg: 'bg-[#03150b]/80 backdrop-blur-md border-b border-emerald-500/25 sticky top-0 z-50',
+          bg: 'bg-[#030906] text-emerald-100 selection:bg-emerald-500/30 selection:text-emerald-300',
+          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-32 lg:py-12 space-y-10 md:space-y-12',
+          headerBg: 'bg-[#030906]/85 backdrop-blur-xl border-b border-emerald-500/20 sticky top-0 z-50',
           accentColor: 'text-emerald-400',
           borderStyle: 'border-emerald-500/20',
-          cardBg: 'bg-[#051a10]/95 border border-emerald-500/35 text-emerald-50 shadow-[0_16px_48px_-12px_rgba(16,185,129,0.25)]',
-          navActive: 'bg-emerald-500/20 text-emerald-300 border-b-2 border-emerald-400 font-bold',
-          navInactive: 'text-emerald-400 hover:text-emerald-100 hover:bg-emerald-500/10 font-medium',
-          bannerGradient: 'from-emerald-500 via-teal-600 to-cyan-500 shadow-[0_8px_32px_rgba(16,185,129,0.2)]',
-          themeBrand: '⚡ Cyber Neon Theme'
+          cardBg: 'bg-[#06140b] border border-emerald-500/20 text-emerald-50 shadow-[0_8px_30px_rgb(0,0,0,0.5)]',
+          navActive: 'bg-emerald-500/15 text-emerald-300 font-semibold',
+          navInactive: 'text-emerald-400/70 hover:text-emerald-200 hover:bg-emerald-500/5 font-medium',
+          bannerGradient: 'from-slate-950 via-emerald-950 to-slate-950 border border-emerald-500/25 shadow-xl',
+          themeBrand: '⚡ Cyber Emerald'
         };
       case 'light':
         return {
-          bg: 'bg-[#fffbf7] text-slate-900 selection:bg-indigo-100 selection:text-indigo-900',
-          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-32 lg:py-16 space-y-12 md:space-y-14',
-          headerBg: 'bg-white/80 backdrop-blur-md border-b border-pink-100 sticky top-0 z-50 shadow-sm',
+          bg: 'bg-[#f8fafc] text-slate-900 selection:bg-indigo-100 selection:text-indigo-900',
+          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-32 lg:py-12 space-y-10 md:space-y-12',
+          headerBg: 'bg-white/85 backdrop-blur-xl border-b border-slate-200/80 sticky top-0 z-50',
           accentColor: 'text-indigo-600',
-          borderStyle: 'border-pink-100/60',
-          cardBg: 'bg-white border border-pink-100 text-slate-950 shadow-[0_16px_40px_-12px_rgba(244,63,94,0.06)]',
-          navActive: 'bg-pink-50 text-rose-600 border-b-2 border-rose-500 font-bold',
-          navInactive: 'text-slate-600 hover:text-rose-600 hover:bg-rose-50/50 font-medium',
-          bannerGradient: 'from-pink-400 via-rose-500 to-amber-400 shadow-[0_8px_32px_rgba(244,63,94,0.15)]',
-          themeBrand: '🌸 Spring Blossom Theme'
+          borderStyle: 'border-slate-200/80',
+          cardBg: 'bg-white border border-slate-200/80 text-slate-950 shadow-[0_1px_3px_0_rgba(0,0,0,0.05),0_10px_25px_-5px_rgba(0,0,0,0.04)]',
+          navActive: 'bg-slate-100 text-indigo-600 font-semibold shadow-xs',
+          navInactive: 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/60 font-medium',
+          bannerGradient: 'from-slate-900 via-indigo-950 to-slate-900 border border-slate-800 shadow-xl',
+          themeBrand: '☀️ Minimal Light'
         };
       case 'slate':
       default:
         return {
-          bg: 'bg-[#050816] text-slate-100 selection:bg-cyan-500/30 selection:text-cyan-200',
-          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-32 lg:py-16 space-y-12 md:space-y-14',
-          headerBg: 'bg-[#090d24]/80 backdrop-blur-md border-b border-cyan-500/25 sticky top-0 z-50',
+          bg: 'bg-[#070b14] text-slate-100 selection:bg-cyan-500/30 selection:text-cyan-200',
+          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-32 lg:py-12 space-y-10 md:space-y-12',
+          headerBg: 'bg-[#070b14]/85 backdrop-blur-xl border-b border-white/[0.07] sticky top-0 z-50',
           accentColor: 'text-cyan-400',
-          borderStyle: 'border-cyan-500/20',
-          cardBg: 'bg-[#0d122e]/95 border border-cyan-500/30 text-slate-100 shadow-[0_16px_48px_-12px_rgba(6,182,212,0.25)]',
-          navActive: 'bg-cyan-500/15 text-cyan-300 border-b-2 border-cyan-400 font-bold',
-          navInactive: 'text-slate-300 hover:text-cyan-200 hover:bg-cyan-500/10 font-medium',
-          bannerGradient: 'from-cyan-500 via-blue-600 to-indigo-600 shadow-[0_8px_32px_rgba(6,182,212,0.2)]',
-          themeBrand: '💎 Cosmic Ocean Theme'
+          borderStyle: 'border-white/[0.07]',
+          cardBg: 'bg-[#0c1224] border border-white/[0.07] text-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.45)]',
+          navActive: 'bg-cyan-500/15 text-cyan-300 font-semibold',
+          navInactive: 'text-slate-400 hover:text-cyan-200 hover:bg-cyan-500/5 font-medium',
+          bannerGradient: 'from-slate-950 via-cyan-950 to-slate-950 border border-cyan-500/20 shadow-xl',
+          themeBrand: '💎 Titanium Slate'
         };
     }
   }, [settings.theme]);
@@ -881,62 +881,28 @@ export default function App() {
 
       {/* GLOBAL NAVBAR HEADER */}
       <header className={themeStyles.headerBg}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3 select-none">
-            {/* Custom high-fidelity branding icon with growth paths, success tick & action arrow */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-15 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3 select-none shrink-0">
+            {/* Minimal, crisp branding logo container */}
             <div className="relative group shrink-0 select-none">
-              {/* Animated glowing backdrop aura - constant breathing glow */}
-              <div 
-                className="absolute -inset-1.5 rounded-xl opacity-65 blur-md group-hover:opacity-100 transition duration-1000 animate-pulse-glow"
-                style={{
-                  background: settings.theme === 'cyber'
-                    ? 'linear-gradient(to right, #10b981, #059669, #34d399)'
-                    : settings.theme === 'light'
-                    ? 'linear-gradient(to right, #f43f5e, #ec4899, #fb7185)'
-                    : settings.theme === 'slate'
-                    ? 'linear-gradient(to right, #06b6d4, #0891b2, #38bdf8)'
-                    : 'linear-gradient(to right, #818cf8, #6366f1, #c084fc)'
-                }}
-              />
-              
-              {/* The main logo container box */}
-              <div className="relative p-1.5 rounded-xl bg-slate-950 dark:bg-[#030712] border border-primary/30 text-white shadow-lg overflow-hidden flex items-center justify-center">
-                {/* A circuiting glowing line effect */}
-                <div className="absolute inset-0 w-full h-full pointer-events-none overflow-hidden rounded-xl">
-                  <div 
-                    className="absolute top-0 left-0 w-[200%] h-[200%] -translate-x-1/4 -translate-y-1/4 animate-circuit-slow"
-                    style={{
-                      background: `conic-gradient(from 0deg, transparent 40%, ${
-                        settings.theme === 'cyber' ? '#10b981' :
-                        settings.theme === 'light' ? '#f43f5e' :
-                        settings.theme === 'slate' ? '#06b6d4' :
-                        '#818cf8'
-                      } 50%, ${
-                        settings.theme === 'cyber' ? '#059669' :
-                        settings.theme === 'light' ? '#fb7185' :
-                        settings.theme === 'slate' ? '#0891b2' :
-                        '#6366f1'
-                      } 60%, transparent 70%)`
-                    }}
-                  />
-                  <div className="absolute inset-[1px] bg-slate-950 dark:bg-[#0a0f1d] rounded-[11px]" />
-                </div>
-                
-                {/* Branding Logo inside */}
-                <BrandingLogo size={28} className="shrink-0 relative z-10" />
+              <div className="relative p-1.5 rounded-xl bg-slate-900/90 dark:bg-slate-950 border border-white/10 dark:border-white/10 text-white shadow-xs overflow-hidden flex items-center justify-center transition-transform group-hover:scale-105 duration-200">
+                <BrandingLogo size={24} className="shrink-0 relative z-10" />
               </div>
             </div>
 
-            <div>
-              <div className="flex items-center gap-1.5">
-                <h1 className="text-base font-bold font-display tracking-tight text-foreground leading-none">PrepTrack</h1>
-              </div>
-              <p className="text-[10px] text-muted-foreground font-medium mt-1 hidden xl:block">Your JEE preparation Tracker.</p>
+            <div className="flex items-center gap-2">
+              <h1 className="text-base font-extrabold font-display tracking-tight text-foreground leading-none">
+                PrepTrack
+              </h1>
+              <span className="hidden sm:inline-flex items-center gap-1 text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 select-none">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                JEE 2026
+              </span>
             </div>
           </div>
 
-          {/* Nav Links for PC */}
-          <nav className="hidden lg:flex items-center h-full gap-0.5 xl:gap-1.5">
+          {/* Nav Segmented Control for PC */}
+          <nav className="hidden lg:flex items-center p-1 rounded-xl bg-accent/[0.06] border border-border/40 gap-0.5 backdrop-blur-md">
             {[
               { id: 'dashboard', label: 'Dashboard', icon: Timer },
               { id: 'analytics', label: 'Analytics', icon: BarChart },
@@ -948,43 +914,32 @@ export default function App() {
             ].map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
-              const textClass = isActive 
-                ? (settings.theme === 'light' ? 'text-rose-650 font-extrabold' : settings.theme === 'cyber' ? 'text-emerald-400 font-extrabold' : settings.theme === 'slate' ? 'text-cyan-400 font-extrabold' : 'text-[#818cf8] font-extrabold') 
-                : (settings.theme === 'light' ? 'text-slate-600 hover:text-rose-600 hover:bg-rose-50/40' : settings.theme === 'cyber' ? 'text-emerald-500/70 hover:text-emerald-300 hover:bg-emerald-950/20' : settings.theme === 'slate' ? 'text-slate-400 hover:text-cyan-300 hover:bg-cyan-950/20' : 'text-slate-400 hover:text-white hover:bg-white/5');
               return (
                 <button
                   key={tab.id}
                   onClick={() => handleTabChange(tab.id as any)}
-                  className={`h-16 px-1.5 xl:px-4 flex items-center gap-1 xl:gap-2 text-[10.5px] xl:text-xs font-semibold relative transition-all duration-300 cursor-pointer outline-none rounded-t-lg ${textClass}`}
+                  className={`px-3 py-1.5 flex items-center gap-1.5 text-xs font-semibold relative transition-all duration-150 cursor-pointer outline-none rounded-lg select-none ${
+                    isActive 
+                      ? 'text-foreground font-bold shadow-xs' 
+                      : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.04]'
+                  }`}
                 >
-                  <Icon className="w-4 h-4 shrink-0 z-10" />
+                  {isActive && (
+                    <motion.div
+                      layoutId="activeDesktopSegment"
+                      className="absolute inset-0 bg-card border border-border/70 rounded-lg -z-0 shadow-xs"
+                      transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                    />
+                  )}
+                  <Icon className={`w-3.5 h-3.5 shrink-0 z-10 transition-colors ${isActive ? 'text-primary' : 'opacity-70'}`} />
                   <span className="z-10">{tab.label}</span>
-                  {isActive && (
-                    <motion.div
-                      layoutId="activeTabUnderline"
-                      className={`absolute bottom-0 left-0 right-0 h-1 z-10 ${
-                        settings.theme === 'cyber' ? 'bg-emerald-400 shadow-[0_-2px_10px_rgba(16,185,129,0.5)]' :
-                        settings.theme === 'light' ? 'bg-rose-500 shadow-[0_-2px_10px_rgba(244,63,94,0.5)]' :
-                        settings.theme === 'slate' ? 'bg-cyan-400 shadow-[0_-2px_10px_rgba(6,182,212,0.5)]' :
-                        'bg-indigo-400 shadow-[0_-2px_10px_rgba(129,140,248,0.5)]'
-                      }`}
-                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                    />
-                  )}
-                  {isActive && (
-                    <motion.div
-                      layoutId="activeTabBackground"
-                      className="absolute inset-0 bg-white/[0.03] rounded-t-lg z-0"
-                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                    />
-                  )}
                 </button>
               );
             })}
           </nav>
 
-          {/* Quick theme toggler in navbar for supreme accessibility */}
-          <div className="flex items-center gap-2.5">
+          {/* Header Utilities: Live Clock & Theme Toggler */}
+          <div className="flex items-center gap-2">
             <HeaderClock 
               clockFormat={settings.clockFormat} 
               timezone={settings.timezone}
@@ -997,7 +952,7 @@ export default function App() {
                 const nextTheme = themes[(currentIdx + 1) % themes.length];
                 handleSaveSettings({ ...settings, theme: nextTheme });
               }}
-              className="p-2 border border-border rounded-xl bg-accent/15 hover:bg-accent/30 text-muted-foreground hover:text-foreground transition-all cursor-pointer"
+              className="p-2 border border-border/50 rounded-xl bg-accent/10 hover:bg-accent/25 text-muted-foreground hover:text-foreground transition-all cursor-pointer"
               title={`Switch Theme (Current: ${settings.theme})`}
               aria-label={`Switch Theme (Current: ${settings.theme})`}
             >
@@ -1012,7 +967,7 @@ export default function App() {
       </header>
 
       {/* MOBILE CONSOLE TABS - FIXED BOTTOM NAV BAR FOR NATIVE APP EXPERIENCE */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-card/90 backdrop-blur-xl border-t border-border z-40 flex items-center justify-around px-2 h-16 pb-safe gap-1 shadow-[0_-8px_32px_rgba(0,0,0,0.12)]">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-xl border-t border-border/60 z-40 flex items-center justify-around px-2 h-16 pb-safe gap-1 shadow-[0_-8px_32px_rgba(0,0,0,0.18)]">
         {[
           { id: 'dashboard', label: 'Home', icon: Timer },
           { id: 'analytics', label: 'Stats', icon: BarChart },
@@ -1028,26 +983,21 @@ export default function App() {
             <button
               key={tab.id}
               onClick={() => handleTabChange(tab.id as any)}
-              className={`flex-1 py-1 flex flex-col items-center justify-center gap-1 relative transition-all duration-250 outline-none ${
+              className={`flex-1 py-1 flex flex-col items-center justify-center gap-1 relative transition-all duration-200 outline-none select-none ${
                 isActive
-                  ? (settings.theme === 'light' ? 'text-rose-650 font-black' : settings.theme === 'cyber' ? 'text-emerald-400 font-black' : settings.theme === 'slate' ? 'text-cyan-400 font-black' : 'text-[#818cf8] font-black')
-                  : 'text-muted-foreground/80 hover:text-foreground font-medium'
+                  ? 'text-primary font-bold'
+                  : 'text-muted-foreground hover:text-foreground font-medium'
               }`}
             >
               {isActive && (
                 <motion.div
                    layoutId="activeMobileTabPill"
-                   className={`absolute inset-x-1.5 inset-y-1 rounded-2xl -z-0 ${
-                     settings.theme === 'light' ? 'bg-rose-500/10' :
-                     settings.theme === 'cyber' ? 'bg-emerald-500/10' :
-                     settings.theme === 'slate' ? 'bg-cyan-500/10' :
-                     'bg-indigo-500/10'
-                   }`}
-                   transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                   className="absolute inset-x-1.5 inset-y-1 rounded-xl -z-0 bg-primary/10 border border-primary/20"
+                   transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                 />
               )}
               <Icon className="w-4.5 h-4.5 z-10 shrink-0" />
-              <span className="z-10 text-[8px] font-bold leading-none tracking-tight select-none">{tab.label}</span>
+              <span className="z-10 text-[8.5px] font-bold leading-none tracking-tight">{tab.label}</span>
             </button>
           );
         })}
@@ -1103,520 +1053,6 @@ export default function App() {
               />
             </div>
           </div>
-
-          {/* DEPRECATED INLINE DASHBOARD CODE GUARDED */}
-          {false && (
-            <div className={activeTab === 'dashboard' ? 'block' : 'hidden'}>
-              <motion.div
-              variants={dashboardContainerVariants}
-              initial="hidden"
-              animate={activeTab === 'dashboard' ? "visible" : "hidden"}
-              className="space-y-12 md:space-y-14"
-            >
-              <div className="space-y-12 md:space-y-14">
-                
-                {/* Dynamic header welcome banner now displayed ONLY inside dashboard workspace */}
-                <motion.div 
-                  variants={dashboardItemVariants}
-                  className={`p-6 md:p-8 rounded-3xl bg-gradient-to-r ${themeStyles.bannerGradient} text-white shadow-lg space-y-3 relative overflow-hidden`}
-                >
-                  {/* Subtle logo background */}
-                  <div className="absolute right-0 bottom-0 opacity-12 translate-x-12 translate-y-12 select-none pointer-events-none">
-                    <BrandingLogo size={280} />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-150 bg-white/10 px-2.5 py-1 rounded-full w-max">
-                      JEE Preparation Companion • Pure & Focused Tracker
-                    </span>
-                    <h2 className="text-2xl md:text-3xl font-display font-black leading-tight tracking-tight">Focus. Track. Crack JEE.</h2>
-                    <p className="text-xs text-indigo-100 max-w-xl font-medium leading-relaxed">
-                      A comprehensive, elegant workspace to track study hours, practice questions, and chapter progress for JEE Main & Advanced.
-                    </p>
-                  </div>
-
-                  {/* PCM Fast stats panel */}
-                  <div className="pt-4 grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 max-w-lg">
-                    <div className="bg-white/10 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl text-center border border-white/5 shadow-sm relative group" title="Today's focused study minutes translated to hours (resets daily)">
-                      <span className="block text-[9px] uppercase font-bold text-indigo-150">Study Hrs (Today)</span>
-                      <span className="text-sm sm:text-base font-bold font-mono tracking-tight text-white mt-1 block">
-                        {(studyMinutesToday / 60).toFixed(1)}h
-                      </span>
-                    </div>
-
-                    <div className="bg-white/10 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl text-center border border-white/5 shadow-sm relative group" title="Today's total questions solved (resets daily)">
-                      <span className="block text-[9px] uppercase font-bold text-indigo-150">Qs Solved (Today)</span>
-                      <span className="text-sm sm:text-base font-bold font-mono tracking-tight text-white mt-1 block">
-                        {questionsSolvedToday}
-                      </span>
-                    </div>
-
-                    <div className="bg-white/10 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl text-center border border-white/5 shadow-sm">
-                      <span className="block text-[9px] uppercase font-bold text-indigo-150">NCERT Done</span>
-                      <span className="text-sm sm:text-base font-bold font-mono tracking-tight text-white mt-1 block">
-                        {syllabusStats.percentage}%
-                      </span>
-                    </div>
-
-                    <div className="bg-white/10 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl text-center border border-white/5 shadow-sm">
-                      <span className="block text-[9px] uppercase font-bold text-indigo-150">Streak 🔥</span>
-                      <span className="text-sm sm:text-base font-bold font-mono tracking-tight text-white mt-1 block">
-                        {streakStats.currentStreak}d
-                      </span>
-                    </div>
-                  </div>
-                </motion.div>                  
-
-                {/* Subtle horizontal section divider */}
-                <div className={`border-t ${themeStyles.borderStyle} my-8 opacity-65`} />
-
-                {/* Central Study Timer */}
-                <motion.div variants={dashboardItemVariants}>
-                  <TimerSection 
-                    settings={settings}
-                    onSaveSession={handleSaveStudySession}
-                    currentSessionsTodayCount={sessionsTodayCount}
-                  />
-                </motion.div>
-                
-                {/* Subtle horizontal section divider */}
-                <div className={`border-t ${themeStyles.borderStyle} my-8 opacity-65`} />
-                
-                {/* GAMIFIED STUDY STREAK COUNTER */}
-                <motion.div 
-                  variants={dashboardItemVariants}
-                  className={`bg-card border border-border rounded-3xl p-6 shadow-sm ${themeStyles.cardBg} relative overflow-hidden dashboard-card-gpu`}
-                >
-                    
-                    {/* Decorative ambient background glow */}
-                    <div className="absolute -right-12 -top-12 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl pointer-events-none" />
-                    
-                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                      
-                      {/* Left Block: Core Flame and Stats */}
-                      <div className="flex items-center gap-4.5">
-                        
-                        {/* Roaring Hot Streak Badge Container */}
-                        <div className={`relative shrink-0 w-16 h-16 rounded-2xl flex flex-col items-center justify-center border transition-all duration-500 ${
-                          streakStats.currentStreak > 0
-                            ? 'bg-orange-500/15 border-orange-500/35 text-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.12)] scale-[1.01]'
-                            : 'bg-accent/10 border-border text-muted-foreground/60'
-                        }`}>
-                          
-                          {/* Pulsing visual halo for positive streaks */}
-                          {streakStats.currentStreak > 0 && (
-                            <span className="absolute inset-0.5 rounded-2xl bg-orange-500/20 animate-ping opacity-30 pointer-events-none" />
-                          )}
-                          
-                          <Flame className={`w-8 h-8 ${streakStats.currentStreak > 0 ? 'animate-bounce' : ''}`} fill={streakStats.currentStreak > 0 ? 'currentColor' : 'none'} />
-                          
-                          {streakStats.currentStreak > 0 && (
-                            <span className="absolute bottom-1 right-1 text-[8px] font-black font-mono bg-orange-500 text-white px-1 rounded-sm leading-none py-0.5 select-none">
-                              LIT
-                            </span>
-                          )}
-                        </div>
-
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <h3 className="text-lg font-bold font-display tracking-tight text-foreground">
-                              {streakStats.currentStreak} Day Study Streak
-                            </h3>
-                            {streakStats.currentStreak > 0 && (
-                              <span className="text-[9px] uppercase tracking-wider font-extrabold text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded-full select-none">
-                                Unstoppable Flame
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-xs text-muted-foreground leading-relaxed max-w-md">
-                            {streakStats.currentStreak > 0
-                              ? `You have met your JEE Daily Study Goals for ${streakStats.currentStreak} consecutive days! Keep up this supreme momentum to crack it!`
-                              : "Meet either your Daily study hours goal or questions target today to spark an active study streak!"}
-                          </p>
-                          
-                          {/* Streak statistics secondary row */}
-                          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pt-1 text-[10px] font-mono font-medium text-slate-400">
-                            <span className="flex items-center gap-1.5">
-                              <Award className="w-3.5 h-3.5 text-indigo-500" />
-                              All-Time Peak-Streak: <strong className="text-foreground">{streakStats.maxStreak} days</strong>
-                            </span>
-                            <span>•</span>
-                            <span className="flex items-center gap-1">
-                              Today's Pulse: {streakStats.metToday ? (
-                                <strong className="text-emerald-500">Sparked! 🔥</strong>
-                              ) : streakStats.metYesterday ? (
-                                <strong className="text-orange-400">Maintained (Needs study) ⏳</strong>
-                              ) : (
-                                <strong className="text-muted-foreground/80">Cold ❄️</strong>
-                              )}
-                            </span>
-                          </div>
-                        </div>
-
-                      </div>
-
-                      {/* Right Block: Visual 7-Day Calendar Checklist */}
-                      <div className="bg-accent/[0.03] dark:bg-white/[0.02] border border-border/85 rounded-2xl p-4 lg:w-[460px] shrink-0 w-full">
-                        <span className="block text-[10px] uppercase font-bold tracking-wider text-muted-foreground mb-3 text-center lg:text-left select-none">
-                          Past Weekly Fire Checklist
-                        </span>
-                        
-                        <div className="grid grid-cols-7 gap-1 sm:gap-2">
-                          {streakStats.weeklyGrid.map((day) => {
-                            return (
-                              <div
-                                key={day.dateStr}
-                                className={`flex flex-col items-center gap-1.5 p-0.5 sm:p-1 rounded-xl transition-all duration-300 relative ${
-                                  day.isToday 
-                                    ? 'bg-indigo-500/5 border border-indigo-500/25' 
-                                    : 'border border-transparent'
-                                }`}
-                              >
-                                <span className={`text-[8px] sm:text-[9px] font-mono font-black ${
-                                  day.isToday ? 'text-indigo-500' : 'text-muted-foreground/90'
-                                }`}>
-                                  {day.dayAbbrev}
-                                </span>
-                                
-                                <div className={`w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center transition-all duration-400 border cursor-default ${
-                                  day.met
-                                    ? 'bg-gradient-to-tr from-amber-500 to-orange-500 text-white border-orange-500/40 shadow-xs'
-                                    : day.activeAtAll
-                                      ? 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20'
-                                      : 'bg-card border-border/60 text-muted-foreground/35 hover:border-muted-foreground/30'
-                                }`}
-                                title={`${day.studyMins} mins studied, ${day.questionsSolved} questions solved`}>
-                                  {day.met ? (
-                                    <Flame className="w-4 h-4 sm:w-5 sm:h-5 fill-white animate-pulse" />
-                                  ) : day.activeAtAll ? (
-                                    <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse" />
-                                  ) : (
-                                    <span className="text-[9px] sm:text-[10px] font-mono font-medium select-none">{day.dayNum}</span>
-                                  )}
-                                </div>
-                                
-                                {day.isToday && (
-                                  <span className="text-[7px] sm:text-[8px] font-bold text-indigo-500 uppercase leading-none mt-0.5 tracking-wider select-none">
-                                    Today
-                                  </span>
-                                )}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-
-                    </div>
-                  </motion.div>
-
-                  {/* Subtle horizontal section divider */}
-                  <div className={`border-t ${themeStyles.borderStyle} my-8 opacity-65`} />
-
-                  {/* TODAY'S GOALS PROGRESS BOARD */}
-                  <motion.div 
-                    variants={dashboardItemVariants}
-                    className={`bg-card border border-border rounded-3xl p-6 shadow-sm space-y-6 ${themeStyles.cardBg}`}
-                  >
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/40 pb-5">
-                      <div>
-                        <h3 className="text-base font-bold font-display tracking-tight flex items-center gap-2">
-                          <Award className="w-5 h-5 text-indigo-500 animate-pulse" /> Today's Aspiration Milestones
-                        </h3>
-                        <p className="text-[11px] text-muted-foreground mt-0.5">Real-time tracking of achievements towards your custom daily JEE study targets</p>
-                      </div>
-                      
-                      <button
-                        onClick={() => handleTabChange('settings')}
-                        className="text-[10px] sm:self-center uppercase font-bold text-indigo-500 hover:text-indigo-400 flex items-center gap-1 cursor-pointer w-max self-start"
-                      >
-                        Adjust targets <ArrowUpRight className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                      {/* STUDY HOUR GOAL */}
-                      <div className="flex flex-col sm:flex-row items-center gap-5 p-5.5 rounded-2xl bg-slate-500/5 border border-slate-500/10 dark:bg-white/[0.02] dark:border-white/[0.05] hover:bg-slate-500/10 dark:hover:bg-white/[0.04] transition-all duration-300">
-                        {/* Radial Ring Container */}
-                        <div className="relative w-32 h-32 flex-shrink-0 flex items-center justify-center">
-                          {/* Outer glow overlay */}
-                          <div className="absolute inset-0 rounded-full bg-indigo-500/5 blur-md" />
-                          <svg className="w-full h-full transform -rotate-90" viewBox="0 0 128 128">
-                            {/* Track Circle */}
-                            <circle
-                              cx="64"
-                              cy="64"
-                              r="50"
-                              className="stroke-slate-200 dark:stroke-white/10 fill-transparent"
-                              strokeWidth="8"
-                            />
-                            {/* Progress Circle */}
-                            <motion.circle
-                              cx="64"
-                              cy="64"
-                              r="50"
-                              className="stroke-indigo-500 dark:stroke-indigo-400 fill-transparent"
-                              strokeWidth="8"
-                              strokeLinecap="round"
-                              strokeDasharray="314.16"
-                              initial={{ strokeDashoffset: 314.16 }}
-                              animate={{ strokeDashoffset: 314.16 - (Math.min(100, (studyMinutesToday / (settings.dailyStudyMinutesGoal ?? 180)) * 100) / 100) * 314.16 }}
-                              transition={{ duration: 1.2, ease: "easeOut" }}
-                            />
-                          </svg>
-                          {/* Inner percentage & details */}
-                          <div className="absolute flex flex-col items-center justify-center text-center">
-                            <span className="text-xl font-black font-mono tracking-tight text-foreground">
-                              {Math.min(100, Math.round((studyMinutesToday / (settings.dailyStudyMinutesGoal ?? 180)) * 100))}%
-                            </span>
-                            <span className="text-[9px] uppercase font-bold tracking-wider text-muted-foreground font-sans">
-                              Studied
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Text and Details */}
-                        <div className="flex-1 space-y-2.5 text-center sm:text-left w-full">
-                          <div className="flex items-center justify-center sm:justify-start gap-2">
-                            <div className="p-1.5 bg-indigo-500/10 rounded-lg text-indigo-500 shrink-0">
-                              <BookOpen className="w-4 h-4" />
-                            </div>
-                            <span className="text-sm font-bold text-foreground">Focused Study Hours</span>
-                          </div>
-                          <div className="space-y-1">
-                            <span className="text-xs text-muted-foreground font-medium block">
-                              {(studyMinutesToday / 60).toFixed(1)}h of {((settings.dailyStudyMinutesGoal ?? 180) / 60).toFixed(1)}h target complete
-                            </span>
-                            <div className="text-[10px] text-muted-foreground/80 font-mono">
-                              {studyMinutesToday} mins / {(settings.dailyStudyMinutesGoal ?? 180)} mins goal
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* PROBLEMS SOLVED GOAL */}
-                      <div className="flex flex-col sm:flex-row items-center gap-5 p-5.5 rounded-2xl bg-slate-500/5 border border-slate-500/10 dark:bg-white/[0.02] dark:border-white/[0.05] hover:bg-slate-500/10 dark:hover:bg-white/[0.04] transition-all duration-300">
-                        {/* Radial Ring Container */}
-                        <div className="relative w-32 h-32 flex-shrink-0 flex items-center justify-center">
-                          {/* Outer glow overlay */}
-                          <div className="absolute inset-0 rounded-full bg-emerald-500/5 blur-md" />
-                          <svg className="w-full h-full transform -rotate-90" viewBox="0 0 128 128">
-                            {/* Track Circle */}
-                            <circle
-                              cx="64"
-                              cy="64"
-                              r="50"
-                              className="stroke-slate-200 dark:stroke-white/10 fill-transparent"
-                              strokeWidth="8"
-                            />
-                            {/* Progress Circle */}
-                            <motion.circle
-                              cx="64"
-                              cy="64"
-                              r="50"
-                              className="stroke-emerald-500 dark:stroke-emerald-400 fill-transparent"
-                              strokeWidth="8"
-                              strokeLinecap="round"
-                              strokeDasharray="314.16"
-                              initial={{ strokeDashoffset: 314.16 }}
-                              animate={{ strokeDashoffset: 314.16 - (Math.min(100, (questionsSolvedToday / (settings.dailyQuestionsSolvedGoal ?? 30)) * 100) / 100) * 314.16 }}
-                              transition={{ duration: 1.2, ease: "easeOut" }}
-                            />
-                          </svg>
-                          {/* Inner percentage & details */}
-                          <div className="absolute flex flex-col items-center justify-center text-center">
-                            <span className="text-xl font-black font-mono tracking-tight text-foreground">
-                              {Math.min(100, Math.round((questionsSolvedToday / (settings.dailyQuestionsSolvedGoal ?? 30)) * 100))}%
-                            </span>
-                            <span className="text-[9px] uppercase font-bold tracking-wider text-muted-foreground font-sans">
-                              Solved
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Text and Details */}
-                        <div className="flex-1 space-y-2.5 text-center sm:text-left w-full">
-                          <div className="flex items-center justify-center sm:justify-start gap-2">
-                            <div className="p-1.5 bg-emerald-500/10 rounded-lg text-emerald-500 shrink-0">
-                              <CheckCircle className="w-4 h-4" />
-                            </div>
-                            <span className="text-sm font-bold text-foreground">Daily Problem Solves</span>
-                          </div>
-                          <div className="space-y-1">
-                            <span className="text-xs text-muted-foreground font-medium block">
-                              {questionsSolvedToday} of {(settings.dailyQuestionsSolvedGoal ?? 30)} questions tracked
-                            </span>
-                            <div className="text-[10px] text-muted-foreground/80 font-mono">
-                              {questionsSolvedToday} Qs / {(settings.dailyQuestionsSolvedGoal ?? 30)} Qs goal
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Fun motivative dynamic notification */}
-                    {(studyMinutesToday >= (settings.dailyStudyMinutesGoal ?? 180) && questionsSolvedToday >= (settings.dailyQuestionsSolvedGoal ?? 30)) ? (
-                      <div className="bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-2xl flex items-center gap-3 animate-fade-in">
-                        <Sparkles className="w-5 h-5 text-emerald-500 shrink-0 animate-bounce" />
-                        <div className="text-xs text-emerald-400">
-                          <span className="font-bold">Outstanding focus!</span> Both daily targets have been successfully surpassed today. Keep on tracking to build supreme momentum!
-                        </div>
-                      </div>
-                    ) : (studyMinutesToday >= (settings.dailyStudyMinutesGoal ?? 180) || questionsSolvedToday >= (settings.dailyQuestionsSolvedGoal ?? 30)) ? (
-                      <div className="bg-indigo-500/10 border border-indigo-500/20 p-4 rounded-2xl flex items-center gap-3 animate-fade-in">
-                        <Coffee className="w-5 h-5 text-indigo-400 shrink-0" />
-                        <div className="text-xs text-indigo-300">
-                          <span className="font-bold">Super progress!</span> You have completed one of your milestones today. Power through the remaining target to stay at peak consistency!
-                        </div>
-                      </div>
-                    ) : null}
-                  </motion.div>
-
-                  {/* Subtle horizontal section divider */}
-                  <div className={`border-t ${themeStyles.borderStyle} my-8 opacity-65`} />
-
-                  {/* Fast Daily Quick Solves card */}
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    
-                    {/* Solved ratios quick guide */}
-                    <motion.div 
-                      variants={dashboardItemVariants}
-                      className="bg-card border border-border rounded-2xl p-6.5 space-y-4 dashboard-card-gpu"
-                    >
-                      <h4 className="text-sm font-bold font-display tracking-tight flex items-center gap-1.5 text-foreground">
-                        <TrendingUp className="w-4 h-4 text-emerald-500" /> Today's Focus Pulse
-                      </h4>
-
-                      <div className="space-y-3.5 text-xs text-muted-foreground leading-relaxed">
-                        <p>JEE success depends critically on daily problem cycles. Logging questions establishes fine grain muscle memory.</p>
-                        <div className="space-y-2 font-medium">
-                          <div className="flex justify-between border-b border-border/40 pb-1.5">
-                            <span>Total Solved Questions:</span>
-                            <span className="font-bold font-mono text-foreground">{questionAggregatess.normal} Qs</span>
-                          </div>
-                          <div className="flex justify-between border-b border-border/40 pb-1.5">
-                            <span>Success PYQs Solved:</span>
-                            <span className="font-bold font-mono text-emerald-500">{questionAggregatess.pyqs} Qs</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span>NCERT Checklist status:</span>
-                            <span className="font-bold text-indigo-500">
-                              {Object.values(chapterCompletions).filter(Boolean).length} Done
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-
-                    {/* Study History Snapshot */}
-                    <motion.div 
-                      variants={dashboardItemVariants}
-                      className="lg:col-span-2 bg-card border border-border rounded-2xl p-6.5 space-y-4 dashboard-card-gpu"
-                    >
-                      <div className="flex items-center justify-between">
-                        <h4 className="text-sm font-bold font-display tracking-tight flex items-center gap-1.5 text-foreground">
-                          <History className="w-4.5 h-4.5 text-indigo-500 animate-spin-slow" /> Recent Actions Study Log
-                        </h4>
-                        <button
-                          onClick={() => handleTabChange('analytics')}
-                          className="text-[10px] uppercase font-bold text-indigo-500 hover:text-indigo-400 flex items-center gap-1 cursor-pointer"
-                        >
-                          All Logs <ArrowUpRight className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-
-                      <WindowedStudyLog
-                        sessions={sessions}
-                        onDeleteSession={handleDeleteStudySession}
-                        maxHeight="170px"
-                        isAnalyticsVariant={false}
-                      />
-                    </motion.div>
-
-                  </div>
-
-                  {/* QUICK NOTES SECTION */}
-                  <motion.div variants={dashboardItemVariants}>
-                    <QuickNotes theme={settings.theme} cardBgClass={themeStyles.cardBg} />
-                  </motion.div>
-
-                  {/* DYNAMIC JEE LIVE TOOL LINKS & TELEGRAM GROUP */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
-                    
-                    {/* Telegram Community */}
-                    <motion.div 
-                      variants={dashboardItemVariants}
-                      className="bg-card border border-border rounded-3xl p-6 shadow-sm flex flex-col justify-between"
-                    >
-                      <div className="space-y-1.5">
-                        <span className="text-[9px] uppercase font-bold text-indigo-500 bg-indigo-500/10 px-2 py-0.5 rounded-full w-max">Community Sync</span>
-                        <h4 className="text-base font-bold font-sans tracking-tight">JEE CIRCLES Telegram</h4>
-                        <p className="text-xs text-muted-foreground leading-relaxed">
-                          Join other serious aspirants in our active JEE CIRCLES telegram group. Collaborate, solve, and get guides instantly.
-                        </p>
-                      </div>
-
-                      <a
-                        href="https://t.me/JEECIRCLES"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-4 bg-indigo-600/10 text-indigo-500 hover:bg-indigo-600 hover:text-white text-xs font-bold py-3 px-4 rounded-2xl text-center border border-indigo-500/20 flex items-center justify-center gap-1.5 transition-all outline-none"
-                      >
-                        Join JEE CIRCLES <ArrowUpRight className="w-4 h-4" />
-                      </a>
-                    </motion.div>
-
-                    {/* Exam Countdown timer link */}
-                    <motion.div 
-                      variants={dashboardItemVariants}
-                      className="bg-card border border-border rounded-3xl p-6 shadow-sm flex flex-col justify-between"
-                    >
-                      <div className="space-y-1.5">
-                        <span className="text-[9px] uppercase font-bold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-full w-max">Live Timer App</span>
-                        <h4 className="text-base font-bold font-sans tracking-tight">JEE & NEET Exam Clock</h4>
-                        <p className="text-xs text-muted-foreground leading-relaxed">
-                          Track dynamic countdowns and remaining preparation slots visually using high quality exam timing portals.
-                        </p>
-                      </div>
-
-                      <a
-                        href="https://examclock-jee-neet-aspirants.vercel.app/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-4 bg-amber-600/10 text-amber-500 hover:bg-amber-600 hover:text-white text-xs font-bold py-3 px-4 rounded-2xl text-center border border-amber-500/20 flex items-center justify-center gap-1.5 transition-all outline-none"
-                      >
-                        Access Countdown Timer <ArrowUpRight className="w-4 h-4" />
-                      </a>
-                    </motion.div>
-
-                    {/* IIT JEE Guide link */}
-                    <motion.div 
-                      variants={dashboardItemVariants}
-                      className="bg-card border border-border rounded-3xl p-6 shadow-sm flex flex-col justify-between"
-                    >
-                      <div className="space-y-1.5">
-                        <span className="text-[9px] uppercase font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full w-max">Aspirant Guides</span>
-                        <h4 className="text-base font-bold font-sans tracking-tight">The IIT JEE Guide Hub</h4>
-                        <p className="text-xs text-muted-foreground leading-relaxed">
-                          Access optimal subject prep schedules, NCERT solution methods, strategy breakdowns and pyq archives easily.
-                        </p>
-                      </div>
-
-                      <a
-                        href="https://iit-jee-guide.vercel.app/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-4 bg-emerald-600/10 text-emerald-500 hover:bg-emerald-600 hover:text-white text-xs font-bold py-3 px-4 rounded-2xl text-center border border-emerald-500/20 flex items-center justify-center gap-1.5 transition-all outline-none"
-                      >
-                        View JEE Guides <ArrowUpRight className="w-4 h-4" />
-                      </a>
-                    </motion.div>
-
-                  </div>
-
-                </div>
-            </motion.div>
-          </div>
-          )}
 
           {/* TAB 2: PROGRESS HISTORY & BAR CHARTS */}
           <div className={activeTab === 'analytics' ? 'block' : 'hidden'}>

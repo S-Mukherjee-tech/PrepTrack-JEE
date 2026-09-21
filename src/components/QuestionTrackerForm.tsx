@@ -1,6 +1,6 @@
 import { useState, useEffect, memo } from 'react';
 import { DailyQuestions } from '../types';
-import { Hash, Plus, Calendar, Save, Trash2, CheckCircle } from 'lucide-react';
+import { Hash, Plus, Calendar, Save, Trash2, CheckCircle2, Atom, FlaskConical, Binary } from 'lucide-react';
 import { validateNumber, validateDate } from '../utils/validators';
 
 interface QuestionTrackerFormProps {
@@ -69,7 +69,6 @@ const QuestionTrackerForm = memo(function QuestionTrackerForm({ questionsList, o
       setter('');
       return;
     }
-    // Limit inputs to maximum 3 digits (max 999 questions per day category is a very safe limit)
     const sliced = val.slice(0, 3);
     const cleaned = sliced.replace(/[^0-9]/g, '');
     if (cleaned === '') {
@@ -128,22 +127,27 @@ const QuestionTrackerForm = memo(function QuestionTrackerForm({ questionsList, o
   };
 
   return (
-    <div className="bg-card border border-border rounded-3xl p-6 lg:p-8 shadow-sm hover:border-accent/30 active-scale-99 transition-all duration-300">
+    <div className="bg-card border border-border rounded-3xl p-6 lg:p-8 shadow-sm space-y-6 hover:border-accent/30 active-scale-99 transition-all duration-300">
       
       {/* Date Header Switcher */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border/60 pb-5 mb-6 gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border/60 pb-5 gap-4">
         <div>
-          <h3 className="text-lg font-bold font-sans tracking-tight">Question Solving Logs</h3>
-          <p className="text-xs text-muted-foreground">Select a date below to log and persistent track questions solved</p>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-mono uppercase tracking-wider font-bold text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-0.5 rounded-full">
+              Problem Solver
+            </span>
+          </div>
+          <h3 className="text-lg font-bold font-sans tracking-tight text-foreground mt-1">Daily Practice Logs</h3>
+          <p className="text-xs text-muted-foreground">Select a date to track your standard practice questions and PYQ milestones.</p>
         </div>
 
-        <div className="flex items-center gap-2 bg-accent/15 border border-border px-3 py-2 rounded-xl">
-          <Calendar className="w-4 h-4 text-indigo-500" />
+        <div className="flex items-center gap-2 bg-accent/15 border border-border/70 px-3.5 py-2 rounded-xl shadow-xs">
+          <Calendar className="w-4 h-4 text-indigo-500 shrink-0" />
           <input
             type="date"
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
-            className="bg-transparent text-xs font-semibold outline-none text-foreground select-none cursor-pointer"
+            className="bg-transparent text-xs font-mono font-bold outline-none text-foreground select-none cursor-pointer"
           />
         </div>
       </div>
@@ -152,17 +156,25 @@ const QuestionTrackerForm = memo(function QuestionTrackerForm({ questionsList, o
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
         {/* PHYSICS SECTION */}
-        <div className="bg-accent/10 border border-border/80 rounded-2xl p-5 space-y-4">
-          <div className="flex justify-between items-center border-b border-border pb-3 mb-2">
-            <span className="text-sm font-bold text-foreground">Physics Log</span>
-            <span className="text-xs font-mono font-bold bg-indigo-500/10 text-indigo-500 dark:text-indigo-400 px-2 py-0.5 rounded-full">
-              {physicsTotal} Qs Done
+        <div className="bg-accent/10 border border-border/70 hover:border-indigo-500/30 rounded-2xl p-5 space-y-4 transition-colors">
+          <div className="flex justify-between items-center border-b border-border/60 pb-3">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                <Atom className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="text-sm font-bold text-foreground block leading-none">Physics</span>
+                <span className="text-[10px] text-muted-foreground font-mono">Mechanics & Electrodynamics</span>
+              </div>
+            </div>
+            <span className="text-xs font-mono font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-2.5 py-1 rounded-full">
+              {physicsTotal} Qs
             </span>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-3.5">
             <div>
-              <label className="block text-[11px] font-medium text-muted-foreground mb-1">Normal Questions Solved</label>
+              <label className="block text-[11px] font-medium text-muted-foreground mb-1.5">Standard Problems</label>
               <input
                 type="text"
                 inputMode="numeric"
@@ -170,13 +182,13 @@ const QuestionTrackerForm = memo(function QuestionTrackerForm({ questionsList, o
                 value={physicsNormal}
                 onFocus={(e) => e.target.select()}
                 onChange={(e) => handleIntChange(e.target.value, setPhysicsNormal)}
-                className="w-full bg-card border border-border text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500/50 font-sans font-medium"
+                className="w-full bg-card border border-border/80 text-xs rounded-xl px-3 py-2.5 outline-none focus:border-indigo-500/60 font-mono font-semibold text-foreground transition-all"
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2.5">
               <div>
-                <label className="block text-[10px] font-medium text-muted-foreground mb-1">JEE Main PYQs</label>
+                <label className="block text-[10px] font-medium text-muted-foreground mb-1">JEE Main PYQ</label>
                 <input
                   type="text"
                   inputMode="numeric"
@@ -184,11 +196,11 @@ const QuestionTrackerForm = memo(function QuestionTrackerForm({ questionsList, o
                   value={phyMain}
                   onFocus={(e) => e.target.select()}
                   onChange={(e) => handleIntChange(e.target.value, setPhyMain)}
-                  className="w-full bg-card border border-border text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500/50 font-sans font-medium"
+                  className="w-full bg-card border border-border/80 text-xs rounded-xl px-3 py-2 outline-none focus:border-indigo-500/60 font-mono font-semibold text-foreground transition-all"
                 />
               </div>
               <div>
-                <label className="block text-[10px] font-medium text-muted-foreground mb-1">JEE Adv PYQs</label>
+                <label className="block text-[10px] font-medium text-muted-foreground mb-1">JEE Adv PYQ</label>
                 <input
                   type="text"
                   inputMode="numeric"
@@ -196,7 +208,7 @@ const QuestionTrackerForm = memo(function QuestionTrackerForm({ questionsList, o
                   value={phyAdv}
                   onFocus={(e) => e.target.select()}
                   onChange={(e) => handleIntChange(e.target.value, setPhyAdv)}
-                  className="w-full bg-card border border-border text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500/50 font-sans font-medium"
+                  className="w-full bg-card border border-border/80 text-xs rounded-xl px-3 py-2 outline-none focus:border-indigo-500/60 font-mono font-semibold text-foreground transition-all"
                 />
               </div>
             </div>
@@ -204,17 +216,25 @@ const QuestionTrackerForm = memo(function QuestionTrackerForm({ questionsList, o
         </div>
 
         {/* CHEMISTRY SECTION */}
-        <div className="bg-accent/10 border border-border/80 rounded-2xl p-5 space-y-4">
-          <div className="flex justify-between items-center border-b border-border pb-3 mb-2">
-            <span className="text-sm font-bold text-foreground">Chemistry Log</span>
-            <span className="text-xs font-mono font-bold bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 px-2 py-0.5 rounded-full">
-              {chemistryTotal} Qs Done
+        <div className="bg-accent/10 border border-border/70 hover:border-emerald-500/30 rounded-2xl p-5 space-y-4 transition-colors">
+          <div className="flex justify-between items-center border-b border-border/60 pb-3">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <FlaskConical className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="text-sm font-bold text-foreground block leading-none">Chemistry</span>
+                <span className="text-[10px] text-muted-foreground font-mono">Organic, Inorganic & Physical</span>
+              </div>
+            </div>
+            <span className="text-xs font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-full">
+              {chemistryTotal} Qs
             </span>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-3.5">
             <div>
-              <label className="block text-[11px] font-medium text-muted-foreground mb-1">Normal Questions Solved</label>
+              <label className="block text-[11px] font-medium text-muted-foreground mb-1.5">Standard Problems</label>
               <input
                 type="text"
                 inputMode="numeric"
@@ -222,13 +242,13 @@ const QuestionTrackerForm = memo(function QuestionTrackerForm({ questionsList, o
                 value={chemistryNormal}
                 onFocus={(e) => e.target.select()}
                 onChange={(e) => handleIntChange(e.target.value, setChemistryNormal)}
-                className="w-full bg-card border border-border text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500/50 font-sans font-medium"
+                className="w-full bg-card border border-border/80 text-xs rounded-xl px-3 py-2.5 outline-none focus:border-emerald-500/60 font-mono font-semibold text-foreground transition-all"
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2.5">
               <div>
-                <label className="block text-[10px] font-medium text-muted-foreground mb-1">JEE Main PYQs</label>
+                <label className="block text-[10px] font-medium text-muted-foreground mb-1">JEE Main PYQ</label>
                 <input
                   type="text"
                   inputMode="numeric"
@@ -236,11 +256,11 @@ const QuestionTrackerForm = memo(function QuestionTrackerForm({ questionsList, o
                   value={chemMain}
                   onFocus={(e) => e.target.select()}
                   onChange={(e) => handleIntChange(e.target.value, setChemMain)}
-                  className="w-full bg-card border border-border text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500/50 font-sans font-medium"
+                  className="w-full bg-card border border-border/80 text-xs rounded-xl px-3 py-2 outline-none focus:border-emerald-500/60 font-mono font-semibold text-foreground transition-all"
                 />
               </div>
               <div>
-                <label className="block text-[10px] font-medium text-muted-foreground mb-1">JEE Adv PYQs</label>
+                <label className="block text-[10px] font-medium text-muted-foreground mb-1">JEE Adv PYQ</label>
                 <input
                   type="text"
                   inputMode="numeric"
@@ -248,7 +268,7 @@ const QuestionTrackerForm = memo(function QuestionTrackerForm({ questionsList, o
                   value={chemAdv}
                   onFocus={(e) => e.target.select()}
                   onChange={(e) => handleIntChange(e.target.value, setChemAdv)}
-                  className="w-full bg-card border border-border text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500/50 font-sans font-medium"
+                  className="w-full bg-card border border-border/80 text-xs rounded-xl px-3 py-2 outline-none focus:border-emerald-500/60 font-mono font-semibold text-foreground transition-all"
                 />
               </div>
             </div>
@@ -256,17 +276,25 @@ const QuestionTrackerForm = memo(function QuestionTrackerForm({ questionsList, o
         </div>
 
         {/* MATHS SECTION */}
-        <div className="bg-accent/10 border border-border/80 rounded-2xl p-5 space-y-4">
-          <div className="flex justify-between items-center border-b border-border pb-3 mb-2">
-            <span className="text-sm font-bold text-foreground">Maths Log</span>
-            <span className="text-xs font-mono font-bold bg-violet-500/10 text-violet-500 dark:text-violet-400 px-2 py-0.5 rounded-full">
-              {mathTotal} Qs Done
+        <div className="bg-accent/10 border border-border/70 hover:border-violet-500/30 rounded-2xl p-5 space-y-4 transition-colors">
+          <div className="flex justify-between items-center border-b border-border/60 pb-3">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-lg bg-violet-500/10 text-violet-400 border border-violet-500/20">
+                <Binary className="w-4 h-4" />
+              </div>
+              <div>
+                <span className="text-sm font-bold text-foreground block leading-none">Mathematics</span>
+                <span className="text-[10px] text-muted-foreground font-mono">Calculus, Algebra & Vectors</span>
+              </div>
+            </div>
+            <span className="text-xs font-mono font-bold bg-violet-500/10 text-violet-400 border border-violet-500/20 px-2.5 py-1 rounded-full">
+              {mathTotal} Qs
             </span>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-3.5">
             <div>
-              <label className="block text-[11px] font-medium text-muted-foreground mb-1">Normal Questions Solved</label>
+              <label className="block text-[11px] font-medium text-muted-foreground mb-1.5">Standard Problems</label>
               <input
                 type="text"
                 inputMode="numeric"
@@ -274,13 +302,13 @@ const QuestionTrackerForm = memo(function QuestionTrackerForm({ questionsList, o
                 value={mathNormal}
                 onFocus={(e) => e.target.select()}
                 onChange={(e) => handleIntChange(e.target.value, setMathNormal)}
-                className="w-full bg-card border border-border text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500/50 font-sans font-medium"
+                className="w-full bg-card border border-border/80 text-xs rounded-xl px-3 py-2.5 outline-none focus:border-violet-500/60 font-mono font-semibold text-foreground transition-all"
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2.5">
               <div>
-                <label className="block text-[10px] font-medium text-muted-foreground mb-1">JEE Main PYQs</label>
+                <label className="block text-[10px] font-medium text-muted-foreground mb-1">JEE Main PYQ</label>
                 <input
                   type="text"
                   inputMode="numeric"
@@ -288,11 +316,11 @@ const QuestionTrackerForm = memo(function QuestionTrackerForm({ questionsList, o
                   value={mathMain}
                   onFocus={(e) => e.target.select()}
                   onChange={(e) => handleIntChange(e.target.value, setMathMain)}
-                  className="w-full bg-card border border-border text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500/50 font-sans font-medium"
+                  className="w-full bg-card border border-border/80 text-xs rounded-xl px-3 py-2 outline-none focus:border-violet-500/60 font-mono font-semibold text-foreground transition-all"
                 />
               </div>
               <div>
-                <label className="block text-[10px] font-medium text-muted-foreground mb-1">JEE Adv PYQs</label>
+                <label className="block text-[10px] font-medium text-muted-foreground mb-1">JEE Adv PYQ</label>
                 <input
                   type="text"
                   inputMode="numeric"
@@ -300,7 +328,7 @@ const QuestionTrackerForm = memo(function QuestionTrackerForm({ questionsList, o
                   value={mathAdv}
                   onFocus={(e) => e.target.select()}
                   onChange={(e) => handleIntChange(e.target.value, setMathAdv)}
-                  className="w-full bg-card border border-border text-xs rounded-lg px-3 py-2 outline-none focus:border-indigo-500/50 font-sans font-medium"
+                  className="w-full bg-card border border-border/80 text-xs rounded-xl px-3 py-2 outline-none focus:border-violet-500/60 font-mono font-semibold text-foreground transition-all"
                 />
               </div>
             </div>
@@ -310,53 +338,55 @@ const QuestionTrackerForm = memo(function QuestionTrackerForm({ questionsList, o
       </div>
 
       {/* Stats Summary Panel */}
-      <div className="mt-8 bg-accent/15 border border-border/80 rounded-2xl p-6 grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="bg-accent/15 border border-border/70 rounded-2xl p-5 sm:p-6 grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="text-center sm:text-left">
-          <span className="block text-[10px] uppercase font-bold text-muted-foreground tracking-wider mb-1">Normal Total</span>
-          <span className="text-xl font-bold font-mono text-indigo-500">{totalNormal}</span>
+          <span className="block text-[10px] uppercase font-mono font-bold text-muted-foreground tracking-wider mb-1">Standard Practice</span>
+          <span className="text-xl sm:text-2xl font-bold font-mono text-indigo-400">{totalNormal}</span>
         </div>
 
         <div className="text-center sm:text-left border-l border-border/60 pl-0 sm:pl-4">
-          <span className="block text-[10px] uppercase font-bold text-muted-foreground tracking-wider mb-1">JEE Main PYQs</span>
-          <span className="text-xl font-bold font-mono text-emerald-500">{totalMainPYQs}</span>
+          <span className="block text-[10px] uppercase font-mono font-bold text-muted-foreground tracking-wider mb-1">JEE Main PYQ</span>
+          <span className="text-xl sm:text-2xl font-bold font-mono text-emerald-400">{totalMainPYQs}</span>
         </div>
 
         <div className="text-center sm:text-left border-l border-border/60 pl-0 sm:pl-4">
-          <span className="block text-[10px] uppercase font-bold text-muted-foreground tracking-wider mb-1">JEE Advanced PYQs</span>
-          <span className="text-xl font-bold font-mono text-amber-500">{totalAdvPYQs}</span>
+          <span className="block text-[10px] uppercase font-mono font-bold text-muted-foreground tracking-wider mb-1">JEE Advanced PYQ</span>
+          <span className="text-xl sm:text-2xl font-bold font-mono text-amber-400">{totalAdvPYQs}</span>
         </div>
 
         <div className="text-center sm:text-left border-l border-border/60 pl-0 sm:pl-4">
-          <span className="block text-[10px] uppercase font-bold text-muted-foreground tracking-wider mb-1">GRAND TOTAL</span>
-          <span className="text-xl font-bold font-mono text-primary flex items-center justify-center sm:justify-start gap-1">{grandTotal} <span className="text-xs font-normal text-muted-foreground">Qs</span></span>
+          <span className="block text-[10px] uppercase font-mono font-bold text-muted-foreground tracking-wider mb-1">Grand Total</span>
+          <span className="text-xl sm:text-2xl font-bold font-mono text-primary flex items-center justify-center sm:justify-start gap-1">
+            {grandTotal} <span className="text-xs font-normal text-muted-foreground font-sans">Qs</span>
+          </span>
         </div>
       </div>
 
       {/* Button Drawer */}
-      <div className="mt-6 flex flex-col sm:flex-row gap-3 items-center justify-between">
-        <div className="text-xs text-muted-foreground italic">
+      <div className="flex flex-col sm:flex-row gap-3 items-center justify-between pt-1">
+        <div className="text-xs text-muted-foreground">
           {saveSuccessMessage ? (
-            <span className="text-emerald-500 flex items-center gap-1.5 font-medium">
-              <CheckCircle className="w-4 h-4" /> Save Success! Local IndexedDB synced.
+            <span className="text-emerald-400 flex items-center gap-1.5 font-medium bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-lg">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Changes saved to local storage
             </span>
           ) : (
-            'All updates are saved locally with ultra performance.'
+            <span className="text-muted-foreground/80 font-mono text-[11px]">Auto-buffered with IndexedDB persistence</span>
           )}
         </div>
 
         <div className="flex gap-2.5 w-full sm:w-auto">
           <button
             onClick={handleClear}
-            className="flex-1 sm:flex-none border border-border bg-accent/20 hover:bg-accent/40 text-muted-foreground hover:text-foreground font-semibold text-xs py-2.5 px-4 rounded-xl transition-all cursor-pointer"
+            className="flex-1 sm:flex-none border border-border bg-accent/15 hover:bg-accent/35 text-muted-foreground hover:text-foreground font-semibold text-xs py-2.5 px-4 rounded-xl transition-all cursor-pointer"
           >
             Clear Inputs
           </button>
           
           <button
             onClick={handleSave}
-            className="flex-1 sm:flex-none bg-primary text-primary-foreground font-semibold text-xs py-2.5 px-6 rounded-xl flex items-center justify-center gap-2 shadow-sm shadow-primary/20 hover:opacity-90 active-scale-98 transition-all cursor-pointer"
+            className="flex-1 sm:flex-none bg-primary text-primary-foreground font-bold text-xs py-2.5 px-6 rounded-xl flex items-center justify-center gap-2 shadow-sm shadow-primary/20 hover:opacity-90 active-scale-98 transition-all cursor-pointer"
           >
-            <Save className="w-4 h-4" /> Save Today Logs
+            <Save className="w-4 h-4" /> Save Today's Logs
           </button>
         </div>
       </div>

@@ -817,7 +817,7 @@ const MockTestTracker = memo(function MockTestTracker({
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="💡 Write about silly mistakes committed, time pressure bottlenecks, chapters to revise, formula confusion, or conceptual blindspots..."
+                placeholder="Document critical takeaways: calculation slips, time pressure bottlenecks, chapters to revise, formula confusion, or conceptual blindspots..."
                 rows={3}
                 className={`w-full text-xs p-4 rounded-xl bg-background border ${outlineBorder} text-foreground placeholder:text-muted-foreground/45 focus:outline-none transition-all leading-relaxed resize-none ${inputBorderFocus}`}
               />

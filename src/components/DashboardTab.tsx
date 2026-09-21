@@ -92,22 +92,25 @@ const BannerClock = memo(function BannerClock({ clockFormat = '12', timezone }: 
 
   return (
     <div id="banner-clock-widget" className="flex flex-col items-center sm:items-end select-none">
-      <div className="flex items-start font-sans drop-shadow-[0_2px_12px_rgba(255,255,255,0.2)]">
-        <span className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-white leading-none">
+      <div className="flex items-baseline font-mono">
+        <span className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-none">
           {formattedHours}
-          <span className={`mx-0.5 transition-opacity duration-500 ${seconds % 2 === 0 ? 'opacity-100' : 'opacity-35'}`}>:</span>
+          <span className={`mx-0.5 transition-opacity duration-300 ${seconds % 2 === 0 ? 'opacity-100 text-indigo-400' : 'opacity-30'}`}>:</span>
           {formattedMinutes}
         </span>
         {clockFormat === '12' ? (
-          <span className="text-xs md:text-sm font-black tracking-wider text-indigo-200/90 ml-1.5 uppercase select-none pt-0.5">
+          <span className="text-[11px] font-bold font-sans tracking-widest text-indigo-300/80 ml-2 uppercase select-none self-start">
             {ampm}
           </span>
         ) : (
-          <span className="text-[10px] font-black tracking-widest text-indigo-200/70 ml-2 uppercase select-none pt-1">
+          <span className="text-[9px] font-bold font-sans tracking-wider text-indigo-300/60 ml-2 uppercase select-none self-start bg-white/10 px-1.5 py-0.5 rounded-sm">
             24H
           </span>
         )}
       </div>
+      <span className="text-[10px] font-mono text-slate-400 mt-1 hidden sm:block">
+        {time.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+      </span>
     </div>
   );
 });
@@ -339,58 +342,68 @@ const DashboardTab = memo(function DashboardTab({
       {/* Dynamic header welcome banner */}
       <motion.div 
         variants={dashboardItemVariants}
-        className={`p-6 md:p-8 rounded-3xl bg-gradient-to-r ${themeStyles.bannerGradient} text-white shadow-lg relative overflow-hidden`}
+        className={`p-6 sm:p-8 rounded-2xl md:rounded-3xl bg-gradient-to-br ${themeStyles.bannerGradient} text-white shadow-lg relative overflow-hidden`}
       >
-        <div className="absolute right-0 bottom-0 opacity-12 translate-x-12 translate-y-12 select-none pointer-events-none">
-          <BrandingLogo size={280} />
+        {/* Subtle architectural dot matrix backdrop */}
+        <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.06)_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
+        
+        {/* Watermark branding logo */}
+        <div className="absolute right-0 bottom-0 opacity-8 translate-x-10 translate-y-10 select-none pointer-events-none">
+          <BrandingLogo size={260} />
         </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 relative z-10">
-          <div className="space-y-3 flex-1">
-            <div className="space-y-1.5">
-              <span className="text-[10px] uppercase font-bold tracking-widest text-indigo-150 bg-white/10 px-2.5 py-1 rounded-full w-max">
-                JEE Preparation Companion • Pure & Focused Tracker
-              </span>
-              <h2 className="text-2xl md:text-3xl font-display font-black leading-tight tracking-tight">Focus. Track. Crack JEE.</h2>
-              <p className="text-xs text-indigo-100 max-w-xl font-medium leading-relaxed">
-                A comprehensive, elegant workspace to track study hours, practice questions, and chapter progress for JEE Main & Advanced.
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 relative z-10">
+          <div className="space-y-4 flex-1">
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.08] border border-white/[0.12] backdrop-blur-md">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span className="text-[10px] uppercase font-mono font-bold tracking-wider text-slate-200">
+                  JEE Preparation Command Center • Live Engine
+                </span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-display font-black leading-tight tracking-tight text-white">
+                Focus. Consistency. Rank.
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-300 max-w-xl font-normal leading-relaxed">
+                Systematic daily tracking for JEE Main & Advanced: track deep study intervals, practice questions, and verify chapter mastery.
               </p>
             </div>
 
-            {/* PCM Fast stats panel */}
-            <div className="pt-2 grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 max-w-lg">
-              <div className="bg-white/10 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl text-center border border-white/5 shadow-sm relative group" title="Today's focused study minutes translated to hours (resets daily)">
-                <span className="block text-[9px] uppercase font-bold text-indigo-150">Study Hrs (Today)</span>
-                <span className="text-sm sm:text-base font-bold font-mono tracking-tight text-white mt-1 block">
-                  {(studyMinutesToday / 60).toFixed(1)}h
+            {/* High-Precision Stats Capsules */}
+            <div className="pt-2 grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 max-w-xl">
+              <div className="bg-white/[0.05] hover:bg-white/[0.08] backdrop-blur-md p-3 rounded-xl border border-white/[0.08] transition-colors" title="Today's focused study minutes">
+                <span className="block text-[9px] uppercase font-mono font-bold tracking-wider text-slate-300">Study Time</span>
+                <span className="text-base sm:text-lg font-bold font-mono tracking-tight text-white mt-1 block">
+                  {(studyMinutesToday / 60).toFixed(1)}<span className="text-xs font-normal text-slate-300 ml-0.5">hrs</span>
                 </span>
               </div>
 
-              <div className="bg-white/10 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl text-center border border-white/5 shadow-sm relative group" title="Today's total questions solved (resets daily)">
-                <span className="block text-[9px] uppercase font-bold text-indigo-150">Qs Solved (Today)</span>
-                <span className="text-sm sm:text-base font-bold font-mono tracking-tight text-white mt-1 block">
-                  {questionsSolvedToday}
+              <div className="bg-white/[0.05] hover:bg-white/[0.08] backdrop-blur-md p-3 rounded-xl border border-white/[0.08] transition-colors" title="Today's total questions solved">
+                <span className="block text-[9px] uppercase font-mono font-bold tracking-wider text-slate-300">Questions</span>
+                <span className="text-base sm:text-lg font-bold font-mono tracking-tight text-white mt-1 block">
+                  {questionsSolvedToday}<span className="text-xs font-normal text-slate-300 ml-0.5">solved</span>
                 </span>
               </div>
 
-              <div className="bg-white/10 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl text-center border border-white/5 shadow-sm">
-                <span className="block text-[9px] uppercase font-bold text-indigo-150">NCERT Done</span>
-                <span className="text-sm sm:text-base font-bold font-mono tracking-tight text-white mt-1 block">
-                  {syllabusStats.percentage}%
+              <div className="bg-white/[0.05] hover:bg-white/[0.08] backdrop-blur-md p-3 rounded-xl border border-white/[0.08] transition-colors" title="NCERT syllabus completed">
+                <span className="block text-[9px] uppercase font-mono font-bold tracking-wider text-slate-300">NCERT Mastery</span>
+                <span className="text-base sm:text-lg font-bold font-mono tracking-tight text-white mt-1 block">
+                  {syllabusStats.percentage}<span className="text-xs font-normal text-slate-300 ml-0.5">%</span>
                 </span>
               </div>
 
-              <div className="bg-white/10 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl text-center border border-white/5 shadow-sm">
-                <span className="block text-[9px] uppercase font-bold text-indigo-150">Streak 🔥</span>
-                <span className="text-sm sm:text-base font-bold font-mono tracking-tight text-white mt-1 block">
-                  {streakStats.currentStreak}d
+              <div className="bg-white/[0.05] hover:bg-white/[0.08] backdrop-blur-md p-3 rounded-xl border border-white/[0.08] transition-colors" title="Consecutive day study streak">
+                <span className="block text-[9px] uppercase font-mono font-bold tracking-wider text-slate-300">Daily Streak</span>
+                <span className="text-base sm:text-lg font-bold font-mono tracking-tight text-white mt-1 flex items-center gap-1">
+                  {streakStats.currentStreak}<span className="text-xs font-normal text-slate-300">days</span>
+                  {streakStats.currentStreak > 0 && <span className="text-sm">🔥</span>}
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Clock Widget on the Right (Tablet, Laptop, PC only - hidden on mobile) */}
-          <div className="hidden sm:flex flex-col items-center sm:items-end justify-center shrink-0 pr-2 lg:pr-6 border-l border-white/10 sm:pl-6">
+          {/* Clock Widget on the Right (Desktop / Tablet) */}
+          <div className="hidden lg:flex flex-col items-end justify-center shrink-0 pl-6 border-l border-white/10">
             <BannerClock clockFormat={settings.clockFormat} timezone={settings.timezone} />
           </div>
         </div>
@@ -414,60 +427,52 @@ const DashboardTab = memo(function DashboardTab({
       {/* GAMIFIED STUDY STREAK COUNTER */}
       <motion.div 
         variants={dashboardItemVariants}
-        className={`bg-card border border-border rounded-3xl p-6 shadow-sm ${themeStyles.cardBg} relative overflow-hidden dashboard-card-gpu`}
+        className={`bg-card border border-border rounded-2xl md:rounded-3xl p-6 md:p-7 shadow-sm ${themeStyles.cardBg} relative overflow-hidden dashboard-card-gpu`}
       >
-        <div className="absolute -right-12 -top-12 w-32 h-32 bg-orange-500/10 rounded-full blur-2xl pointer-events-none" />
-        
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="flex items-center gap-4.5">
-            <div className={`relative shrink-0 w-16 h-16 rounded-2xl flex flex-col items-center justify-center border transition-all duration-500 ${
+            <div className={`relative shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex flex-col items-center justify-center border transition-all duration-300 ${
               streakStats.currentStreak > 0
-                ? 'bg-orange-500/15 border-orange-500/35 text-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.12)] scale-[1.01]'
-                : 'bg-accent/10 border-border text-muted-foreground/60'
+                ? 'bg-gradient-to-br from-amber-500/20 to-orange-500/20 border-orange-500/40 text-orange-400 shadow-sm'
+                : 'bg-accent/10 border-border/70 text-muted-foreground/50'
             }`}>
               {streakStats.currentStreak > 0 && (
-                <span className="absolute inset-0.5 rounded-2xl bg-orange-500/20 animate-ping opacity-30 pointer-events-none" />
+                <div className="absolute inset-0 bg-orange-500/10 rounded-2xl blur-md pointer-events-none" />
               )}
               
-              <Flame className={`w-8 h-8 ${streakStats.currentStreak > 0 ? 'animate-bounce' : ''}`} fill={streakStats.currentStreak > 0 ? 'currentColor' : 'none'} />
-              
-              {streakStats.currentStreak > 0 && (
-                <span className="absolute bottom-1 right-1 text-[8px] font-black font-mono bg-orange-500 text-white px-1 rounded-sm leading-none py-0.5 select-none">
-                  LIT
-                </span>
-              )}
+              <Flame className={`w-7 h-7 sm:w-8 sm:h-8 ${streakStats.currentStreak > 0 ? 'text-orange-500 animate-pulse' : 'text-muted-foreground/40'}`} fill={streakStats.currentStreak > 0 ? 'currentColor' : 'none'} />
             </div>
 
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <h3 className="text-lg font-bold font-display tracking-tight text-foreground">
+                <h3 className="text-base sm:text-lg font-bold font-display tracking-tight text-foreground">
                   {streakStats.currentStreak} Day Study Streak
                 </h3>
                 {streakStats.currentStreak > 0 && (
-                  <span className="text-[9px] uppercase tracking-wider font-extrabold text-orange-500 bg-orange-500/10 px-2 py-0.5 rounded-full select-none">
-                    Unstoppable Flame
+                  <span className="text-[9px] uppercase tracking-wider font-mono font-bold text-orange-400 bg-orange-500/15 border border-orange-500/25 px-2 py-0.5 rounded-full select-none">
+                    Active Momentum
                   </span>
                 )}
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed max-w-md">
                 {streakStats.currentStreak > 0
-                  ? `You have met your JEE Daily Study Goals for ${streakStats.currentStreak} consecutive days! Keep up this supreme momentum to crack it!`
-                  : "Meet either your Daily study hours goal or questions target today to spark an active study streak!"}
+                  ? `You have met your daily goals for ${streakStats.currentStreak} consecutive days. Consistency creates rank!`
+                  : "Complete either your daily study hours target or question quota today to ignite your streak."}
               </p>
               
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pt-1 text-[10px] font-mono font-medium text-slate-400">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pt-1 text-[10px] font-mono text-muted-foreground">
                 <span className="flex items-center gap-1.5">
-                  <Award className="w-3.5 h-3.5 text-indigo-500" />
-                  All-Time Peak-Streak: <strong className="text-foreground">{streakStats.maxStreak} days</strong>
+                  <Award className="w-3.5 h-3.5 text-primary" />
+                  Peak Streak: <strong className="text-foreground font-bold">{streakStats.maxStreak} days</strong>
                 </span>
                 <span>•</span>
                 <span className="flex items-center gap-1">
-                  Today's Pulse: {streakStats.metToday ? (
-                    <strong className="text-emerald-500">Sparked! 🔥</strong>
+                  Today's Status: {streakStats.metToday ? (
+                    <strong className="text-emerald-400 font-bold">Goal Met 🔥</strong>
                   ) : streakStats.metYesterday ? (
-                    <strong className="text-orange-400">Maintained (Needs study) ⏳</strong>
+                    <strong className="text-amber-400 font-bold">Streak Active (Needs study) ⏳</strong>
                   ) : (
-                    <strong className="text-muted-foreground/80">Cold ❄️</strong>
+                    <strong className="text-muted-foreground font-bold">Pending ❄️</strong>
                   )}
                 </span>
               </div>
@@ -475,40 +480,45 @@ const DashboardTab = memo(function DashboardTab({
           </div>
 
           {/* Right Block: Visual 7-Day Calendar Checklist */}
-          <div className="bg-accent/[0.03] dark:bg-white/[0.02] border border-border/85 rounded-2xl p-4 lg:w-[460px] shrink-0 w-full">
-            <span className="block text-[10px] uppercase font-bold tracking-wider text-muted-foreground mb-3 text-center lg:text-left select-none">
-              Past Weekly Fire Checklist
-            </span>
+          <div className="bg-accent/[0.04] border border-border/60 rounded-xl p-3.5 lg:w-[440px] shrink-0 w-full">
+            <div className="flex items-center justify-between mb-2.5 px-1">
+              <span className="text-[10px] uppercase font-mono font-bold tracking-wider text-muted-foreground select-none">
+                Past 7 Days History
+              </span>
+              <span className="text-[9px] font-mono text-muted-foreground/80">
+                {streakStats.weeklyGrid.filter(d => d.met).length}/7 Days Met
+              </span>
+            </div>
             
             <div className="grid grid-cols-7 gap-1 sm:gap-2">
               {streakStats.weeklyGrid.map((day) => {
                 return (
                   <div
                     key={day.dateStr}
-                    className={`flex flex-col items-center gap-1.5 p-0.5 sm:p-1 rounded-xl transition-all duration-300 relative ${
+                    className={`flex flex-col items-center gap-1 p-1 rounded-xl transition-all relative ${
                       day.isToday 
-                        ? 'bg-indigo-500/5 border border-indigo-500/25' 
+                        ? 'bg-primary/10 border border-primary/30' 
                         : 'border border-transparent'
                     }`}
                   >
-                    <span className={`text-[8px] sm:text-[9px] font-mono font-black ${
-                      day.isToday ? 'text-indigo-500' : 'text-muted-foreground/90'
+                    <span className={`text-[8.5px] font-mono font-bold ${
+                      day.isToday ? 'text-primary' : 'text-muted-foreground'
                     }`}>
                       {day.dayAbbrev}
                     </span>
                     
-                    <div className={`w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center transition-all duration-400 border cursor-default ${
+                    <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-all border cursor-default select-none ${
                       day.met
-                        ? 'bg-gradient-to-tr from-amber-500 to-orange-500 text-white border-orange-500/40 shadow-xs'
+                        ? 'bg-gradient-to-tr from-amber-500 to-orange-500 text-white border-orange-400/50 shadow-xs'
                         : day.activeAtAll
-                          ? 'bg-indigo-500/10 text-indigo-500 border-indigo-500/20'
-                          : 'bg-card border-border/60 text-muted-foreground/35 hover:border-muted-foreground/30'
+                          ? 'bg-primary/15 text-primary border-primary/30'
+                          : 'bg-card border-border/60 text-muted-foreground/40'
                     }`}
                     title={`${day.studyMins} mins studied, ${day.questionsSolved} questions solved`}>
                       {day.met ? (
-                        <Flame className="w-4 h-4 sm:w-5 sm:h-5 fill-white animate-pulse" />
+                        <Flame className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-white" />
                       ) : (
-                        <span className="text-[10px] sm:text-xs font-black font-mono">{day.dayNum}</span>
+                        <span className="text-[10px] font-mono font-bold">{day.dayNum}</span>
                       )}
                     </div>
                   </div>
@@ -720,18 +730,24 @@ const DashboardTab = memo(function DashboardTab({
       </motion.div>
 
       {/* DYNAMIC JEE LIVE TOOL LINKS & TELEGRAM GROUP */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 pt-2">
         
         {/* Telegram Community */}
         <motion.div 
           variants={dashboardItemVariants}
-          className="bg-card border border-border rounded-3xl p-6 shadow-sm flex flex-col justify-between"
+          className="bg-card border border-border rounded-2xl p-5.5 shadow-sm flex flex-col justify-between hover:border-border/80 transition-all group"
         >
-          <div className="space-y-1.5">
-            <span className="text-[9px] uppercase font-bold text-indigo-500 bg-indigo-500/10 px-2 py-0.5 rounded-full w-max">Community Sync</span>
-            <h4 className="text-base font-bold font-sans tracking-tight">JEE CIRCLES Telegram</h4>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] uppercase font-mono font-bold text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-0.5 rounded-full">
+                Community Sync
+              </span>
+            </div>
+            <h4 className="text-base font-bold font-display tracking-tight text-foreground group-hover:text-primary transition-colors">
+              JEE CIRCLES Telegram
+            </h4>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Join other serious aspirants in our active JEE CIRCLES telegram group. Collaborate, solve, and get guides instantly.
+              Join active JEE aspirants. Share doubts, discuss tough concepts, and collaborate with peers preparing for Main & Advanced.
             </p>
           </div>
 
@@ -739,22 +755,28 @@ const DashboardTab = memo(function DashboardTab({
             href="https://t.me/JEECIRCLES"
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-4 bg-indigo-600/10 text-indigo-500 hover:bg-indigo-600 hover:text-white text-xs font-bold py-3 px-4 rounded-2xl text-center border border-indigo-500/20 flex items-center justify-center gap-1.5 transition-all outline-none"
+            className="mt-5 bg-indigo-500/10 hover:bg-indigo-600 text-indigo-400 hover:text-white text-xs font-mono font-semibold py-2.5 px-4 rounded-xl text-center border border-indigo-500/25 flex items-center justify-center gap-1.5 transition-all outline-none"
           >
-            Join JEE CIRCLES <ArrowUpRight className="w-4 h-4" />
+            Join JEE CIRCLES <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </a>
         </motion.div>
 
         {/* Exam Countdown timer link */}
         <motion.div 
           variants={dashboardItemVariants}
-          className="bg-card border border-border rounded-3xl p-6 shadow-sm flex flex-col justify-between"
+          className="bg-card border border-border rounded-2xl p-5.5 shadow-sm flex flex-col justify-between hover:border-border/80 transition-all group"
         >
-          <div className="space-y-1.5">
-            <span className="text-[9px] uppercase font-bold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-full w-max">Live Timer App</span>
-            <h4 className="text-base font-bold font-sans tracking-tight">JEE & NEET Exam Clock</h4>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] uppercase font-mono font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 rounded-full">
+                Live Countdown
+              </span>
+            </div>
+            <h4 className="text-base font-bold font-display tracking-tight text-foreground group-hover:text-amber-400 transition-colors">
+              JEE & NEET Exam Clock
+            </h4>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Track dynamic countdowns and remaining preparation slots visually using high quality exam timing portals.
+              Track live countdowns and remaining preparation hours to stay grounded and keep the exam dates front and center.
             </p>
           </div>
 
@@ -762,22 +784,28 @@ const DashboardTab = memo(function DashboardTab({
             href="https://examclock-jee-neet-aspirants.vercel.app/"
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-4 bg-amber-600/10 text-amber-500 hover:bg-amber-600 hover:text-white text-xs font-bold py-3 px-4 rounded-2xl text-center border border-amber-500/20 flex items-center justify-center gap-1.5 transition-all outline-none"
+            className="mt-5 bg-amber-500/10 hover:bg-amber-600 text-amber-400 hover:text-white text-xs font-mono font-semibold py-2.5 px-4 rounded-xl text-center border border-amber-500/25 flex items-center justify-center gap-1.5 transition-all outline-none"
           >
-            Access Countdown Timer <ArrowUpRight className="w-4 h-4" />
+            Open Exam Clock <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </a>
         </motion.div>
 
         {/* IIT JEE Guide link */}
         <motion.div 
           variants={dashboardItemVariants}
-          className="bg-card border border-border rounded-3xl p-6 shadow-sm flex flex-col justify-between"
+          className="bg-card border border-border rounded-2xl p-5.5 shadow-sm flex flex-col justify-between hover:border-border/80 transition-all group"
         >
-          <div className="space-y-1.5">
-            <span className="text-[9px] uppercase font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full w-max">Aspirant Guides</span>
-            <h4 className="text-base font-bold font-sans tracking-tight">The IIT JEE Guide Hub</h4>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] uppercase font-mono font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full">
+                Strategy & Pyqs
+              </span>
+            </div>
+            <h4 className="text-base font-bold font-display tracking-tight text-foreground group-hover:text-emerald-400 transition-colors">
+              IIT JEE Guide Hub
+            </h4>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Access optimal subject prep schedules, NCERT solution methods, strategy breakdowns and pyq archives easily.
+              Subject prep frameworks, chapter-wise weightage analysis, and curated problem strategies for Physics, Chem & Math.
             </p>
           </div>
 
@@ -785,9 +813,9 @@ const DashboardTab = memo(function DashboardTab({
             href="https://iit-jee-guide.vercel.app/"
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-4 bg-emerald-600/10 text-emerald-500 hover:bg-emerald-600 hover:text-white text-xs font-bold py-3 px-4 rounded-2xl text-center border border-emerald-500/20 flex items-center justify-center gap-1.5 transition-all outline-none"
+            className="mt-5 bg-emerald-500/10 hover:bg-emerald-600 text-emerald-400 hover:text-white text-xs font-mono font-semibold py-2.5 px-4 rounded-xl text-center border border-emerald-500/25 flex items-center justify-center gap-1.5 transition-all outline-none"
           >
-            View JEE Guides <ArrowUpRight className="w-4 h-4" />
+            View Study Guides <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </a>
         </motion.div>
 

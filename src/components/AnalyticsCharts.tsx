@@ -1,7 +1,21 @@
 import { useState, useMemo, memo } from 'react';
 import { motion } from 'motion/react';
 import { StudySession, DailyQuestions, ErrorBookItem } from '../types';
-import { BarChart, Clock, Hash, BookOpen, Target, Sparkles, Award } from 'lucide-react';
+import { 
+  BarChart, 
+  Clock, 
+  Hash, 
+  BookOpen, 
+  Target, 
+  Sparkles, 
+  Award, 
+  AlertTriangle, 
+  Calculator, 
+  Timer, 
+  FileText, 
+  CheckCircle2, 
+  TrendingUp 
+} from 'lucide-react';
 
 interface AnalyticsChartsProps {
   sessions: StudySession[];
@@ -83,37 +97,37 @@ const AnalyticsCharts = memo(function AnalyticsCharts({ sessions, questions, err
     if (dom.name === 'Silly Mistake' && dom.pct >= 30) {
       return {
         title: "High Silly Error Rate detected",
-        text: "⚠️ High Silly Error Rate detected. Slow down during the last 30 seconds of solving and re-read the question's final statement carefully.",
+        text: "Elevated silly slip frequency detected. Slow down during the last 30 seconds of solving and re-read the question's final target statement carefully.",
         type: "silly"
       };
     } else if (dom.name === 'Conceptual' && dom.pct >= 30) {
       return {
         title: "Concept Gaps dominant",
-        text: "📚 Concept Errors dominant. Pause active test-taking and schedule a deep active-recall review session for those specific chapters.",
+        text: "Fundamental concept gaps identified. Pause rapid test-taking and schedule a deep active-recall review session for those specific chapters.",
         type: "conceptual"
       };
     } else if (dom.name === 'Calculation' && dom.pct >= 30) {
       return {
         title: "Calculation errors dominant",
-        text: "🧮 Calculation errors detected. Always write steps down clearly on your scratchpad. Avoid solving complex algebraic or numeric steps purely in your head.",
+        text: "Calculation slips detected. Always write steps down systematically on your scratchpad. Avoid solving complex algebraic or numeric steps purely in your head.",
         type: "calculation"
       };
     } else if (dom.name === 'Formula Error' && dom.pct >= 30) {
       return {
         title: "Formula memory gaps detected",
-        text: "📝 Formula Error rate high. Spend the first 15 minutes of your study morning doing active-recall writing of active formulas for Physics/Chemistry.",
+        text: "Formula error rate high. Spend the first 15 minutes of your morning doing active-recall sheets of core formulas for Physics and Chemistry.",
         type: "formula"
       };
     } else if (dom.name === 'Time Pressure' && dom.pct >= 20) {
       return {
         title: "Time management constraint",
-        text: "⏱️ Time pressure errors high. Implement strict 2-minute limit timers per question when doing daily mock logs to reduce anxiety.",
+        text: "Time pressure errors high. Implement strict 2-minute limits per question during daily practice drills to reduce anxiety.",
         type: "time"
       };
     } else {
       return {
         title: `Primary weakness: ${dom.name}`,
-        text: `Logged ${dom.count} errors in this category (${Math.round(dom.pct)}% of total). Review these specific mistake files before the next mock test.`,
+        text: `Logged ${dom.count} errors in this category (${Math.round(dom.pct)}% of total). Review these specific mistake profiles before the next mock test.`,
         type: "other"
       };
     }
@@ -381,9 +395,9 @@ const AnalyticsCharts = memo(function AnalyticsCharts({ sessions, questions, err
             return (
               <div key={index} className="flex-1 flex flex-col items-center h-full group relative">
                 {/* Tooltip */}
-                <div className="absolute bottom-full mb-2 bg-gray-900 border border-gray-800 text-gray-100 text-[10px] px-2 py-1 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none flex flex-col items-center z-20 whitespace-nowrap">
-                  <span className="font-bold">{d.value.toFixed(2)} hr</span>
-                  <span className="text-gray-400">{(d.value * 60).toFixed(0)} min</span>
+                <div className="absolute bottom-full mb-2 bg-slate-900/95 backdrop-blur-md border border-slate-800 text-slate-100 text-[10px] px-3 py-1.5 rounded-xl shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none flex flex-col items-center z-20 whitespace-nowrap">
+                  <span className="font-bold font-mono text-white">{d.value.toFixed(2)} hr</span>
+                  <span className="text-slate-400 font-mono text-[9px]">{(d.value * 60).toFixed(0)} min</span>
                 </div>
 
                 {/* Animated Bar */}
@@ -468,10 +482,16 @@ const AnalyticsCharts = memo(function AnalyticsCharts({ sessions, questions, err
             return (
               <div key={index} className="flex-1 flex flex-col items-center h-full group relative">
                 {/* Tooltip */}
-                <div className="absolute bottom-full mb-2 bg-gray-900 border border-gray-800 text-gray-100 text-[10px] px-3 py-1.5 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none flex flex-col items-start gap-0.5 z-20 whitespace-nowrap">
-                  <span className="font-bold border-b border-gray-700/50 pb-0.5 mb-0.5 w-full">Total: {total} Qs</span>
-                  <span className="text-emerald-400 flex items-center gap-1">🟢 PYQ: {pyq}</span>
-                  <span className="text-indigo-400 flex items-center gap-1">🔵 Normal: {normal}</span>
+                <div className="absolute bottom-full mb-2 bg-slate-900/95 backdrop-blur-md border border-slate-800 text-slate-100 text-[10px] px-3 py-2 rounded-xl shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none flex flex-col items-start gap-1 z-20 whitespace-nowrap">
+                  <span className="font-bold border-b border-slate-700/60 pb-1 mb-0.5 w-full font-mono text-white">Total: {total} Qs</span>
+                  <span className="text-emerald-400 flex items-center gap-1.5 font-medium">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block shrink-0 shadow-xs shadow-emerald-500/50"></span>
+                    PYQ: {pyq}
+                  </span>
+                  <span className="text-indigo-400 flex items-center gap-1.5 font-medium">
+                    <span className="w-2 h-2 rounded-full bg-indigo-400 inline-block shrink-0 shadow-xs shadow-indigo-500/50"></span>
+                    Normal: {normal}
+                  </span>
                 </div>
 
                 {/* Animated Stacked Bar */}
@@ -508,12 +528,16 @@ const AnalyticsCharts = memo(function AnalyticsCharts({ sessions, questions, err
           })}
         </div>
 
-        <div className="mt-8 text-xs flex gap-4 items-center justify-between italic bg-accent/15 py-2 px-3 rounded-xl border border-border/40">
-          <div className="flex gap-3 text-muted-foreground">
-            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 bg-indigo-500 rounded-sm inline-block"></span> Normal</span>
-            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 bg-emerald-500 rounded-sm inline-block"></span> PYQ</span>
+        <div className="mt-8 text-xs flex gap-4 items-center justify-between bg-accent/10 py-2.5 px-3.5 rounded-xl border border-border/50">
+          <div className="flex gap-4 text-xs font-medium text-muted-foreground">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 bg-indigo-500 rounded-sm inline-block shadow-xs"></span> Normal Practice
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 bg-emerald-500 rounded-sm inline-block shadow-xs"></span> PYQ Problems
+            </span>
           </div>
-          <span className="font-semibold text-foreground">Hover bar details</span>
+          <span className="text-[11px] font-mono text-muted-foreground">Hover bars for breakdown</span>
         </div>
       </div>
     </div>

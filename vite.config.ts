@@ -19,10 +19,13 @@ export default defineConfig(() => {
           manualChunks(id) {
             if (id.includes('node_modules')) {
               if (id.includes('react') || id.includes('react-dom') || id.includes('scheduler') || id.includes('motion')) {
-                return 'vendor-react';
+                return 'vendor-framework';
               }
               if (id.includes('lucide-react')) {
                 return 'vendor-lucide';
+              }
+              if (id.includes('crypto-js') || id.includes('dompurify')) {
+                return 'vendor-security';
               }
               return 'vendor-core';
             }

@@ -2,7 +2,20 @@ import { useState, useMemo, memo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Chapter, Subject } from '../types';
 import { CLASS_11_SYLLABUS, CLASS_12_SYLLABUS } from '../data/syllabus';
-import { CheckSquare, Square, Search, BookOpen, Download, Trash2, ArrowUpRight, HelpCircle, Flame } from 'lucide-react';
+import { 
+  CheckSquare, 
+  Square, 
+  Search, 
+  BookOpen, 
+  Download, 
+  Trash2, 
+  ArrowUpRight, 
+  HelpCircle, 
+  Flame, 
+  Zap, 
+  Layers, 
+  Sparkles 
+} from 'lucide-react';
 
 interface SyllabusTrackerProps {
   completions: Record<string, boolean>;
@@ -23,18 +36,18 @@ const SyllabusChapterItem = memo(function SyllabusChapterItem({
   const subjectStyles = {
     physics: {
       stroke: isCompleted ? 'border-l-emerald-500' : 'border-l-indigo-500',
-      text: 'text-indigo-500 dark:text-indigo-400',
-      badgeBg: 'bg-indigo-500/10 text-indigo-500'
+      text: 'text-indigo-400',
+      badgeBg: 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'
     },
     chemistry: {
       stroke: isCompleted ? 'border-l-emerald-500' : 'border-l-emerald-500',
-      text: 'text-emerald-500 dark:text-emerald-400',
-      badgeBg: 'bg-emerald-500/10 text-emerald-500'
+      text: 'text-emerald-400',
+      badgeBg: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
     },
     math: {
       stroke: isCompleted ? 'border-l-emerald-500' : 'border-l-purple-500',
-      text: 'text-purple-500 dark:text-purple-400',
-      badgeBg: 'bg-purple-500/10 text-purple-500'
+      text: 'text-purple-400',
+      badgeBg: 'bg-purple-500/10 text-purple-400 border border-purple-500/20'
     }
   };
   const currentStyle = subjectStyles[ch.subject] || subjectStyles.physics;
@@ -44,8 +57,8 @@ const SyllabusChapterItem = memo(function SyllabusChapterItem({
       onClick={() => onToggleChapter(ch.id, !isCompleted)}
       className={`p-3.5 rounded-xl border border-l-4 text-left cursor-pointer flex items-start gap-3 select-none transition-all duration-150 hover:scale-[1.01] active:scale-[0.99] ${currentStyle.stroke} ${
         isCompleted
-          ? 'bg-emerald-500/[0.02] dark:bg-emerald-500/10 border-emerald-500/30 hover:bg-emerald-500/5 hover:border-emerald-500/50 shadow-xs'
-          : 'bg-card border-border hover:bg-accent/15 hover:border-accent shadow-2xs'
+          ? 'bg-emerald-500/[0.04] dark:bg-emerald-500/10 border-emerald-500/30 hover:bg-emerald-500/8 hover:border-emerald-500/50 shadow-xs'
+          : 'bg-card border-border/80 hover:bg-accent/15 hover:border-accent/80 shadow-2xs'
       }`}
     >
       <div className="shrink-0 mt-0.5">
@@ -56,29 +69,29 @@ const SyllabusChapterItem = memo(function SyllabusChapterItem({
         )}
       </div>
 
-      <div className="space-y-1">
-        <span className={`text-xs font-semibold block leading-tight ${isCompleted ? 'text-emerald-500 dark:text-emerald-400 line-through opacity-70' : 'text-foreground'}`}>
+      <div className="space-y-1.5 flex-1 min-w-0">
+        <span className={`text-xs font-semibold block leading-tight truncate ${isCompleted ? 'text-emerald-400 line-through opacity-75' : 'text-foreground'}`}>
           {ch.name}
         </span>
         
         <div className="flex flex-wrap gap-1.5 items-center">
-          <span className={`text-[9px] font-mono font-bold uppercase px-1 rounded ${currentStyle.badgeBg}`}>
+          <span className={`text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded ${currentStyle.badgeBg}`}>
             {ch.subject}
           </span>
-          <span className="text-[9px] font-mono text-muted-foreground mr-1">Class {ch.classLevel}</span>
+          <span className="text-[9px] font-mono text-muted-foreground">Class {ch.classLevel}</span>
           {ch.weightage === 'high' && (
-            <span className="text-[9px] font-bold bg-rose-500/10 text-rose-500 px-1.5 py-0.5 rounded flex items-center gap-0.5 shadow-2xs">
-              🔥 High Yield
+            <span className="text-[9px] font-mono font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20 px-1.5 py-0.5 rounded flex items-center gap-1">
+              <Flame className="w-2.5 h-2.5 text-rose-400" /> High Yield
             </span>
           )}
           {ch.weightage === 'medium' && (
-            <span className="text-[9px] font-bold bg-amber-500/10 text-amber-500 px-1.5 py-0.5 rounded flex items-center gap-0.5 shadow-2xs">
-              ⚡ Medium
+            <span className="text-[9px] font-mono font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 px-1.5 py-0.5 rounded flex items-center gap-1">
+              <Zap className="w-2.5 h-2.5 text-amber-400" /> Medium
             </span>
           )}
           {ch.weightage === 'low' && (
-            <span className="text-[9px] font-bold bg-blue-500/10 text-blue-500 px-1.5 py-0.5 rounded flex items-center gap-0.5 shadow-2xs">
-              ❄️ Low
+            <span className="text-[9px] font-mono font-bold bg-sky-500/10 text-sky-400 border border-sky-500/20 px-1.5 py-0.5 rounded flex items-center gap-1">
+              <Layers className="w-2.5 h-2.5 text-sky-400" /> Standard
             </span>
           )}
         </div>
@@ -227,30 +240,30 @@ const SyllabusTracker = memo(function SyllabusTracker({ completions, onToggleCha
           {/* High Yield Filter */}
           <button
             onClick={() => setFocusHighYield(!focusHighYield)}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 border ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 border ${
               focusHighYield
-                ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white border-amber-500/30 shadow-md scale-[1.01]'
-                : 'bg-accent/15 border-border text-muted-foreground hover:text-foreground hover:bg-accent/30'
+                ? 'bg-amber-500/15 border-amber-500/40 text-amber-400 shadow-xs'
+                : 'bg-accent/15 border-border/70 text-muted-foreground hover:text-foreground hover:bg-accent/30'
             }`}
           >
-            <Flame className={`w-3.5 h-3.5 ${focusHighYield ? 'animate-bounce text-white' : 'text-orange-500'}`} />
-            Focus High-Yield Only (35%)
+            <Flame className={`w-3.5 h-3.5 ${focusHighYield ? 'text-amber-400' : 'text-muted-foreground'}`} />
+            High-Yield Focus (35%)
           </button>
         </div>
 
         {/* Download links */}
-        <div className="flex bg-accent/10 border border-border rounded-2xl p-2 items-center gap-2 lg:self-start xl:self-auto shrink-0 justify-around">
+        <div className="flex bg-accent/10 border border-border/70 rounded-2xl p-1.5 items-center gap-2 lg:self-start xl:self-auto shrink-0">
           <button
             onClick={() => handleDownloadSyllabus('main')}
-            className="flex items-center gap-1.5 text-[11px] font-bold text-indigo-500 hover:text-indigo-400 cursor-pointer bg-card px-2.5 py-1.5 rounded-lg border border-border"
+            className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-indigo-400 hover:text-white cursor-pointer bg-card hover:bg-indigo-600 px-3 py-1.5 rounded-xl border border-border/80 hover:border-indigo-500 transition-all shadow-2xs"
           >
-            <Download className="w-3.5 h-3.5" /> JEE Main Syllabus
+            <Download className="w-3.5 h-3.5" /> Main Syllabus
           </button>
           <button
             onClick={() => handleDownloadSyllabus('advanced')}
-            className="flex items-center gap-1.5 text-[11px] font-bold text-emerald-500 hover:text-emerald-400 cursor-pointer bg-card px-2.5 py-1.5 rounded-lg border border-border"
+            className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-emerald-400 hover:text-white cursor-pointer bg-card hover:bg-emerald-600 px-3 py-1.5 rounded-xl border border-border/80 hover:border-emerald-500 transition-all shadow-2xs"
           >
-            <Download className="w-3.5 h-3.5" /> JEE Adv Syllabus
+            <Download className="w-3.5 h-3.5" /> Adv Syllabus
           </button>
         </div>
 

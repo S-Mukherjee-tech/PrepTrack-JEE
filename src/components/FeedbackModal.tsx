@@ -12,14 +12,16 @@ export default function FeedbackModal({ onSubmitFeedback }: FeedbackModalProps) 
   const [category, setCategory] = useState<'bug' | 'performance' | 'feature' | 'other'>('feature');
   const [comment, setComment] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // Fallback Google Form action if they configure, or we simulate a real standard POST
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!comment.trim()) {
-      alert('Please include your brief details in the feedback comments.');
+      setErrorMsg('Please include your brief details in the feedback comments.');
       return;
     }
+    setErrorMsg(null);
 
     const feedbackObj: FeedbackItem = {
       rating,
@@ -131,9 +133,13 @@ export default function FeedbackModal({ onSubmitFeedback }: FeedbackModalProps) 
               rows={3}
               placeholder="Tell us what you liked, features you want to suggest, or specific lags you felt..."
               value={comment}
-              onChange={(e) => setComment(e.target.value)}
+              onChange={(e) => {
+                setComment(e.target.value);
+                if (errorMsg) setErrorMsg(null);
+              }}
               className="w-full bg-accent/20 border border-border text-xs rounded-xl p-3 outline-none focus:border-indigo-500/50 transition-all text-foreground"
             />
+            {errorMsg && <p className="mt-1.5 text-xs text-rose-400 font-medium">{errorMsg}</p>}
           </div>
 
           {/* Submit Action */}
