@@ -50,33 +50,32 @@ const SettingsTab = memo(function SettingsTab({
     <div className="space-y-10 md:space-y-12">
       {/* Theme Settings Selector */}
       <div className="space-y-4">
-        <h4 className="text-sm font-bold text-foreground">Select Theme Accent</h4>
+        <div>
+          <h4 className="text-sm font-semibold text-foreground">Appearance & Surface Theme</h4>
+          <p className="text-xs text-muted-foreground mt-0.5">Select a restful, high-contrast workspace surface calibrated for extended study sessions.</p>
+        </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
           {[
-            { id: 'glass', name: '🌌 Aurora Glass Theme', desc: 'Luminous translucent glass panels floating on a vivid cosmic-violet backdrop with high contrast accents.', colorBg: 'bg-gradient-to-tr from-indigo-500 via-purple-600 to-pink-500', textC: 'text-white' },
-            { id: 'slate', name: '💎 Cosmic Ocean Theme', desc: 'Stunning deep navy-slate interface accented with high-fidelity glowing electric cyan highlights.', colorBg: 'bg-gradient-to-tr from-cyan-600 to-blue-900', textC: 'text-white' },
-            { id: 'cyber', name: '⚡ Cyber Neon Theme', desc: 'Vibrant retro-futuristic dark neon setup styled with vivid laser green and high energy glows.', colorBg: 'bg-gradient-to-tr from-emerald-500 to-teal-950 border border-emerald-400', textC: 'text-emerald-400' },
-            { id: 'light', name: '🌸 Spring Blossom Theme', desc: 'Delightful pure bright layout infused with warm cherry blossom rose and radiant golden tones.', colorBg: 'bg-gradient-to-tr from-pink-300 via-rose-400 to-amber-200', textC: 'text-slate-900 border border-slate-200' },
+            { id: 'glass', name: 'Obsidian Glass', desc: 'Deep obsidian canvas with subtle translucent glassmorphic cards and soft indigo accents.', colorBg: 'bg-indigo-500', textC: 'text-white' },
+            { id: 'slate', name: 'Deep Slate', desc: 'Classic executive dark slate architecture with crisp hairline borders and sky-cyan highlights.', colorBg: 'bg-sky-400', textC: 'text-white' },
+            { id: 'cyber', name: 'Emerald Studio', desc: 'Restful dark graphite surface paired with calm botanical emerald accents.', colorBg: 'bg-[#10a37f]', textC: 'text-emerald-400' },
+            { id: 'light', name: 'Classic Light', desc: 'Clean, paper-soft daylight workspace with diffused card elevation and deep slate ink.', colorBg: 'bg-slate-200 border border-slate-300', textC: 'text-slate-900' },
           ].map((themeOpt) => (
             <button
               key={themeOpt.id}
               onClick={() => onSaveSettings({ ...settings, theme: themeOpt.id as ThemeType })}
-              className={`p-5 rounded-2xl text-left transition-all border outline-none cursor-pointer duration-200 hover:scale-[1.01] active:scale-[0.98] ${
+              className={`p-5 rounded-2xl text-left transition-all border outline-none cursor-pointer duration-150 ${
                 settings.theme === themeOpt.id
-                  ? 'border-indigo-500 bg-indigo-500/5 ring-2 ring-indigo-500/20'
-                  : 'border-border bg-accent/15 hover:bg-accent/25'
+                  ? 'border-primary bg-primary/[0.06] ring-1 ring-primary/30'
+                  : 'border-border bg-accent/10 hover:bg-accent/20'
               }`}
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-bold text-foreground">{themeOpt.name}</span>
-                <div className={`w-3.5 h-3.5 rounded-full ${themeOpt.colorBg} border border-border flex items-center justify-center`}>
-                  {settings.theme === themeOpt.id && (
-                    <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full" />
-                  )}
-                </div>
+                <span className="text-xs font-semibold text-foreground">{themeOpt.name}</span>
+                <span className={`w-3.5 h-3.5 rounded-full ${themeOpt.colorBg} flex items-center justify-center`} />
               </div>
-              <p className="text-[10px] text-muted-foreground leading-normal">{themeOpt.desc}</p>
+              <p className="text-[11px] text-muted-foreground leading-relaxed">{themeOpt.desc}</p>
             </button>
           ))}
         </div>

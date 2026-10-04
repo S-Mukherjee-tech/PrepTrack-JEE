@@ -7,9 +7,10 @@ html, body, #root {
 }
 
 @theme {
-  --font-sans: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
-  --font-display: "Outfit", "Space Grotesk", sans-serif;
+  --font-sans: "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", "Plus Jakarta Sans", sans-serif;
+  --font-numeric: "Outfit", "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+  --font-mono: "Outfit", "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
   --color-primary: var(--primary);
   --color-primary-foreground: #ffffff;
 }
@@ -20,37 +21,37 @@ html, body, #root {
 }
 
 .theme-glass .bg-card {
-  background: rgba(15, 18, 33, 0.82) !important;
+  background: rgba(13, 17, 32, 0.74) !important;
   border-color: rgba(255, 255, 255, 0.08) !important;
-  backdrop-filter: blur(16px) saturate(120%);
-  -webkit-backdrop-filter: blur(16px) saturate(120%);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
   color: #f8fafc !important;
-  box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.55), inset 0 1px 0 0 rgba(255, 255, 255, 0.1) !important;
 }
 
-/* Highly Optimized Mobile/Low-End Device Compatibility - Remove Heavy Backdrop Blurs entirely */
+/* Optimized Mobile Compatibility */
 @media (max-width: 768px) {
   .theme-glass .bg-card {
-    background: rgba(13, 15, 28, 0.98) !important;
+    background: rgba(12, 16, 30, 0.95) !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
   }
 }
 
 .theme-glass .text-muted-foreground,
 .theme-glass .text-slate-400,
 .theme-glass .text-gray-400 {
-  color: #94a3b8 !important; /* Beautiful secondary contrast slate */
+  color: #94a3b8 !important;
 }
 
 .theme-glass .text-slate-500,
 .theme-glass .text-gray-500 {
-  color: #64748b !important; /* Readable tertiary text */
+  color: #64748b !important;
 }
 
 .theme-glass .text-slate-300 {
-  color: #cbd5e1 !important; /* High fidelity silver-white text */
+  color: #cbd5e1 !important;
 }
 
 .theme-glass .text-foreground,
@@ -62,31 +63,33 @@ html, body, #root {
   color: #ffffff;
 }
 
-/* Cosmic Ocean (Steel Slate Dark) Theme Overrides */
+/* Deep Slate Dark Theme Overrides */
 .theme-slate {
   --primary: #06b6d4;
 }
 
 .theme-slate .bg-card {
-  background: #0c1224 !important;
-  border-color: rgba(255, 255, 255, 0.07) !important;
+  background: rgba(10, 16, 30, 0.8) !important;
+  border-color: rgba(56, 189, 248, 0.12) !important;
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
   color: #f8fafc !important;
-  box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.6), inset 0 1px 0 0 rgba(255, 255, 255, 0.08) !important;
 }
 
 .theme-slate .text-muted-foreground,
 .theme-slate .text-slate-400,
 .theme-slate .text-gray-400 {
-  color: #94a3b8 !important; /* Cool grey for crisp secondary lines */
+  color: #94a3b8 !important;
 }
 
 .theme-slate .text-slate-500,
 .theme-slate .text-gray-500 {
-  color: #64748b !important; /* Highly legible subtext */
+  color: #64748b !important;
 }
 
 .theme-slate .text-slate-300 {
-  color: #e2e8f0 !important; /* High-contrast body elements */
+  color: #e2e8f0 !important;
 }
 
 .theme-slate .text-foreground,
@@ -98,31 +101,33 @@ html, body, #root {
   color: #f8fafc;
 }
 
-/* Cyber Neon Theme Overrides */
+/* Emerald Studio Theme Overrides */
 .theme-cyber {
   --primary: #10b981;
 }
 
 .theme-cyber .bg-card {
-  background: #041009 !important;
-  border-color: rgba(16, 185, 129, 0.18) !important;
+  background: rgba(5, 16, 11, 0.82) !important;
+  border-color: rgba(16, 185, 129, 0.16) !important;
+  backdrop-filter: blur(24px) saturate(175%);
+  -webkit-backdrop-filter: blur(24px) saturate(175%);
   color: #ecfdf5 !important;
-  box-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(16, 185, 129, 0.08) !important;
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.6), inset 0 1px 0 0 rgba(16, 185, 129, 0.12) !important;
 }
 
 .theme-cyber .text-muted-foreground,
 .theme-cyber .text-slate-400,
 .theme-cyber .text-gray-400 {
-  color: #86efac !important; /* Luminous light green secondary */
+  color: #86efac !important;
 }
 
 .theme-cyber .text-slate-500,
 .theme-cyber .text-gray-500 {
-  color: #34d399 !important; /* Highly distinct intermediate tier */
+  color: #34d399 !important;
 }
 
 .theme-cyber .text-slate-300 {
-  color: #e6fffa !important; /* Maximized contrast cyan-emerald body */
+  color: #e6fffa !important;
 }
 
 .theme-cyber .text-foreground {
@@ -135,34 +140,36 @@ html, body, #root {
 .theme-cyber h4,
 .theme-cyber h5 {
   color: #10b981 !important;
-  text-shadow: 0 0 12px rgba(16, 185, 129, 0.2);
+  text-shadow: 0 0 16px rgba(16, 185, 129, 0.2);
 }
 
-/* Spring Blossom (Light) Theme Overrides */
+/* Classic Light Theme Overrides */
 .theme-light {
   --primary: #4f46e5;
 }
 
 .theme-light .bg-card {
-  background: #ffffff !important;
+  background: rgba(255, 255, 255, 0.9) !important;
   border-color: rgba(226, 232, 240, 0.9) !important;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   color: #0f172a !important;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 8px 24px -4px rgba(0, 0, 0, 0.06) !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.03), 0 14px 34px -8px rgba(15, 23, 42, 0.05), inset 0 1px 0 0 rgba(255, 255, 255, 0.95) !important;
 }
 
 .theme-light .text-muted-foreground,
 .theme-light .text-slate-400,
 .theme-light .text-gray-400 {
-  color: #64748b !important; /* Elegant, premium, WCAG-compliant slate secondary */
+  color: #64748b !important;
 }
 
 .theme-light .text-slate-500,
 .theme-light .text-gray-500 {
-  color: #94a3b8 !important; /* High contrast muted elements */
+  color: #94a3b8 !important;
 }
 
 .theme-light .text-slate-300 {
-  color: #334155 !important; /* Crisp dark navy body text */
+  color: #334155 !important;
 }
 
 .theme-light .text-foreground,
@@ -172,6 +179,69 @@ html, body, #root {
 .theme-light h4,
 .theme-light h5 {
   color: #0f172a;
+}
+
+/* Sleek, Classic Glass Surface & Tactile Tokens */
+.glass-panel,
+.apple-glass {
+  background: rgba(14, 18, 32, 0.72) !important;
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.1), 0 8px 32px 0 rgba(0, 0, 0, 0.35) !important;
+}
+
+.theme-light .glass-panel,
+.theme-light .apple-glass {
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.95), 0 8px 30px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Squircle & Continuous Geometry */
+.squircle-card,
+.apple-squircle {
+  border-radius: 22px !important;
+}
+
+.squircle-card-sm,
+.apple-squircle-sm {
+  border-radius: 14px !important;
+}
+
+.squircle-card-lg,
+.apple-squircle-lg {
+  border-radius: 28px !important;
+}
+
+/* Tactile Spring Press Physics */
+.tactile-press,
+.apple-press {
+  transition: transform 0.16s cubic-bezier(0.2, 0.9, 0.2, 1), opacity 0.16s ease !important;
+}
+
+.tactile-press:active,
+.apple-press:active {
+  transform: scale(0.96) !important;
+}
+
+/* Floating Navigation Dock */
+.floating-dock,
+.apple-dock {
+  background: rgba(10, 14, 26, 0.85) !important;
+  backdrop-filter: blur(28px) saturate(200%);
+  -webkit-backdrop-filter: blur(28px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 16px 48px -8px rgba(0, 0, 0, 0.6), inset 0 1px 0 0 rgba(255, 255, 255, 0.15) !important;
+}
+
+.theme-light .floating-dock,
+.theme-light .apple-dock {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.1), inset 0 1px 0 0 rgba(255, 255, 255, 0.95) !important;
 }
 
 /* Global Smooth Element Polish (Harmonious FAANG curves) */
@@ -393,30 +463,59 @@ input, select, textarea {
   border-color: #f1f5f9 !important;
 }
 
-/* Custom fade integrations */
+/* Custom fade & spatial glide integrations (Compositor-only for 120Hz fluidity) */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
 }
 
 @keyframes tabFadeIn {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translate3d(0, 6px, 0) scale(0.997);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0) scale(1);
   }
 }
 
 .animate-tab-fade-in {
-  animation: tabFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: tabFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   will-change: transform, opacity;
+}
+
+/* Fluid Page Transition Container */
+.page-transition-wrapper {
+  contain: layout style;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.page-transition-layer {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-tab-fade-in,
+  .animate-fade-in {
+    animation-duration: 0.08s !important;
+    transform: none !important;
+  }
 }
 
 /* Modern minimalist, system-style overlay scrollbars */
@@ -502,12 +601,15 @@ input, select, textarea {
   }
 }
 
-/* Custom Monospace Override for Gorgeous, Rounded, Tabular Digits with No Slashed Zeroes */
-.font-mono {
-  font-family: var(--font-mono) !important;
-  font-variant-numeric: tabular-nums !important;
-  font-feature-settings: "tnum" 1, "zero" 0, "ss01" 1, "ss02" 1 !important;
-  letter-spacing: -0.015em !important;
+/* Sleek, Classic, High-Elegance Tabular Numeric Typography (Replaces mechanical coder monospace) */
+.font-mono,
+.font-numeric,
+[class*="font-mono"],
+[class*="font-numeric"] {
+  font-family: var(--font-numeric) !important;
+  font-variant-numeric: tabular-nums lining-nums !important;
+  font-feature-settings: "tnum" 1, "lnum" 1, "cv05" 1, "cv11" 1, "ss01" 1 !important;
+  letter-spacing: -0.02em !important;
 }
 
 @keyframes pulseGlow {

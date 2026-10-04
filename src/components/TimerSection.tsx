@@ -460,7 +460,7 @@ const TimerSection = memo(function TimerSection({ settings, onSaveSession, curre
         duration: 3,
         ease: "easeInOut"
       }}
-      className="bg-card border border-border rounded-3xl p-6 lg:p-8 shadow-sm flex flex-col md:flex-row gap-8 items-center relative overflow-hidden dashboard-card-gpu"
+      className="bg-card border border-border squircle-card p-6 lg:p-8 shadow-xl flex flex-col md:flex-row gap-8 items-center relative overflow-hidden dashboard-card-gpu glass-panel"
     >
       
       {/* Decorative gradient glowing orb - purely aesthetic */}
@@ -558,7 +558,7 @@ const TimerSection = memo(function TimerSection({ settings, onSaveSession, curre
             </span>
 
             {/* Timer String digits - jitter free tabular formatting */}
-            <div className="font-mono text-3xl md:text-4xl font-black tracking-tight text-foreground flex gap-0.5 items-center my-1.5 transition-colors select-none">
+            <div className="font-numeric text-3xl md:text-4xl font-extrabold tracking-tight text-foreground flex gap-0.5 items-center my-1.5 transition-colors select-none">
               <span className="tabular-nums">{hoursStr}</span>
               <span className={`transition-colors duration-300 ${
                 isRunning && !isPaused 
@@ -591,7 +591,7 @@ const TimerSection = memo(function TimerSection({ settings, onSaveSession, curre
 
       {/* Control panel and customization options */}
       <div className="flex-1 w-full space-y-5">
-        <div className="grid grid-cols-3 gap-2.5">
+        <div className="grid grid-cols-3 gap-2 p-1 rounded-2xl glass-panel border border-white/10">
           {(['normal', 'pomodoro', 'test'] as StudyMode[]).map((m) => (
             <button
               key={m}
@@ -601,10 +601,10 @@ const TimerSection = memo(function TimerSection({ settings, onSaveSession, curre
                 setTimeElapsed(0);
                 setPomodoroStage('work');
               }}
-              className={`py-3.5 px-3 rounded-2xl text-xs font-bold capitalize border cursor-pointer flex flex-col items-center gap-1.5 transition-all duration-300 transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${
+              className={`py-3 px-3 squircle-card-sm text-xs font-bold capitalize border cursor-pointer flex flex-col items-center gap-1 transition-all duration-200 tactile-press disabled:opacity-50 disabled:cursor-not-allowed ${
                 mode === m
-                  ? 'bg-primary border-primary text-primary-foreground shadow-[0_8px_24px_rgba(129,140,248,0.22)]'
-                  : 'bg-accent/10 border-border/80 hover:bg-accent/20 text-muted-foreground hover:text-foreground'
+                  ? 'bg-primary border-primary text-primary-foreground shadow-sm'
+                  : 'bg-card/40 border-transparent text-muted-foreground hover:text-foreground hover:bg-card/70'
               }`}
             >
               <span className="font-sans">

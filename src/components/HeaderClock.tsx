@@ -66,8 +66,8 @@ export const HeaderClock = memo(function HeaderClock({ clockFormat = '12', timez
       }`}
       title={`Current System Time (${timezone || 'Local'})`}
     >
-      <div className="flex items-baseline font-mono tabular-nums">
-        <span className="text-sm md:text-base font-bold tracking-tight text-foreground drop-shadow-sm leading-none">
+      <div className="flex items-baseline font-numeric tabular-nums">
+        <span className="text-sm md:text-base font-bold font-numeric tracking-tight text-foreground drop-shadow-sm leading-none">
           {formattedHours}
           <span className={`mx-0.5 transition-opacity duration-300 ${seconds % 2 === 0 ? 'opacity-100 text-primary' : 'opacity-30'}`}>:</span>
           {formattedMinutes}

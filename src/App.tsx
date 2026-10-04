@@ -26,14 +26,34 @@ import HeaderClock from './components/HeaderClock';
 import { BrandingLogo } from './components/BrandingLogo';
 import { WindowedStudyLog } from './components/WindowedStudyLog';
 import { ScrollProgressAndTop } from './components/ScrollProgressAndTop';
+import PageTransition, { TAB_ORDER } from './components/PageTransition';
+import PageHeader from './components/PageHeader';
+import LiveActivityPill from './components/LiveActivityPill';
+import { secureStorage } from './utils/security';
 
-// Lazy loaded workspace features for loading performance
-const AnalyticsCharts = lazy(() => import('./components/AnalyticsCharts'));
-const QuestionTrackerForm = lazy(() => import('./components/QuestionTrackerForm'));
-const SyllabusTracker = lazy(() => import('./components/SyllabusTracker'));
-const NotesAndErrors = lazy(() => import('./components/NotesAndErrors'));
-const MockTestTracker = lazy(() => import('./components/MockTestTracker'));
-const SettingsTab = lazy(() => import('./components/SettingsTab'));
+// Lazy loaded workspace features with preloaders for zero-latency navigation
+const loadAnalyticsCharts = () => import('./components/AnalyticsCharts');
+const loadQuestionTrackerForm = () => import('./components/QuestionTrackerForm');
+const loadSyllabusTracker = () => import('./components/SyllabusTracker');
+const loadNotesAndErrors = () => import('./components/NotesAndErrors');
+const loadMockTestTracker = () => import('./components/MockTestTracker');
+const loadSettingsTab = () => import('./components/SettingsTab');
+
+const AnalyticsCharts = lazy(loadAnalyticsCharts);
+const QuestionTrackerForm = lazy(loadQuestionTrackerForm);
+const SyllabusTracker = lazy(loadSyllabusTracker);
+const NotesAndErrors = lazy(loadNotesAndErrors);
+const MockTestTracker = lazy(loadMockTestTracker);
+const SettingsTab = lazy(loadSettingsTab);
+
+const TAB_PRELOADERS: Record<string, () => Promise<unknown>> = {
+  analytics: loadAnalyticsCharts,
+  questions: loadQuestionTrackerForm,
+  syllabus: loadSyllabusTracker,
+  notes: loadNotesAndErrors,
+  mock_tests: loadMockTestTracker,
+  settings: loadSettingsTab,
+};
 
 // High-performance loading fallback component
 const LoadingFallback = () => (
@@ -121,6 +141,7 @@ export default function App() {
 
   // UI Control states
   const [activeTab, setActiveTab] = useState<'dashboard' | 'analytics' | 'questions' | 'syllabus' | 'notes' | 'mock_tests' | 'settings'>('dashboard');
+  const [tabDirection, setTabDirection] = useState<number>(1);
   const [dbLoading, setDbLoading] = useState(true);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [isBannerClockScrolledOut, setIsBannerClockScrolledOut] = useState(false);
@@ -237,12 +258,40 @@ export default function App() {
       }
     }
     initDB();
+
+    // Preload workspace tab modules during browser idle time so tab transitions are instantaneous
+    const preloadTimer = setTimeout(() => {
+      Object.values(TAB_PRELOADERS).forEach((preload) => {
+        preload().catch(() => {});
+      });
+    }, 300);
+
+    return () => clearTimeout(preloadTimer);
   }, []);
 
-  // Set active tab scroll safely
-  const handleTabChange = useCallback((tab: typeof activeTab) => {
-    setActiveTab(tab);
-    window.scrollTo({ top: 0, behavior: 'auto' });
+  const handlePreloadTab = useCallback((tabId: string) => {
+    const preloader = TAB_PRELOADERS[tabId];
+    if (preloader) {
+      preloader().catch(() => {});
+    }
+  }, []);
+
+  // Set active tab with smooth, direction-aware, non-blocking transitions
+  const handleTabChange = useCallback((nextTab: typeof activeTab) => {
+    const preloader = TAB_PRELOADERS[nextTab];
+    if (preloader) {
+      preloader().catch(() => {});
+    }
+    setActiveTab((currentTab) => {
+      if (nextTab === currentTab) return currentTab;
+      const prevOrder = TAB_ORDER[currentTab] ?? 0;
+      const nextOrder = TAB_ORDER[nextTab] ?? 0;
+      setTabDirection(nextOrder >= prevOrder ? 1 : -1);
+      if (typeof window !== 'undefined' && window.scrollY > 40) {
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      }
+      return nextTab;
+    });
   }, []);
 
   // --- SAVE CALLBACKS UNIFYING DB AND REACT STATE ---
@@ -273,6 +322,78 @@ export default function App() {
       console.error(e);
     }
   }, [saveSessionLimiter, addToast]);
+
+  // Background Pomodoro study session tracker when navigating between other tabs
+  useEffect(() => {
+    if (activeTab === 'dashboard') return;
+
+    const interval = setInterval(() => {
+      const isRunning = secureStorage.getItem('preptrack_timer_isRunning') === 'true';
+      const isPaused = secureStorage.getItem('preptrack_timer_isPaused') === 'true';
+      const mode = secureStorage.getItem('preptrack_timer_mode');
+      const savedTime = parseInt(secureStorage.getItem('preptrack_timer_timeElapsed') || '0', 10);
+      const savedLastTS = parseInt(secureStorage.getItem('preptrack_timer_lastTS') || '0', 10);
+      const pomodoroStage = secureStorage.getItem('preptrack_timer_pomodoroStage') || 'work';
+
+      if (isRunning && !isPaused && mode === 'pomodoro' && savedLastTS > 0) {
+        const deltaSec = Math.floor((Date.now() - savedLastTS) / 1000);
+        const currentElapsed = savedTime + deltaSec;
+        const goalMins = pomodoroStage === 'work' ? settings.pomodoroWorkDuration : settings.pomodoroBreakDuration;
+        const goalSec = goalMins * 60;
+
+        if (currentElapsed >= goalSec) {
+          try {
+            const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+            if (AudioCtx) {
+              const ctx = new AudioCtx();
+              const osc = ctx.createOscillator();
+              const gain = ctx.createGain();
+              osc.type = 'sine';
+              osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+              gain.gain.setValueAtTime(0.3, ctx.currentTime);
+              gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.8);
+              osc.connect(gain);
+              gain.connect(ctx.destination);
+              osc.start();
+              osc.stop(ctx.currentTime + 0.8);
+            }
+          } catch (e) {
+            console.warn(e);
+          }
+
+          if (pomodoroStage === 'work') {
+            addToast(
+              '🎯 Pomodoro Completed!',
+              `Great job completing your ${settings.pomodoroWorkDuration}-minute focus block. Time to rest!`,
+              'success'
+            );
+            handleSaveStudySession({
+              id: `session_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+              startTime: Date.now() - goalSec * 1000,
+              endTime: Date.now(),
+              duration: goalSec,
+              sessionName: 'Pomodoro Focus Session',
+              mode: 'pomodoro'
+            });
+            secureStorage.setItem('preptrack_timer_pomodoroStage', 'break');
+          } else {
+            addToast(
+              '⚡ Break Finished!',
+              'Your break interval is over. Ready for the next focused study block?',
+              'info'
+            );
+            secureStorage.setItem('preptrack_timer_pomodoroStage', 'work');
+          }
+
+          secureStorage.setItem('preptrack_timer_isRunning', 'false');
+          secureStorage.setItem('preptrack_timer_timeElapsed', '0');
+          secureStorage.setItem('preptrack_timer_lastTS', Date.now().toString());
+        }
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [activeTab, settings, addToast, handleSaveStudySession]);
 
   const handleDeleteStudySession = useCallback(async (id: string) => {
     if (confirm('Delete this study log entry permanently?')) {
@@ -765,7 +886,7 @@ export default function App() {
           navActive: 'bg-white/10 text-white font-semibold',
           navInactive: 'text-slate-400 hover:text-white hover:bg-white/[0.04] font-medium',
           bannerGradient: 'from-slate-900 via-indigo-950 to-slate-900 border border-white/10 shadow-xl',
-          themeBrand: '🌌 Obsidian Indigo'
+          themeBrand: 'Obsidian Glass'
         };
       case 'cyber':
         return {
@@ -778,7 +899,7 @@ export default function App() {
           navActive: 'bg-emerald-500/15 text-emerald-300 font-semibold',
           navInactive: 'text-emerald-400/70 hover:text-emerald-200 hover:bg-emerald-500/5 font-medium',
           bannerGradient: 'from-slate-950 via-emerald-950 to-slate-950 border border-emerald-500/25 shadow-xl',
-          themeBrand: '⚡ Cyber Emerald'
+          themeBrand: 'Emerald Studio'
         };
       case 'light':
         return {
@@ -791,7 +912,7 @@ export default function App() {
           navActive: 'bg-slate-100 text-indigo-600 font-semibold shadow-xs',
           navInactive: 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/60 font-medium',
           bannerGradient: 'from-slate-900 via-indigo-950 to-slate-900 border border-slate-800 shadow-xl',
-          themeBrand: '☀️ Minimal Light'
+          themeBrand: 'Classic Light'
         };
       case 'slate':
       default:
@@ -805,7 +926,7 @@ export default function App() {
           navActive: 'bg-cyan-500/15 text-cyan-300 font-semibold',
           navInactive: 'text-slate-400 hover:text-cyan-200 hover:bg-cyan-500/5 font-medium',
           bannerGradient: 'from-slate-950 via-cyan-950 to-slate-950 border border-cyan-500/20 shadow-xl',
-          themeBrand: '💎 Titanium Slate'
+          themeBrand: 'Deep Slate'
         };
     }
   }, [settings.theme]);
@@ -827,66 +948,62 @@ export default function App() {
 
   return (
     <div 
-      className={`min-h-screen font-sans transition-colors duration-300 relative ${themeStyles.bg} theme-${settings.theme}`}
+      className={`min-h-screen font-sans transition-colors duration-500 relative ${themeStyles.bg} theme-${settings.theme}`}
       style={{
-        backgroundImage: settings.theme === 'glass'
-          ? 'radial-gradient(at 0% 0%, rgba(129, 140, 248, 0.25) 0px, transparent 50%), radial-gradient(at 100% 0%, rgba(236, 72, 153, 0.22) 0px, transparent 50%), radial-gradient(at 50% 100%, rgba(168, 85, 247, 0.18) 0px, transparent 55%), radial-gradient(at 10% 90%, rgba(6, 182, 212, 0.15) 0px, transparent 50%)'
-          : settings.theme === 'slate'
-          ? 'radial-gradient(at 5% 5%, rgba(6, 182, 212, 0.2) 0px, transparent 50%), radial-gradient(at 95% 95%, rgba(99, 102, 241, 0.15) 0px, transparent 50%), radial-gradient(at 50% 50%, rgba(13, 16, 35, 0.95) 0px, transparent 100%)'
-          : settings.theme === 'cyber'
-          ? 'radial-gradient(at 10% 10%, rgba(16, 185, 129, 0.22) 0px, transparent 55%), radial-gradient(at 90% 90%, rgba(6, 182, 212, 0.15) 0px, transparent 50%)'
-          : settings.theme === 'light'
-          ? 'radial-gradient(at 0% 0%, rgba(244, 63, 94, 0.08) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(245, 158, 11, 0.06) 0px, transparent 50%), radial-gradient(at 50% 0%, rgba(99, 102, 241, 0.05) 0px, transparent 50%)'
-          : undefined,
         backgroundColor: settings.theme === 'glass'
-          ? '#070814'
+          ? '#080915'
           : settings.theme === 'slate'
-          ? '#080a15'
+          ? '#070a14'
           : settings.theme === 'cyber'
-          ? '#010804'
-          : settings.theme === 'light'
-          ? '#fafbfc'
-          : undefined
+          ? '#030805'
+          : '#f9fafb'
       }}
     >
-      
-      {/* Dynamic ambient floating backdrops for balanced aesthetic side effects */}
-      <div className="hidden md:block absolute inset-0 overflow-hidden pointer-events-none select-none z-0">
-        {settings.theme === 'glass' && (
-          <>
-            <div className="absolute top-[10%] left-[5%] w-[450px] h-[450px] rounded-full bg-indigo-600/12 blur-[130px] animate-[floatGlow_25s_infinite_ease-in-out]" />
-            <div className="absolute bottom-[15%] right-[5%] w-[500px] h-[500px] rounded-full bg-pink-500/10 blur-[140px] animate-[floatGlowReverse_30s_infinite_ease-in-out]" />
-            <div className="absolute top-[40%] right-[15%] w-[380px] h-[380px] rounded-full bg-purple-600/8 blur-[120px] animate-[floatGlow_20s_infinite_ease-in-out]" />
-          </>
-        )}
-        {settings.theme === 'slate' && (
-          <>
-            <div className="absolute top-[15%] left-[10%] w-[500px] h-[500px] rounded-full bg-cyan-500/10 blur-[130px] animate-[floatGlow_28s_infinite_ease-in-out]" />
-            <div className="absolute bottom-[20%] right-[8%] w-[450px] h-[450px] rounded-full bg-indigo-500/12 blur-[130px] animate-[floatGlowReverse_24s_infinite_ease-in-out]" />
-          </>
-        )}
-        {settings.theme === 'cyber' && (
-          <>
-            <div className="absolute top-[8%] left-[12%] w-[480px] h-[480px] rounded-full bg-emerald-500/8 blur-[120px] animate-[floatGlow_22s_infinite_ease-in-out]" />
-            <div className="absolute bottom-[25%] right-[10%] w-[400px] h-[400px] rounded-full bg-teal-500/10 blur-[120px] animate-[floatGlowReverse_26s_infinite_ease-in-out]" />
-          </>
-        )}
-        {settings.theme === 'light' && (
-          <>
-            <div className="absolute top-[5%] left-[3%] w-[550px] h-[550px] rounded-full bg-rose-200/20 blur-[140px] animate-[floatGlow_35s_infinite_ease-in-out]" />
-            <div className="absolute bottom-[10%] right-[5%] w-[480px] h-[480px] rounded-full bg-amber-100/25 blur-[120px] animate-[floatGlowReverse_28s_infinite_ease-in-out]" />
-          </>
-        )}
+      {/* Sleek, Classic Studio Atmospheric Lighting Architecture */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none select-none z-0">
+        {/* Luminous Top Horizon Halo */}
+        <div 
+          className="absolute top-0 inset-x-0 h-[640px] transition-all duration-700 pointer-events-none"
+          style={{
+            background: settings.theme === 'glass'
+              ? 'radial-gradient(ellipse 90% 55% at 50% -5%, rgba(99, 102, 241, 0.16) 0%, rgba(139, 92, 246, 0.08) 35%, rgba(14, 165, 233, 0.03) 65%, transparent 100%)'
+              : settings.theme === 'slate'
+              ? 'radial-gradient(ellipse 90% 55% at 50% -5%, rgba(6, 182, 212, 0.15) 0%, rgba(30, 58, 138, 0.1) 40%, transparent 100%)'
+              : settings.theme === 'cyber'
+              ? 'radial-gradient(ellipse 90% 55% at 50% -5%, rgba(16, 185, 129, 0.14) 0%, rgba(13, 148, 136, 0.07) 40%, transparent 100%)'
+              : 'radial-gradient(ellipse 90% 55% at 50% -5%, rgba(99, 102, 241, 0.04) 0%, rgba(241, 245, 249, 0.7) 45%, transparent 100%)'
+          }}
+        />
+
+        {/* Soft Ambient Depth Accents */}
+        <div 
+          className="hidden lg:block absolute top-[160px] left-[8%] w-[450px] h-[450px] rounded-full blur-[140px] opacity-40 pointer-events-none transition-all duration-700"
+          style={{
+            backgroundColor: settings.theme === 'glass' ? 'rgba(99, 102, 241, 0.1)' :
+                             settings.theme === 'slate' ? 'rgba(6, 182, 212, 0.08)' :
+                             settings.theme === 'cyber' ? 'rgba(16, 185, 129, 0.07)' :
+                             'rgba(244, 63, 94, 0.03)'
+          }}
+        />
+        <div 
+          className="hidden lg:block absolute top-[260px] right-[8%] w-[480px] h-[480px] rounded-full blur-[150px] opacity-35 pointer-events-none transition-all duration-700"
+          style={{
+            backgroundColor: settings.theme === 'glass' ? 'rgba(168, 85, 247, 0.08)' :
+                             settings.theme === 'slate' ? 'rgba(59, 130, 246, 0.08)' :
+                             settings.theme === 'cyber' ? 'rgba(20, 184, 166, 0.07)' :
+                             'rgba(245, 158, 11, 0.03)'
+          }}
+        />
       </div>
 
       {/* GLOBAL NAVBAR HEADER */}
-      <header className={themeStyles.headerBg}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-15 flex items-center justify-between gap-4">
+      <header className={`${themeStyles.headerBg} border-b border-white/[0.08] backdrop-blur-2xl`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3 sm:gap-4">
           <div className="flex items-center gap-3 select-none shrink-0">
             {/* Minimal, crisp branding logo container */}
             <div className="relative group shrink-0 select-none">
-              <div className="relative p-1.5 rounded-xl bg-slate-900/90 dark:bg-slate-950 border border-white/10 dark:border-white/10 text-white shadow-xs overflow-hidden flex items-center justify-center transition-transform group-hover:scale-105 duration-200">
-                <BrandingLogo size={24} className="shrink-0 relative z-10" />
+              <div className="relative p-1.5 rounded-xl bg-slate-900/90 dark:bg-slate-950 border border-white/10 dark:border-white/10 text-white shadow-xs overflow-hidden flex items-center justify-center transition-transform group-hover:scale-105 duration-200 tactile-press">
+                <BrandingLogo size={22} className="shrink-0 relative z-10" />
               </div>
             </div>
 
@@ -894,15 +1011,23 @@ export default function App() {
               <h1 className="text-base font-extrabold font-display tracking-tight text-foreground leading-none">
                 PrepTrack
               </h1>
-              <span className="hidden sm:inline-flex items-center gap-1 text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 select-none">
+              <span className="hidden md:inline-flex items-center gap-1 text-[9px] font-numeric font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 select-none">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                 JEE 2026
               </span>
             </div>
           </div>
 
+          {/* Live Activity Focus Tracker */}
+          <div className="flex items-center justify-center">
+            <LiveActivityPill
+              onOpenTimerTab={() => handleTabChange('dashboard')}
+              theme={settings.theme}
+            />
+          </div>
+
           {/* Nav Segmented Control for PC */}
-          <nav className="hidden lg:flex items-center p-1 rounded-xl bg-accent/[0.06] border border-border/40 gap-0.5 backdrop-blur-md">
+          <nav className="hidden xl:flex items-center p-1 rounded-2xl glass-panel gap-0.5 shadow-sm">
             {[
               { id: 'dashboard', label: 'Dashboard', icon: Timer },
               { id: 'analytics', label: 'Analytics', icon: BarChart },
@@ -917,18 +1042,20 @@ export default function App() {
               return (
                 <button
                   key={tab.id}
+                  onMouseEnter={() => handlePreloadTab(tab.id)}
+                  onFocus={() => handlePreloadTab(tab.id)}
                   onClick={() => handleTabChange(tab.id as any)}
-                  className={`px-3 py-1.5 flex items-center gap-1.5 text-xs font-semibold relative transition-all duration-150 cursor-pointer outline-none rounded-lg select-none ${
+                  className={`px-3 py-1.5 flex items-center gap-1.5 text-xs font-semibold relative transition-all duration-150 cursor-pointer outline-none rounded-xl select-none whitespace-nowrap shrink-0 tactile-press ${
                     isActive 
                       ? 'text-foreground font-bold shadow-xs' 
-                      : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.04]'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.06]'
                   }`}
                 >
                   {isActive && (
                     <motion.div
                       layoutId="activeDesktopSegment"
-                      className="absolute inset-0 bg-card border border-border/70 rounded-lg -z-0 shadow-xs"
-                      transition={{ type: 'spring', stiffness: 450, damping: 35 }}
+                      className="absolute inset-0 bg-card/90 border border-border/80 rounded-xl -z-0 shadow-sm"
+                      transition={{ type: 'spring', stiffness: 500, damping: 35, mass: 0.6 }}
                     />
                   )}
                   <Icon className={`w-3.5 h-3.5 shrink-0 z-10 transition-colors ${isActive ? 'text-primary' : 'opacity-70'}`} />
@@ -952,7 +1079,7 @@ export default function App() {
                 const nextTheme = themes[(currentIdx + 1) % themes.length];
                 handleSaveSettings({ ...settings, theme: nextTheme });
               }}
-              className="p-2 border border-border/50 rounded-xl bg-accent/10 hover:bg-accent/25 text-muted-foreground hover:text-foreground transition-all cursor-pointer"
+              className="p-2 border border-border/50 rounded-2xl glass-panel text-muted-foreground hover:text-foreground transition-all cursor-pointer tactile-press shadow-xs"
               title={`Switch Theme (Current: ${settings.theme})`}
               aria-label={`Switch Theme (Current: ${settings.theme})`}
             >
@@ -966,8 +1093,8 @@ export default function App() {
         </div>
       </header>
 
-      {/* MOBILE CONSOLE TABS - FIXED BOTTOM NAV BAR FOR NATIVE APP EXPERIENCE */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-xl border-t border-border/60 z-40 flex items-center justify-around px-2 h-16 pb-safe gap-1 shadow-[0_-8px_32px_rgba(0,0,0,0.18)]">
+      {/* MOBILE CONSOLE NAVIGATION DOCK */}
+      <div className="xl:hidden fixed bottom-3.5 inset-x-3.5 max-w-md mx-auto z-40 floating-dock rounded-[28px] flex items-center justify-around px-2 py-1.5 shadow-[0_16px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.18)]">
         {[
           { id: 'dashboard', label: 'Home', icon: Timer },
           { id: 'analytics', label: 'Stats', icon: BarChart },
@@ -980,10 +1107,14 @@ export default function App() {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
           return (
-            <button
+            <motion.button
               key={tab.id}
+              whileTap={{ scale: 0.84 }}
+              transition={{ type: 'spring', stiffness: 450, damping: 25 }}
+              onTouchStart={() => handlePreloadTab(tab.id)}
+              onMouseEnter={() => handlePreloadTab(tab.id)}
               onClick={() => handleTabChange(tab.id as any)}
-              className={`flex-1 py-1 flex flex-col items-center justify-center gap-1 relative transition-all duration-200 outline-none select-none ${
+              className={`flex-1 py-1.5 flex flex-col items-center justify-center gap-1 relative transition-all duration-150 outline-none select-none ${
                 isActive
                   ? 'text-primary font-bold'
                   : 'text-muted-foreground hover:text-foreground font-medium'
@@ -992,71 +1123,47 @@ export default function App() {
               {isActive && (
                 <motion.div
                    layoutId="activeMobileTabPill"
-                   className="absolute inset-x-1.5 inset-y-1 rounded-xl -z-0 bg-primary/10 border border-primary/20"
-                   transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                   className="absolute inset-x-1 inset-y-0.5 rounded-2xl -z-0 bg-primary/15 border border-primary/25 shadow-xs"
+                   transition={{ type: 'spring', stiffness: 500, damping: 36, mass: 0.7 }}
                 />
               )}
               <Icon className="w-4.5 h-4.5 z-10 shrink-0" />
               <span className="z-10 text-[8.5px] font-bold leading-none tracking-tight">{tab.label}</span>
-            </button>
+            </motion.button>
           );
         })}
       </div>
 
       {/* CORE FRAME CONTAINER */}
       <main className={themeStyles.container}>
-        
-        {/* Sleek breadcrumb and section heading for non-dashboard tracks */}
-        {activeTab !== 'dashboard' && (
-          <div className="flex flex-col md:flex-row md:items-center justify-between pb-1.5 select-none animate-fade-in border-b border-border/40 mb-6">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground">
-                <span className="tracking-wider uppercase font-extrabold text-indigo-500 bg-indigo-500/10 px-2 py-0.5 rounded-md text-[10px]">
-                  Workspace
-                </span>
-                <span>/</span>
-                <span className="uppercase font-bold text-slate-300">
-                  {activeTab === 'notes' ? 'mistakes book' : activeTab === 'mock_tests' ? 'mock tests' : activeTab}
-                </span>
-              </div>
-              <h2 className="text-xl md:text-2xl font-bold font-sans tracking-tight text-foreground capitalize">
-                {activeTab === 'notes' && 'Mistakes & Core Concept Book'}
-                {activeTab === 'syllabus' && 'JEE Curriculum Syllabus Track'}
-                {activeTab === 'questions' && 'Daily Solved Questions Logger'}
-                {activeTab === 'analytics' && 'Syllabus & Time Analytics'}
-                {activeTab === 'mock_tests' && 'JEE Mock Test Tracker & Trends'}
-                {activeTab === 'settings' && 'Applet Configurations & Customization'}
-              </h2>
-            </div>
-            
-            <div className="flex gap-2.5 mt-3 md:mt-0 text-xs font-bold text-muted-foreground bg-card/80 backdrop-blur-md border border-border/80 px-4 py-2 rounded-2xl self-start items-center shadow-md">
-              <span className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></span>
-              <span>{themeStyles.themeBrand}</span>
-            </div>
-          </div>
-        )}
-
-        {/* --- DYNAMIC RENDER OF THEMES OR TABS --- */}
-        <div className="space-y-12 md:space-y-14">
-          {/* Keep Dashboard always mounted to preserve active running stopwatch and avoid resetting */}
-          <div className={activeTab === 'dashboard' ? 'block' : 'hidden'}>
-            <div className={activeTab === 'dashboard' ? 'animate-tab-fade-in' : 'opacity-0'}>
-              <DashboardTab
-                settings={settings}
-                sessions={sessions}
-                questions={questions}
-                chapterCompletions={chapterCompletions}
-                themeStyles={themeStyles}
-                onSaveStudySession={handleSaveStudySession}
-                onDeleteStudySession={handleDeleteStudySession}
-                onTabChange={handleTabChange}
-              />
-            </div>
-          </div>
+        {/* FLUID PAGE TRANSITIONS */}
+        <PageTransition
+          activeKey={activeTab}
+          direction={tabDirection}
+        >
+          {/* TAB 1: DASHBOARD */}
+          {activeTab === 'dashboard' && (
+            <DashboardTab
+              settings={settings}
+              sessions={sessions}
+              questions={questions}
+              chapterCompletions={chapterCompletions}
+              themeStyles={themeStyles}
+              onSaveStudySession={handleSaveStudySession}
+              onDeleteStudySession={handleDeleteStudySession}
+              onTabChange={handleTabChange}
+            />
+          )}
 
           {/* TAB 2: PROGRESS HISTORY & BAR CHARTS */}
-          <div className={activeTab === 'analytics' ? 'block' : 'hidden'}>
-            <div className={`space-y-12 md:space-y-14 ${activeTab === 'analytics' ? 'animate-tab-fade-in' : 'opacity-0'}`}>
+          {activeTab === 'analytics' && (
+            <div className="space-y-10 md:space-y-12">
+              <PageHeader
+                breadcrumb="Analytics"
+                title="Syllabus & Time Analytics"
+                description="Deep dive into your study metrics, subject balance, question velocity, and historical sessions."
+                themeBrand={themeStyles.themeBrand}
+              />
               <Suspense fallback={<LoadingFallback />}>
                 <AnalyticsCharts sessions={sessions} questions={questions} errorItems={errorBook} />
               </Suspense>
@@ -1085,11 +1192,17 @@ export default function App() {
                 )}
               </div>
             </div>
-          </div>
+          )}
 
           {/* TAB 3: QUESTIONS LOGGER */}
-          <div className={activeTab === 'questions' ? 'block' : 'hidden'}>
-            <div className={activeTab === 'questions' ? 'animate-tab-fade-in' : 'opacity-0'}>
+          {activeTab === 'questions' && (
+            <div className="space-y-10 md:space-y-12">
+              <PageHeader
+                breadcrumb="Questions"
+                title="Daily Solved Questions Logger"
+                description="Log daily physics, chemistry, and mathematics question counts with standard and PYQ separation."
+                themeBrand={themeStyles.themeBrand}
+              />
               <Suspense fallback={<LoadingFallback />}>
                 <QuestionTrackerForm 
                   questionsList={questions}
@@ -1097,11 +1210,17 @@ export default function App() {
                 />
               </Suspense>
             </div>
-          </div>
+          )}
 
           {/* TAB 4: SYLLABUS TABS */}
-          <div className={activeTab === 'syllabus' ? 'block' : 'hidden'}>
-            <div className={activeTab === 'syllabus' ? 'animate-tab-fade-in' : 'opacity-0'}>
+          {activeTab === 'syllabus' && (
+            <div className="space-y-10 md:space-y-12">
+              <PageHeader
+                breadcrumb="Syllabus"
+                title="JEE Curriculum Syllabus Track"
+                description="Track Class 11 and 12 curriculum milestones across Physics, Chemistry, and Mathematics with weightage metrics."
+                themeBrand={themeStyles.themeBrand}
+              />
               <Suspense fallback={<LoadingFallback />}>
                 <SyllabusTracker 
                   completions={chapterCompletions}
@@ -1110,11 +1229,17 @@ export default function App() {
                 />
               </Suspense>
             </div>
-          </div>
+          )}
 
           {/* TAB 5: NOTES & ERROR BOOKS */}
-          <div className={activeTab === 'notes' ? 'block' : 'hidden'}>
-            <div className={activeTab === 'notes' ? 'animate-tab-fade-in' : 'opacity-0'}>
+          {activeTab === 'notes' && (
+            <div className="space-y-10 md:space-y-12">
+              <PageHeader
+                breadcrumb="Mistakes Book"
+                title="Mistakes & Core Concept Book"
+                description="Catalog recurring calculation errors, tricky traps, and high-yield concepts to review before mock tests."
+                themeBrand={themeStyles.themeBrand}
+              />
               <Suspense fallback={<LoadingFallback />}>
                 <NotesAndErrors 
                   errorItems={errorBook}
@@ -1126,11 +1251,17 @@ export default function App() {
                 />
               </Suspense>
             </div>
-          </div>
+          )}
 
           {/* TAB 6: MOCK TEST TRACKER */}
-          <div className={activeTab === 'mock_tests' ? 'block' : 'hidden'}>
-            <div className={activeTab === 'mock_tests' ? 'animate-tab-fade-in' : 'opacity-0'}>
+          {activeTab === 'mock_tests' && (
+            <div className="space-y-10 md:space-y-12">
+              <PageHeader
+                breadcrumb="Mock Tests"
+                title="JEE Mock Test Tracker & Trends"
+                description="Analyze exam scores, percentile trajectory, accuracy rates, and time pressure bottlenecks."
+                themeBrand={themeStyles.themeBrand}
+              />
               <Suspense fallback={<LoadingFallback />}>
                 <MockTestTracker 
                   mockTests={mockTests}
@@ -1141,27 +1272,31 @@ export default function App() {
                 />
               </Suspense>
             </div>
-          </div>
+          )}
 
           {/* TAB 7: SETTINGS & APPEARANCES */}
-          <div className={activeTab === 'settings' ? 'block' : 'hidden'}>
-            <div className={`bg-card border border-border rounded-3xl p-6 lg:p-8 shadow-sm space-y-10 md:space-y-12 ${activeTab === 'settings' ? 'animate-tab-fade-in' : 'opacity-0'}`}>
-              <div className="border-b border-border/60 pb-5">
-                <h3 className="text-lg font-bold font-sans tracking-tight">Settings & Appearance</h3>
-                <p className="text-xs text-muted-foreground">Customize your study targets, timer intervals, themes, and local datasets.</p>
+          {activeTab === 'settings' && (
+            <div className="space-y-10 md:space-y-12">
+              <PageHeader
+                breadcrumb="Settings"
+                title="Settings & Appearance"
+                description="Customize daily study targets, Pomodoro intervals, visual themes, clock formats, and local storage data."
+                themeBrand={themeStyles.themeBrand}
+              />
+              <div className="bg-card border border-border rounded-3xl p-6 lg:p-8 shadow-sm space-y-10 md:space-y-12">
+                <Suspense fallback={<LoadingFallback />}>
+                  <SettingsTab
+                    settings={settings}
+                    onSaveSettings={handleSaveSettings}
+                    onResetAllData={handleResetAllData}
+                    showResetConfirm={showResetConfirm}
+                    setShowResetConfirm={setShowResetConfirm}
+                  />
+                </Suspense>
               </div>
-
-              <Suspense fallback={<LoadingFallback />}>
-                <SettingsTab
-                  settings={settings}
-                  onSaveSettings={handleSaveSettings}
-                  onResetAllData={handleResetAllData}
-                  showResetConfirm={showResetConfirm}
-                  setShowResetConfirm={setShowResetConfirm}
-                />
-              </Suspense>
             </div>
-          </div>
+          )}
+        </PageTransition>
 
 
 
@@ -1171,9 +1306,7 @@ export default function App() {
 
           {/* DYNAMIC GOAL TOAST NOTIFICATIONS */}
           <ToastContainer toasts={toasts} onClose={handleCloseToast} theme={settings.theme} />
-
-        </div>
-      </main>
+        </main>
 
       {/* FOOTER & RIGHTS */}
       <footer className="border-t border-border mt-16 py-8 bg-card/65 text-center text-xs text-muted-foreground">

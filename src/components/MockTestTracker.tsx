@@ -1,6 +1,7 @@
-import React, { useState, useMemo, memo } from 'react';
+import React, { useState, useMemo, memo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { validateNumber, validateString, validateDate } from '../utils/validators';
+import PageTransition, { MOCK_SUBTAB_ORDER } from './PageTransition';
 import { 
   Plus, 
   Trash2, 
@@ -40,6 +41,17 @@ const MockTestTracker = memo(function MockTestTracker({
 }: MockTestTrackerProps) {
   // Tabs for the Tracker
   const [activeSubTab, setActiveSubTab] = useState<'log' | 'analytics' | 'history'>('log');
+  const [subTabDirection, setSubTabDirection] = useState<number>(1);
+
+  const handleSubTabChange = useCallback((nextTab: 'log' | 'analytics' | 'history') => {
+    setActiveSubTab((currentTab) => {
+      if (nextTab === currentTab) return currentTab;
+      const prevOrder = MOCK_SUBTAB_ORDER[currentTab] ?? 0;
+      const nextOrder = MOCK_SUBTAB_ORDER[nextTab] ?? 0;
+      setSubTabDirection(nextOrder >= prevOrder ? 1 : -1);
+      return nextTab;
+    });
+  }, []);
   
   // Test Form States
   const [date, setDate] = useState<string>(() => {
@@ -213,7 +225,7 @@ const MockTestTracker = memo(function MockTestTracker({
     setMUnattempted('');
 
     // Switch to history tab
-    setActiveSubTab('history');
+    handleSubTabChange('history');
   };
 
   // Human coach generative advice algorithm based on actual metrics
@@ -463,7 +475,7 @@ const MockTestTracker = memo(function MockTestTracker({
         {/* Dynamic sub-tab switcher */}
         <div className="flex bg-accent/15 dark:bg-black/40 p-1 rounded-2xl border border-white/5 self-start lg:self-center gap-1.5">
           <button
-            onClick={() => setActiveSubTab('log')}
+            onClick={() => handleSubTabChange('log')}
             className={`flex items-center gap-2 px-4 py-2 text-xs rounded-xl transition-all cursor-pointer ${
               activeSubTab === 'log' ? (activeTabAccent + ' scale-[1.01]') : 'bg-accent/10 border border-border/30 text-muted-foreground hover:text-foreground hover:bg-accent/35 hover:border-border/60'
             }`}
@@ -472,7 +484,7 @@ const MockTestTracker = memo(function MockTestTracker({
             <span>Log Score</span>
           </button>
           <button
-            onClick={() => setActiveSubTab('analytics')}
+            onClick={() => handleSubTabChange('analytics')}
             className={`flex items-center gap-2 px-4 py-2 text-xs rounded-xl transition-all cursor-pointer relative ${
               activeSubTab === 'analytics' ? (activeTabAccent + ' scale-[1.01]') : 'bg-accent/10 border border-border/30 text-muted-foreground hover:text-foreground hover:bg-accent/35 hover:border-border/60'
             }`}
@@ -497,7 +509,7 @@ const MockTestTracker = memo(function MockTestTracker({
             )}
           </button>
           <button
-            onClick={() => setActiveSubTab('history')}
+            onClick={() => handleSubTabChange('history')}
             className={`flex items-center gap-2 px-4 py-2 text-xs rounded-xl transition-all cursor-pointer ${
               activeSubTab === 'history' ? (activeTabAccent + ' scale-[1.01]') : 'bg-accent/10 border border-border/30 text-muted-foreground hover:text-foreground hover:bg-accent/35 hover:border-border/60'
             }`}
@@ -509,13 +521,13 @@ const MockTestTracker = memo(function MockTestTracker({
       </div>
 
       {/* RENDER SELECTED TAB CONTROLLER */}
-      <div className="transition-all duration-150">
+      <PageTransition activeKey={activeSubTab} direction={subTabDirection} variant="subview">
         
         {/* LOG TEST SCORES TAB */}
         {activeSubTab === 'log' && (
           <form
             onSubmit={handleAddSubmit}
-            className="space-y-6 animate-fade-in"
+            className="space-y-6"
           >
             {/* Exam Details & Presets Row */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5 bg-accent/5 dark:bg-white/[0.01] p-5 rounded-2xl border border-white/5">
@@ -842,7 +854,7 @@ const MockTestTracker = memo(function MockTestTracker({
         {/* INTERACTIVE TRENDS & PATTERNS TAB */}
         {activeSubTab === 'analytics' && (
           <div
-            className="space-y-6 animate-fade-in"
+            className="space-y-6"
           >
             {mockTests.length < 2 ? (
               <div className="py-20 text-center border border-dashed border-white/5 rounded-3xl flex flex-col items-center justify-center gap-3">
@@ -852,7 +864,7 @@ const MockTestTracker = memo(function MockTestTracker({
                   Log at least 2 Mock Tests under the "Log Score" tab to unlock dynamic, interactive animated trend mapping.
                 </p>
                 <button
-                  onClick={() => setActiveSubTab('log')}
+                  onClick={() => handleSubTabChange('log')}
                   className={`mt-2 px-4 py-2 text-xs font-semibold rounded-xl bg-accent/15 hover:bg-accent/30 border border-border transition-all cursor-pointer ${buttonHoverColor}`}
                 >
                   Log Your First Test Score
@@ -1174,7 +1186,7 @@ const MockTestTracker = memo(function MockTestTracker({
         {/* HISTORIC LIST & HUMAN COACH FEEDBACK TAB */}
         {activeSubTab === 'history' && (
           <div
-            className="space-y-6 animate-fade-in"
+            className="space-y-6"
           >
             {mockTests.length === 0 ? (
               <div className="py-20 text-center border border-dashed border-white/5 rounded-3xl flex flex-col items-center justify-center gap-3">
@@ -1184,7 +1196,7 @@ const MockTestTracker = memo(function MockTestTracker({
                   Log a JEE Main or Advanced mock score inside the "Log Score" tab to begin compiling your exam ledger.
                 </p>
                 <button
-                  onClick={() => setActiveSubTab('log')}
+                  onClick={() => handleSubTabChange('log')}
                   className={`mt-2 px-4 py-2 text-xs font-semibold rounded-xl bg-accent/15 hover:bg-accent/30 border border-border transition-all cursor-pointer ${buttonHoverColor}`}
                 >
                   Log Test Score
@@ -1314,7 +1326,7 @@ const MockTestTracker = memo(function MockTestTracker({
           </div>
         )}
 
-      </div>
+      </PageTransition>
 
     </div>
   );

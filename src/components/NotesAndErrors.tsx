@@ -1,6 +1,7 @@
-import React, { useState, useMemo, memo } from 'react';
+import React, { useState, useMemo, memo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Subject, ErrorBookItem, SpecialImportanceItem } from '../types';
+import PageTransition, { NOTES_SUBTAB_ORDER } from './PageTransition';
 import { 
   Trash2, 
   AlertCircle, 
@@ -35,7 +36,18 @@ const NotesAndErrors = memo(function NotesAndErrors({
   onDeleteImportanceItem,
 }: NotesAndErrorsProps) {
   const [activeTab, setActiveTab] = useState<'error' | 'special'>('error');
+  const [subTabDirection, setSubTabDirection] = useState<number>(1);
   const [subjectFilter, setSubjectFilter] = useState<'all' | Subject>('all');
+
+  const handleSubTabChange = useCallback((nextTab: 'error' | 'special') => {
+    setActiveTab((currentTab) => {
+      if (nextTab === currentTab) return currentTab;
+      const prevOrder = NOTES_SUBTAB_ORDER[currentTab] ?? 0;
+      const nextOrder = NOTES_SUBTAB_ORDER[nextTab] ?? 0;
+      setSubTabDirection(nextOrder >= prevOrder ? 1 : -1);
+      return nextTab;
+    });
+  }, []);
   const [difficultyFilter, setDifficultyFilter] = useState<'all' | 'low' | 'medium' | 'high'>('all');
   const [tagFilter, setTagFilter] = useState<'all' | string>('all');
 
@@ -167,7 +179,7 @@ const NotesAndErrors = memo(function NotesAndErrors({
       <div className="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between border-b border-border/60 pb-5">
         <div className="flex bg-accent/20 border border-border p-1 rounded-xl text-xs gap-1.5 self-start">
           <button
-            onClick={() => setActiveTab('error')}
+            onClick={() => handleSubTabChange('error')}
             className={`px-4 py-2 rounded-lg font-semibold flex items-center gap-1.5 cursor-pointer transition-all ${
               activeTab === 'error'
                 ? 'bg-primary text-primary-foreground shadow-md font-bold scale-[1.01]'
@@ -178,7 +190,7 @@ const NotesAndErrors = memo(function NotesAndErrors({
           </button>
           
           <button
-            onClick={() => setActiveTab('special')}
+            onClick={() => handleSubTabChange('special')}
             className={`px-4 py-2 rounded-lg font-semibold flex items-center gap-1.5 cursor-pointer transition-all ${
               activeTab === 'special'
                 ? 'bg-primary text-primary-foreground shadow-md font-bold scale-[1.01]'
@@ -213,6 +225,7 @@ const NotesAndErrors = memo(function NotesAndErrors({
         </div>
       </div>
 
+      <PageTransition activeKey={activeTab} direction={subTabDirection} variant="subview">
       {/* ERROR BOOK TAB */}
       {activeTab === 'error' && (
         <div className="space-y-6">
@@ -725,6 +738,7 @@ const NotesAndErrors = memo(function NotesAndErrors({
           )}
         </div>
       )}
+      </PageTransition>
 
     </div>
   );

@@ -92,8 +92,8 @@ const BannerClock = memo(function BannerClock({ clockFormat = '12', timezone }: 
 
   return (
     <div id="banner-clock-widget" className="flex flex-col items-center sm:items-end select-none">
-      <div className="flex items-baseline font-mono">
-        <span className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-none">
+      <div className="flex items-baseline font-numeric">
+        <span className="text-3xl sm:text-4xl lg:text-5xl font-extrabold font-numeric tracking-tight text-white leading-none">
           {formattedHours}
           <span className={`mx-0.5 transition-opacity duration-300 ${seconds % 2 === 0 ? 'opacity-100 text-indigo-400' : 'opacity-30'}`}>:</span>
           {formattedMinutes}
@@ -108,7 +108,7 @@ const BannerClock = memo(function BannerClock({ clockFormat = '12', timezone }: 
           </span>
         )}
       </div>
-      <span className="text-[10px] font-mono text-slate-400 mt-1 hidden sm:block">
+      <span className="text-[10px] font-sans font-medium text-slate-300/80 mt-1 hidden sm:block">
         {time.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
       </span>
     </div>
@@ -116,26 +116,24 @@ const BannerClock = memo(function BannerClock({ clockFormat = '12', timezone }: 
 });
 
 const dashboardContainerVariants = {
-  hidden: { opacity: 0 },
+  hidden: { opacity: 1 },
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.05,
-      delayChildren: 0.02
+      staggerChildren: 0.025,
+      delayChildren: 0
     }
   }
 } as const;
 
 const dashboardItemVariants = {
-  hidden: { opacity: 0, y: 15 },
+  hidden: { opacity: 0, y: 8 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
-      type: "spring" as const,
-      stiffness: 110,
-      damping: 14,
-      mass: 0.8
+      duration: 0.18,
+      ease: [0.16, 1, 0.3, 1] as const
     }
   }
 } as const;
@@ -337,12 +335,12 @@ const DashboardTab = memo(function DashboardTab({
       variants={dashboardContainerVariants}
       initial="hidden"
       animate="visible"
-      className="space-y-12 md:space-y-14 animate-fade-in"
+      className="space-y-12 md:space-y-14"
     >
       {/* Dynamic header welcome banner */}
       <motion.div 
         variants={dashboardItemVariants}
-        className={`p-6 sm:p-8 rounded-2xl md:rounded-3xl bg-gradient-to-br ${themeStyles.bannerGradient} text-white shadow-lg relative overflow-hidden`}
+        className={`p-6 sm:p-8 rounded-3xl bg-gradient-to-br ${themeStyles.bannerGradient} text-white shadow-2xl relative overflow-hidden border border-white/15`}
       >
         {/* Subtle architectural dot matrix backdrop */}
         <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.06)_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
@@ -358,7 +356,7 @@ const DashboardTab = memo(function DashboardTab({
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.08] border border-white/[0.12] backdrop-blur-md">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                 <span className="text-[10px] uppercase font-mono font-bold tracking-wider text-slate-200">
-                  JEE Preparation Command Center • Live Engine
+                  JEE Command Center • Live Engine
                 </span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-display font-black leading-tight tracking-tight text-white">
@@ -369,32 +367,32 @@ const DashboardTab = memo(function DashboardTab({
               </p>
             </div>
 
-            {/* High-Precision Stats Capsules */}
+            {/* Focused Daily Metrics */}
             <div className="pt-2 grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 max-w-xl">
-              <div className="bg-white/[0.05] hover:bg-white/[0.08] backdrop-blur-md p-3 rounded-xl border border-white/[0.08] transition-colors" title="Today's focused study minutes">
-                <span className="block text-[9px] uppercase font-mono font-bold tracking-wider text-slate-300">Study Time</span>
-                <span className="text-base sm:text-lg font-bold font-mono tracking-tight text-white mt-1 block">
+              <div className="glass-panel p-3.5 squircle-card-sm border border-white/15 hover:border-white/30 tactile-press transition-all duration-200 cursor-default shadow-sm" title="Today's focused study minutes">
+                <span className="block text-[9px] uppercase font-numeric font-bold tracking-wider text-slate-300">Study Time</span>
+                <span className="text-base sm:text-lg font-bold font-numeric tracking-tight text-white mt-1 block tabular-nums">
                   {(studyMinutesToday / 60).toFixed(1)}<span className="text-xs font-normal text-slate-300 ml-0.5">hrs</span>
                 </span>
               </div>
 
-              <div className="bg-white/[0.05] hover:bg-white/[0.08] backdrop-blur-md p-3 rounded-xl border border-white/[0.08] transition-colors" title="Today's total questions solved">
-                <span className="block text-[9px] uppercase font-mono font-bold tracking-wider text-slate-300">Questions</span>
-                <span className="text-base sm:text-lg font-bold font-mono tracking-tight text-white mt-1 block">
+              <div className="glass-panel p-3.5 squircle-card-sm border border-white/15 hover:border-white/30 tactile-press transition-all duration-200 cursor-default shadow-sm" title="Today's total questions solved">
+                <span className="block text-[9px] uppercase font-numeric font-bold tracking-wider text-slate-300">Questions</span>
+                <span className="text-base sm:text-lg font-bold font-numeric tracking-tight text-white mt-1 block tabular-nums">
                   {questionsSolvedToday}<span className="text-xs font-normal text-slate-300 ml-0.5">solved</span>
                 </span>
               </div>
 
-              <div className="bg-white/[0.05] hover:bg-white/[0.08] backdrop-blur-md p-3 rounded-xl border border-white/[0.08] transition-colors" title="NCERT syllabus completed">
-                <span className="block text-[9px] uppercase font-mono font-bold tracking-wider text-slate-300">NCERT Mastery</span>
-                <span className="text-base sm:text-lg font-bold font-mono tracking-tight text-white mt-1 block">
+              <div className="glass-panel p-3.5 squircle-card-sm border border-white/15 hover:border-white/30 tactile-press transition-all duration-200 cursor-default shadow-sm" title="NCERT syllabus completed">
+                <span className="block text-[9px] uppercase font-numeric font-bold tracking-wider text-slate-300">NCERT Mastery</span>
+                <span className="text-base sm:text-lg font-bold font-numeric tracking-tight text-white mt-1 block tabular-nums">
                   {syllabusStats.percentage}<span className="text-xs font-normal text-slate-300 ml-0.5">%</span>
                 </span>
               </div>
 
-              <div className="bg-white/[0.05] hover:bg-white/[0.08] backdrop-blur-md p-3 rounded-xl border border-white/[0.08] transition-colors" title="Consecutive day study streak">
-                <span className="block text-[9px] uppercase font-mono font-bold tracking-wider text-slate-300">Daily Streak</span>
-                <span className="text-base sm:text-lg font-bold font-mono tracking-tight text-white mt-1 flex items-center gap-1">
+              <div className="glass-panel p-3.5 squircle-card-sm border border-white/15 hover:border-white/30 tactile-press transition-all duration-200 cursor-default shadow-sm" title="Consecutive day study streak">
+                <span className="block text-[9px] uppercase font-numeric font-bold tracking-wider text-slate-300">Daily Streak</span>
+                <span className="text-base sm:text-lg font-bold font-numeric tracking-tight text-white mt-1 flex items-center gap-1 tabular-nums">
                   {streakStats.currentStreak}<span className="text-xs font-normal text-slate-300">days</span>
                   {streakStats.currentStreak > 0 && <span className="text-sm">🔥</span>}
                 </span>
