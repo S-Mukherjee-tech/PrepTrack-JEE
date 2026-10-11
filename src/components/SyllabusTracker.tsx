@@ -2,6 +2,7 @@ import { useState, useMemo, memo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Chapter, Subject } from '../types';
 import { CLASS_11_SYLLABUS, CLASS_12_SYLLABUS } from '../data/syllabus';
+import AnimatedCounter from './AnimatedCounter';
 import { 
   CheckSquare, 
   Square, 
@@ -32,20 +33,16 @@ const SyllabusChapterItem = memo(function SyllabusChapterItem({
   isCompleted: boolean;
   onToggleChapter: (id: string, completed: boolean) => void;
 }) {
-  // Exquisite theme-adaptive color specs for each subject type
   const subjectStyles = {
     physics: {
-      stroke: isCompleted ? 'border-l-emerald-500' : 'border-l-indigo-500',
       text: 'text-indigo-400',
       badgeBg: 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'
     },
     chemistry: {
-      stroke: isCompleted ? 'border-l-emerald-500' : 'border-l-emerald-500',
       text: 'text-emerald-400',
       badgeBg: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
     },
     math: {
-      stroke: isCompleted ? 'border-l-emerald-500' : 'border-l-purple-500',
       text: 'text-purple-400',
       badgeBg: 'bg-purple-500/10 text-purple-400 border border-purple-500/20'
     }
@@ -55,42 +52,47 @@ const SyllabusChapterItem = memo(function SyllabusChapterItem({
   return (
     <button
       onClick={() => onToggleChapter(ch.id, !isCompleted)}
-      className={`p-3.5 rounded-xl border border-l-4 text-left cursor-pointer flex items-start gap-3 select-none transition-all duration-150 hover:scale-[1.01] active:scale-[0.99] ${currentStyle.stroke} ${
+      className={`p-3.5 rounded-xl border text-left cursor-pointer flex items-start gap-3 select-none transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] ${
         isCompleted
-          ? 'bg-emerald-500/[0.04] dark:bg-emerald-500/10 border-emerald-500/30 hover:bg-emerald-500/8 hover:border-emerald-500/50 shadow-xs'
-          : 'bg-card border-border/80 hover:bg-accent/15 hover:border-accent/80 shadow-2xs'
+          ? 'bg-emerald-500/[0.04] dark:bg-emerald-500/10 border-emerald-500/30 hover:border-emerald-500/50 shadow-xs'
+          : 'bg-card border-border/80 hover:bg-accent/15 hover:border-primary/40 shadow-2xs'
       }`}
     >
-      <div className="shrink-0 mt-0.5">
+      <motion.div 
+        whileTap={{ scale: 0.8 }} 
+        animate={isCompleted ? { scale: [0.8, 1.2, 1] } : { scale: 1 }}
+        transition={{ duration: 0.2 }}
+        className="shrink-0 mt-0.5"
+      >
         {isCompleted ? (
           <CheckSquare className="w-4 h-4 text-emerald-500 fill-emerald-500/20" />
         ) : (
           <Square className="w-4 h-4 text-muted-foreground/60" />
         )}
-      </div>
+      </motion.div>
 
       <div className="space-y-1.5 flex-1 min-w-0">
-        <span className={`text-xs font-semibold block leading-tight truncate ${isCompleted ? 'text-emerald-400 line-through opacity-75' : 'text-foreground'}`}>
+        <span className={`text-xs font-semibold block leading-tight truncate transition-colors ${isCompleted ? 'text-emerald-400 line-through opacity-75' : 'text-foreground'}`}>
           {ch.name}
         </span>
         
         <div className="flex flex-wrap gap-1.5 items-center">
-          <span className={`text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded ${currentStyle.badgeBg}`}>
+          <span className={`text-[9px] font-numeric font-bold uppercase px-1.5 py-0.5 rounded ${currentStyle.badgeBg}`}>
             {ch.subject}
           </span>
-          <span className="text-[9px] font-mono text-muted-foreground">Class {ch.classLevel}</span>
+          <span className="text-[9px] font-numeric text-muted-foreground">Class {ch.classLevel}</span>
           {ch.weightage === 'high' && (
-            <span className="text-[9px] font-mono font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20 px-1.5 py-0.5 rounded flex items-center gap-1">
+            <span className="text-[9px] font-numeric font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20 px-1.5 py-0.5 rounded flex items-center gap-1">
               <Flame className="w-2.5 h-2.5 text-rose-400" /> High Yield
             </span>
           )}
           {ch.weightage === 'medium' && (
-            <span className="text-[9px] font-mono font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 px-1.5 py-0.5 rounded flex items-center gap-1">
+            <span className="text-[9px] font-numeric font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 px-1.5 py-0.5 rounded flex items-center gap-1">
               <Zap className="w-2.5 h-2.5 text-amber-400" /> Medium
             </span>
           )}
           {ch.weightage === 'low' && (
-            <span className="text-[9px] font-mono font-bold bg-sky-500/10 text-sky-400 border border-sky-500/20 px-1.5 py-0.5 rounded flex items-center gap-1">
+            <span className="text-[9px] font-numeric font-bold bg-sky-500/10 text-sky-400 border border-sky-500/20 px-1.5 py-0.5 rounded flex items-center gap-1">
               <Layers className="w-2.5 h-2.5 text-sky-400" /> Standard
             </span>
           )}
@@ -170,18 +172,18 @@ const SyllabusTracker = memo(function SyllabusTracker({ completions, onToggleCha
         </div>
 
         {/* Global Progress Radial/Bar card */}
-        <div className="bg-accent/15 border border-border p-4 rounded-2xl flex items-center gap-4 min-w-[245px]">
+        <div className="bg-accent/15 border border-border p-4 rounded-2xl flex items-center gap-4 min-w-[245px] hover:border-primary/40 transition-all duration-200">
           <div className="relative w-12 h-12 flex items-center justify-center shrink-0">
             <svg className="w-12 h-12 transform -rotate-90">
               <circle cx="24" cy="24" r="20" stroke="currentColor" strokeWidth="3" className="text-border/40" fill="transparent" />
               <circle cx="24" cy="24" r="20" stroke="currentColor" strokeWidth="3.5" className="text-indigo-500 transition-all duration-500" strokeDasharray={`${2 * Math.PI * 20}`} strokeDashoffset={`${2 * Math.PI * 20 * (1 - stats.pct / 100)}`} fill="transparent" />
             </svg>
-            <span className="absolute text-xs font-mono font-bold text-foreground">{Math.round(stats.pct)}%</span>
+            <span className="absolute text-xs font-numeric font-bold text-foreground"><AnimatedCounter value={Math.round(stats.pct)} suffix="%" /></span>
           </div>
 
           <div className="space-y-0.5">
             <span className="block text-[11px] font-bold text-muted-foreground uppercase tracking-wider">Overall Syllabus Done</span>
-            <span className="text-sm font-bold font-mono text-indigo-500">{stats.completed} <span className="text-muted-foreground text-xs font-normal">/ {stats.total} Chapters</span></span>
+            <span className="text-sm font-bold font-numeric text-indigo-500"><AnimatedCounter value={stats.completed} /> <span className="text-muted-foreground text-xs font-normal">/ {stats.total} Chapters</span></span>
           </div>
         </div>
       </div>
@@ -255,13 +257,13 @@ const SyllabusTracker = memo(function SyllabusTracker({ completions, onToggleCha
         <div className="flex bg-accent/10 border border-border/70 rounded-2xl p-1.5 items-center gap-2 lg:self-start xl:self-auto shrink-0">
           <button
             onClick={() => handleDownloadSyllabus('main')}
-            className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-indigo-400 hover:text-white cursor-pointer bg-card hover:bg-indigo-600 px-3 py-1.5 rounded-xl border border-border/80 hover:border-indigo-500 transition-all shadow-2xs"
+            className="flex items-center gap-1.5 text-[11px] font-numeric font-bold text-indigo-400 hover:text-white cursor-pointer bg-card hover:bg-indigo-600 px-3 py-1.5 rounded-xl border border-border/80 hover:border-indigo-500 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-95 shadow-2xs"
           >
             <Download className="w-3.5 h-3.5" /> Main Syllabus
           </button>
           <button
             onClick={() => handleDownloadSyllabus('advanced')}
-            className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-emerald-400 hover:text-white cursor-pointer bg-card hover:bg-emerald-600 px-3 py-1.5 rounded-xl border border-border/80 hover:border-emerald-500 transition-all shadow-2xs"
+            className="flex items-center gap-1.5 text-[11px] font-numeric font-bold text-emerald-400 hover:text-white cursor-pointer bg-card hover:bg-emerald-600 px-3 py-1.5 rounded-xl border border-border/80 hover:border-emerald-500 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-95 shadow-2xs"
           >
             <Download className="w-3.5 h-3.5" /> Adv Syllabus
           </button>

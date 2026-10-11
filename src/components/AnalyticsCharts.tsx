@@ -1,6 +1,7 @@
 import { useState, useMemo, memo } from 'react';
 import { motion } from 'motion/react';
 import { StudySession, DailyQuestions, ErrorBookItem } from '../types';
+import ScrollReveal from './ScrollReveal';
 import { 
   BarChart, 
   Clock, 
@@ -543,141 +544,143 @@ const AnalyticsCharts = memo(function AnalyticsCharts({ sessions, questions, err
     </div>
 
     {/* NEW SECTION: MISTAKE DISTRIBUTION & WEAKNESS RADAR */}
-    <div className="bg-card border border-border rounded-3xl p-6 lg:p-8 shadow-sm space-y-6 hover:border-accent/40 active-scale-99 transition-all duration-300">
-      <div className="border-b border-border/60 pb-5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <h3 className="text-lg font-bold font-sans tracking-tight flex items-center gap-2">
-              <Target className="w-5 h-5 text-rose-500 animate-pulse" /> Mistake Distribution & Weakness Radar
-            </h3>
-            <span className="text-[10px] font-bold bg-rose-500/10 text-rose-500 px-2 py-0.5 rounded-full uppercase">
-              Mistake Diagnosis
-            </span>
-          </div>
-          <span className="text-xs text-muted-foreground font-mono">
-            Analyzed {errorItems.length} records
-          </span>
-        </div>
-        <p className="text-xs text-muted-foreground mt-1">
-          Analysis of tagged mistakes inside the Error Book to identify trap types and cognitive gaps.
-        </p>
-      </div>
-
-      {errorItems.length === 0 || mistakeStats.total === 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center py-6">
-          <div className="space-y-4">
-            <span className="text-xs font-bold text-muted-foreground/80 uppercase tracking-widest block">Awaiting Data Streams</span>
-            <h4 className="text-sm font-bold text-foreground">Diagnosis currently uninitialized</h4>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Log and tag your specific errors (e.g. <strong>Silly Mistakes</strong>, <strong>Conceptual Gaps</strong>, <strong>Calculation slips</strong>) in your <strong>Error Book</strong> to bring this radar to life.
-            </p>
-            <div className="p-3.5 bg-accent/10 border border-border/60 rounded-xl space-y-1.5 text-xs text-muted-foreground">
-              <span className="font-bold text-foreground flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-spin" /> Why tag mistakes?
+    <ScrollReveal delay={0.06}>
+      <div className="bg-card border border-border rounded-3xl p-6 lg:p-8 shadow-sm space-y-6 hover:border-accent/40 active-scale-99 transition-all duration-300">
+        <div className="border-b border-border/60 pb-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <h3 className="text-lg font-bold font-sans tracking-tight flex items-center gap-2">
+                <Target className="w-5 h-5 text-rose-500 animate-pulse" /> Mistake Distribution & Weakness Radar
+              </h3>
+              <span className="text-[10px] font-bold bg-rose-500/10 text-rose-500 px-2 py-0.5 rounded-full uppercase">
+                Mistake Diagnosis
               </span>
-              <span>JEE is won by correcting errors. Reviewing your specific cognitive error profiles dynamically prevents making the same mistake twice on exam day.</span>
             </div>
-          </div>
-
-          <div className="border border-border/80 bg-accent/5 rounded-2xl p-6 space-y-4 relative overflow-hidden flex flex-col justify-center min-h-[160px]">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.02] pointer-events-none">
-              <Target className="w-48 h-48" />
-            </div>
-            <div className="space-y-2 opacity-50">
-              <div className="flex justify-between text-[11px] font-semibold text-muted-foreground">
-                <span>#Silly Mistake</span>
-                <span>0%</span>
-              </div>
-              <div className="h-2 bg-border/40 rounded-full w-full" />
-            </div>
-            <div className="space-y-2 opacity-30">
-              <div className="flex justify-between text-[11px] font-semibold text-muted-foreground">
-                <span>#Conceptual</span>
-                <span>0%</span>
-              </div>
-              <div className="h-2 bg-border/40 rounded-full w-full animate-pulse" />
-            </div>
-            <div className="space-y-2 opacity-25">
-              <div className="flex justify-between text-[11px] font-semibold text-muted-foreground">
-                <span>#Calculation</span>
-                <span>0%</span>
-              </div>
-              <div className="h-2 bg-border/40 rounded-full w-full" />
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Left Column: Breakdown Progress Bars */}
-          <div className="space-y-4">
-            <span className="text-xs font-bold text-muted-foreground/80 uppercase tracking-wider block">
-              Error Breakdown Distribution ({mistakeStats.total} tags)
+            <span className="text-xs text-muted-foreground font-mono">
+              Analyzed {errorItems.length} records
             </span>
-            <div className="space-y-3.5 max-h-[300px] overflow-y-auto pr-1">
-              {mistakeStats.list.map((m) => {
-                const colors = getTagColor(m.name);
-                const colorGradient = colors.split(' ').slice(0, 2).join(' ');
-                const colorText = colors.split(' ').slice(2).join(' ');
-                return (
-                  <div key={m.name} className="space-y-1">
-                    <div className="flex justify-between items-center text-xs">
-                      <span className="font-bold text-foreground">#{m.name}</span>
-                      <div className="space-x-1 font-mono text-muted-foreground text-[11px]">
-                        <span className={`font-bold ${colorText}`}>{m.count} logs</span>
-                        <span>•</span>
-                        <span className="font-bold">{Math.round(m.pct)}%</span>
+          </div>
+          <p className="text-xs text-muted-foreground mt-1">
+            Analysis of tagged mistakes inside the Error Book to identify trap types and cognitive gaps.
+          </p>
+        </div>
+
+        {errorItems.length === 0 || mistakeStats.total === 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center py-6">
+            <div className="space-y-4">
+              <span className="text-xs font-bold text-muted-foreground/80 uppercase tracking-widest block">Awaiting Data Streams</span>
+              <h4 className="text-sm font-bold text-foreground">Diagnosis currently uninitialized</h4>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Log and tag your specific errors (e.g. <strong>Silly Mistakes</strong>, <strong>Conceptual Gaps</strong>, <strong>Calculation slips</strong>) in your <strong>Error Book</strong> to bring this radar to life.
+              </p>
+              <div className="p-3.5 bg-accent/10 border border-border/60 rounded-xl space-y-1.5 text-xs text-muted-foreground">
+                <span className="font-bold text-foreground flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-spin" /> Why tag mistakes?
+                </span>
+                <span>JEE is won by correcting errors. Reviewing your specific cognitive error profiles dynamically prevents making the same mistake twice on exam day.</span>
+              </div>
+            </div>
+
+            <div className="border border-border/80 bg-accent/5 rounded-2xl p-6 space-y-4 relative overflow-hidden flex flex-col justify-center min-h-[160px]">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.02] pointer-events-none">
+                <Target className="w-48 h-48" />
+              </div>
+              <div className="space-y-2 opacity-50">
+                <div className="flex justify-between text-[11px] font-semibold text-muted-foreground">
+                  <span>#Silly Mistake</span>
+                  <span>0%</span>
+                </div>
+                <div className="h-2 bg-border/40 rounded-full w-full" />
+              </div>
+              <div className="space-y-2 opacity-30">
+                <div className="flex justify-between text-[11px] font-semibold text-muted-foreground">
+                  <span>#Conceptual</span>
+                  <span>0%</span>
+                </div>
+                <div className="h-2 bg-border/40 rounded-full w-full animate-pulse" />
+              </div>
+              <div className="space-y-2 opacity-25">
+                <div className="flex justify-between text-[11px] font-semibold text-muted-foreground">
+                  <span>#Calculation</span>
+                  <span>0%</span>
+                </div>
+                <div className="h-2 bg-border/40 rounded-full w-full" />
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Left Column: Breakdown Progress Bars */}
+            <div className="space-y-4">
+              <span className="text-xs font-bold text-muted-foreground/80 uppercase tracking-wider block">
+                Error Breakdown Distribution ({mistakeStats.total} tags)
+              </span>
+              <div className="space-y-3.5 max-h-[300px] overflow-y-auto pr-1">
+                {mistakeStats.list.map((m) => {
+                  const colors = getTagColor(m.name);
+                  const colorGradient = colors.split(' ').slice(0, 2).join(' ');
+                  const colorText = colors.split(' ').slice(2).join(' ');
+                  return (
+                    <div key={m.name} className="space-y-1">
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="font-bold text-foreground">#{m.name}</span>
+                        <div className="space-x-1 font-mono text-muted-foreground text-[11px]">
+                          <span className={`font-bold ${colorText}`}>{m.count} logs</span>
+                          <span>•</span>
+                          <span className="font-bold">{Math.round(m.pct)}%</span>
+                        </div>
+                      </div>
+                      <div className="h-2 bg-accent/10 rounded-full overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${m.pct}%` }}
+                          transition={{ duration: 0.5, ease: 'easeOut' }}
+                          className={`h-full bg-gradient-to-r ${colorGradient} rounded-full`}
+                        />
                       </div>
                     </div>
-                    <div className="h-2 bg-accent/10 rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${m.pct}%` }}
-                        transition={{ duration: 0.5, ease: 'easeOut' }}
-                        className={`h-full bg-gradient-to-r ${colorGradient} rounded-full`}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Right Column: Actionable advice & recommendations card */}
-          <div className="bg-accent/15 border border-border p-5 rounded-2xl flex flex-col justify-between space-y-4">
-            <div className="space-y-3">
-              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block">
-                Diagnosis & Cognitive Advice
-              </span>
-              
-              <div className="flex items-start gap-3">
-                <div className="p-2 bg-rose-500/10 text-rose-500 rounded-xl mt-0.5 shrink-0">
-                  <Award className="w-5 h-5 animate-pulse text-rose-500" />
-                </div>
-                <div className="space-y-1">
-                  <h4 className="text-xs font-bold text-foreground font-sans leading-tight">
-                    {actionableAdvice.title}
-                  </h4>
-                  <p className="text-[11px] text-muted-foreground leading-relaxed mt-1">
-                    {actionableAdvice.text}
-                  </p>
-                </div>
+                  );
+                })}
               </div>
             </div>
 
-            <div className="border-t border-border/60 pt-4 space-y-2">
-              <span className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-                Tactical Action Plan
-              </span>
-              <ul className="text-[11px] text-muted-foreground space-y-1.5 list-disc pl-4 leading-relaxed">
-                <li>Never attempt deep-solving when mentally fatigued; switch to lightweight active-recall or card review.</li>
-                <li>Annotate your draft worksheets explicitly with warning marks on high-danger steps.</li>
-                <li>Review this dynamic diagnosis block before launching mock tests to reduce error-rate.</li>
-              </ul>
+            {/* Right Column: Actionable advice & recommendations card */}
+            <div className="bg-accent/15 border border-border p-5 rounded-2xl flex flex-col justify-between space-y-4">
+              <div className="space-y-3">
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block">
+                  Diagnosis & Cognitive Advice
+                </span>
+                
+                <div className="flex items-start gap-3">
+                  <div className="p-2 bg-rose-500/10 text-rose-500 rounded-xl mt-0.5 shrink-0">
+                    <Award className="w-5 h-5 animate-pulse text-rose-500" />
+                  </div>
+                  <div className="space-y-1">
+                    <h4 className="text-xs font-bold text-foreground font-sans leading-tight">
+                      {actionableAdvice.title}
+                    </h4>
+                    <p className="text-[11px] text-muted-foreground leading-relaxed mt-1">
+                      {actionableAdvice.text}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t border-border/60 pt-4 space-y-2">
+                <span className="block text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                  Tactical Action Plan
+                </span>
+                <ul className="text-[11px] text-muted-foreground space-y-1.5 list-disc pl-4 leading-relaxed">
+                  <li>Never attempt deep-solving when mentally fatigued; switch to lightweight active-recall or card review.</li>
+                  <li>Annotate your draft worksheets explicitly with warning marks on high-danger steps.</li>
+                  <li>Review this dynamic diagnosis block before launching mock tests to reduce error-rate.</li>
+                </ul>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </ScrollReveal>
   </div>
 );
 });

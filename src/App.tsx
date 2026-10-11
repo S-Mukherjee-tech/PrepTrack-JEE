@@ -29,6 +29,8 @@ import { ScrollProgressAndTop } from './components/ScrollProgressAndTop';
 import PageTransition, { TAB_ORDER } from './components/PageTransition';
 import PageHeader from './components/PageHeader';
 import LiveActivityPill from './components/LiveActivityPill';
+import NavigationProgressBar from './components/NavigationProgressBar';
+import ScrollReveal from './components/ScrollReveal';
 import { secureStorage } from './utils/security';
 
 // Lazy loaded workspace features with preloaders for zero-latency navigation
@@ -287,8 +289,8 @@ export default function App() {
       const prevOrder = TAB_ORDER[currentTab] ?? 0;
       const nextOrder = TAB_ORDER[nextTab] ?? 0;
       setTabDirection(nextOrder >= prevOrder ? 1 : -1);
-      if (typeof window !== 'undefined' && window.scrollY > 40) {
-        window.scrollTo({ top: 0, behavior: 'instant' });
+      if (typeof window !== 'undefined' && window.scrollY > 60) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
       return nextTab;
     });
@@ -959,6 +961,9 @@ export default function App() {
           : '#f9fafb'
       }}
     >
+      {/* Top Route Progress Bar for Smooth Page Transitions */}
+      <NavigationProgressBar activeKey={activeTab} theme={settings.theme} />
+
       {/* Sleek, Classic Studio Atmospheric Lighting Architecture */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none select-none z-0">
         {/* Luminous Top Horizon Halo */}
@@ -1048,7 +1053,7 @@ export default function App() {
                   className={`px-3 py-1.5 flex items-center gap-1.5 text-xs font-semibold relative transition-all duration-150 cursor-pointer outline-none rounded-xl select-none whitespace-nowrap shrink-0 tactile-press ${
                     isActive 
                       ? 'text-foreground font-bold shadow-xs' 
-                      : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.06]'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.08] hover:-translate-y-0.5'
                   }`}
                 >
                   {isActive && (
@@ -1058,7 +1063,7 @@ export default function App() {
                       transition={{ type: 'spring', stiffness: 500, damping: 35, mass: 0.6 }}
                     />
                   )}
-                  <Icon className={`w-3.5 h-3.5 shrink-0 z-10 transition-colors ${isActive ? 'text-primary' : 'opacity-70'}`} />
+                  <Icon className={`w-3.5 h-3.5 shrink-0 z-10 transition-colors ${isActive ? 'text-primary' : 'opacity-70 group-hover:opacity-100'}`} />
                   <span className="z-10">{tab.label}</span>
                 </button>
               );
@@ -1079,15 +1084,22 @@ export default function App() {
                 const nextTheme = themes[(currentIdx + 1) % themes.length];
                 handleSaveSettings({ ...settings, theme: nextTheme });
               }}
-              className="p-2 border border-border/50 rounded-2xl glass-panel text-muted-foreground hover:text-foreground transition-all cursor-pointer tactile-press shadow-xs"
+              className="p-2 border border-border/50 rounded-2xl glass-panel text-muted-foreground hover:text-foreground transition-all duration-200 cursor-pointer tactile-press shadow-xs hover:border-primary/40 hover:scale-105 active:scale-95"
               title={`Switch Theme (Current: ${settings.theme})`}
               aria-label={`Switch Theme (Current: ${settings.theme})`}
             >
-              {settings.theme === 'light' ? (
-                <Moon className="w-4 h-4" />
-              ) : (
-                <Sun className="w-4 h-4" />
-              )}
+              <motion.div
+                key={settings.theme}
+                initial={{ rotate: -40, scale: 0.8 }}
+                animate={{ rotate: 0, scale: 1 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+              >
+                {settings.theme === 'light' ? (
+                  <Moon className="w-4 h-4 text-indigo-500" />
+                ) : (
+                  <Sun className="w-4 h-4 text-amber-400" />
+                )}
+              </motion.div>
             </button>
           </div>
         </div>
@@ -1168,29 +1180,31 @@ export default function App() {
                 <AnalyticsCharts sessions={sessions} questions={questions} errorItems={errorBook} />
               </Suspense>
 
-              <div className="bg-card border border-border rounded-3xl p-6 lg:p-8 shadow-sm space-y-6">
-                <div className="flex justify-between items-center border-b border-border/60 pb-5">
-                  <div>
-                    <h3 className="text-lg font-bold font-sans tracking-tight">Full Study Period History Log</h3>
-                    <p className="text-xs text-muted-foreground">Historical breakdown of your focused study sessions on this device</p>
+              <ScrollReveal delay={0.08}>
+                <div className="bg-card border border-border rounded-3xl p-6 lg:p-8 shadow-sm space-y-6">
+                  <div className="flex justify-between items-center border-b border-border/60 pb-5">
+                    <div>
+                      <h3 className="text-lg font-bold font-sans tracking-tight">Full Study Period History Log</h3>
+                      <p className="text-xs text-muted-foreground">Historical breakdown of your focused study sessions on this device</p>
+                    </div>
                   </div>
-                </div>
 
-                {sessions.length === 0 ? (
-                  <div className="text-center py-12 border border-dashed border-border rounded-xl">
-                    <History className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
-                    <span className="text-xs font-semibold text-muted-foreground">No sessions logged yet</span>
-                    <p className="text-[10px] text-muted-foreground/55 mt-1">Start stopwatch timer and complete a study study period to display historical charts.</p>
-                  </div>
-                ) : (
-                  <WindowedStudyLog
-                    sessions={sessions}
-                    onDeleteSession={handleDeleteStudySession}
-                    maxHeight="400px"
-                    isAnalyticsVariant={true}
-                  />
-                )}
-              </div>
+                  {sessions.length === 0 ? (
+                    <div className="text-center py-12 border border-dashed border-border rounded-xl">
+                      <History className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
+                      <span className="text-xs font-semibold text-muted-foreground">No sessions logged yet</span>
+                      <p className="text-[10px] text-muted-foreground/55 mt-1">Start stopwatch timer and complete a study study period to display historical charts.</p>
+                    </div>
+                  ) : (
+                    <WindowedStudyLog
+                      sessions={sessions}
+                      onDeleteSession={handleDeleteStudySession}
+                      maxHeight="400px"
+                      isAnalyticsVariant={true}
+                    />
+                  )}
+                </div>
+              </ScrollReveal>
             </div>
           )}
 

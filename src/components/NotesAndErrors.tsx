@@ -364,7 +364,7 @@ const NotesAndErrors = memo(function NotesAndErrors({
                     </span>
                   ))}
                   {errTags.length === 0 && (
-                    <span className="text-[11px] text-muted-foreground/50 italic font-mono">No labels selected yet</span>
+                    <span className="text-[11px] text-muted-foreground/50 italic font-sans">No labels selected yet</span>
                   )}
                 </div>
 
@@ -455,8 +455,8 @@ const NotesAndErrors = memo(function NotesAndErrors({
                     ))}
                   </div>
                 </div>
-                <div className="text-[10px] text-muted-foreground font-mono">
-                  Showing {filteredErrors.length} of {errorItems.length} logged traps
+                <div className="text-[10px] text-muted-foreground font-sans font-medium">
+                  Showing <span className="font-numeric font-bold">{filteredErrors.length}</span> of <span className="font-numeric font-bold">{errorItems.length}</span> logged traps
                 </div>
               </div>
 
@@ -523,7 +523,7 @@ const NotesAndErrors = memo(function NotesAndErrors({
 
                   <div className="space-y-1.5">
                     <div className="flex flex-wrap gap-2 items-center">
-                      <span className={`text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded ${
+                      <span className={`text-[9px] font-sans font-bold uppercase px-1.5 py-0.5 rounded ${
                         item.subject === 'physics' ? 'bg-indigo-500/10 text-indigo-500' :
                         item.subject === 'chemistry' ? 'bg-emerald-500/10 text-emerald-500' :
                         item.subject === 'math' ? 'bg-purple-500/10 text-purple-500' :
@@ -532,7 +532,7 @@ const NotesAndErrors = memo(function NotesAndErrors({
                         {item.subject === 'general' ? 'general / common' : item.subject}
                       </span>
                       {item.difficulty && (
-                        <span className={`text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded border ${
+                        <span className={`text-[9px] font-sans font-bold uppercase px-1.5 py-0.5 rounded border ${
                           item.difficulty === 'low' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' :
                           item.difficulty === 'medium' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' :
                           'bg-rose-500/10 text-rose-500 border-rose-500/20'
@@ -540,7 +540,7 @@ const NotesAndErrors = memo(function NotesAndErrors({
                           {item.difficulty}
                         </span>
                       )}
-                      <span className="text-[10px] font-mono text-muted-foreground">
+                      <span className="text-[10px] font-medium text-muted-foreground">
                         {new Date(item.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
@@ -564,14 +564,14 @@ const NotesAndErrors = memo(function NotesAndErrors({
 
                   <div className="grid grid-cols-1 gap-2.5 border-t border-border/50 pt-3 text-xs">
                     <div className="bg-rose-500/5 border border-rose-500/15 p-2.5 rounded-xl">
-                      <span className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-rose-400 uppercase tracking-wider mb-1">
+                      <span className="flex items-center gap-1.5 text-[10px] font-sans font-bold text-rose-400 uppercase tracking-wider mb-1">
                         <AlertTriangle className="w-3 h-3 text-rose-400 shrink-0" /> Pitfall / Misconception
                       </span>
                       <p className="text-muted-foreground font-medium leading-relaxed">{item.mistake}</p>
                     </div>
 
                     <div className="bg-emerald-500/5 border border-emerald-500/15 p-2.5 rounded-xl">
-                      <span className="flex items-center gap-1.5 text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-wider mb-1">
+                      <span className="flex items-center gap-1.5 text-[10px] font-sans font-bold text-emerald-400 uppercase tracking-wider mb-1">
                         <CheckCircle2 className="w-3 h-3 text-emerald-400 shrink-0" /> Key Crux & Formulation
                       </span>
                       <p className="text-muted-foreground font-medium leading-relaxed">{item.correction}</p>
@@ -709,7 +709,7 @@ const NotesAndErrors = memo(function NotesAndErrors({
 
                     <div className="space-y-1.5">
                       <div className="flex gap-2 items-center">
-                        <span className={`text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded ${
+                        <span className={`text-[9px] font-sans font-bold uppercase px-1.5 py-0.5 rounded ${
                           item.subject === 'physics' ? 'bg-indigo-500/10 text-indigo-500' :
                           item.subject === 'chemistry' ? 'bg-emerald-500/10 text-emerald-500' :
                           item.subject === 'math' ? 'bg-purple-500/10 text-purple-500' :
@@ -717,7 +717,7 @@ const NotesAndErrors = memo(function NotesAndErrors({
                         }`}>
                           {item.subject === 'general' ? 'general / common' : item.subject}
                         </span>
-                        <span className="text-[9px] font-mono text-muted-foreground">{item.topic}</span>
+                        <span className="text-[9px] font-medium text-muted-foreground">{item.topic}</span>
                       </div>
                       <h5 className="text-xs font-bold text-foreground pr-6 leading-tight flex items-center gap-1.5">
                         <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" /> {item.title}
@@ -729,7 +729,7 @@ const NotesAndErrors = memo(function NotesAndErrors({
                     </div>
                   </div>
 
-                  <div className="mt-3 text-[9px] font-mono text-muted-foreground text-right">
+                  <div className="mt-3 text-[9px] font-medium text-muted-foreground text-right">
                     {new Date(item.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </div>
                 </div>

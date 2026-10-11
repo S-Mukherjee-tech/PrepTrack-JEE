@@ -21,7 +21,7 @@ export const PageHeader = memo(function PageHeader({
           <span className="font-semibold text-muted-foreground/80 tracking-wide text-[11px]">
             Workspace
           </span>
-          <span className="text-muted-foreground/40 font-mono">/</span>
+          <span className="text-muted-foreground/40 font-sans">/</span>
           <span className="font-bold text-foreground tracking-tight text-[11px]">
             {breadcrumb}
           </span>

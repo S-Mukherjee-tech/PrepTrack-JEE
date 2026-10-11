@@ -160,7 +160,7 @@ const SettingsTab = memo(function SettingsTab({
               <span className="text-xs font-bold text-foreground block">12-Hour Format</span>
               <span className="text-[10px] text-muted-foreground">Display with AM/PM (e.g. 12:50 PM)</span>
             </div>
-            <div className="text-xs font-mono font-bold bg-accent/20 px-2 py-1 rounded-md">
+            <div className="text-xs font-numeric font-bold bg-accent/20 px-2 py-1 rounded-md">
               12H
             </div>
           </button>
@@ -177,7 +177,7 @@ const SettingsTab = memo(function SettingsTab({
               <span className="text-xs font-bold text-foreground block">24-Hour Format</span>
               <span className="text-[10px] text-muted-foreground">Display without AM/PM (e.g. 12:50)</span>
             </div>
-            <div className="text-xs font-mono font-bold bg-accent/20 px-2 py-1 rounded-md">
+            <div className="text-xs font-numeric font-bold bg-accent/20 px-2 py-1 rounded-md">
               24H
             </div>
           </button>

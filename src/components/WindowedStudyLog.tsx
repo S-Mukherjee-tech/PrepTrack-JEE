@@ -95,18 +95,18 @@ export const WindowedStudyLog = memo(function WindowedStudyLog({
                   <div className="space-y-1 min-w-0 flex-1">
                     <div className="flex gap-2 items-center">
                       <span className="font-bold text-foreground text-sm uppercase font-display truncate block max-w-[200px] sm:max-w-xs">{s.sessionName}</span>
-                      <span className="text-[10px] font-mono text-muted-foreground uppercase bg-accent/30 px-1.5 py-0.5 rounded shrink-0">
+                      <span className="text-[10px] font-sans font-semibold text-muted-foreground uppercase bg-accent/30 px-1.5 py-0.5 rounded shrink-0">
                         {s.mode || 'normal'} mode
                       </span>
                     </div>
 
-                    <p className="text-[10px] text-muted-foreground font-mono truncate">
+                    <p className="text-[10px] text-muted-foreground font-medium truncate">
                       Start: {dateObj.toLocaleDateString([], { weekday: 'short', month: 'numeric', day: 'numeric' })} at {dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}  •  End: {new Date(s.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </p>
                   </div>
 
                   <div className="flex items-center gap-4 self-end sm:self-auto shrink-0">
-                    <span className="text-xs font-bold font-mono text-indigo-500 bg-indigo-500/10 px-3 py-1 rounded-xl">
+                    <span className="text-xs font-bold font-numeric text-indigo-500 bg-indigo-500/10 px-3 py-1 rounded-xl tabular-nums">
                       {hrsStr > 0 ? `${hrsStr}h ${minsStr}m` : `${minsStr}m`}
                     </span>
 
@@ -131,13 +131,13 @@ export const WindowedStudyLog = memo(function WindowedStudyLog({
               >
                 <div className="space-y-0.5 min-w-0 flex-1">
                   <span className="font-bold text-foreground block truncate">{s.sessionName}</span>
-                  <span className="text-[10px] text-muted-foreground font-mono">
+                  <span className="text-[10px] text-muted-foreground font-medium">
                     {dateObj.toLocaleDateString()} {dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
                 </div>
 
                 <div className="flex items-center gap-4 shrink-0">
-                  <span className="font-bold font-mono text-indigo-500 bg-indigo-500/10 px-2 py-0.5 rounded">
+                  <span className="font-bold font-numeric text-indigo-500 bg-indigo-500/10 px-2 py-0.5 rounded tabular-nums">
                     {mins > 0 ? `${mins} m` : `${s.duration} s`}
                   </span>
 

@@ -295,20 +295,20 @@ const QuickNotes = memo(function QuickNotes({ theme, cardBgClass }: QuickNotesPr
               ))}
             </div>
           ) : (
-            <div className="flex items-center gap-1.5 text-[10px] font-mono text-muted-foreground">
+            <div className="flex items-center gap-1.5 text-[10px] font-numeric text-muted-foreground">
               {isSaving ? (
                 <>
-                  <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
-                  <span className="text-amber-400 font-extrabold">Auto-saving...</span>
+                  <Clock className="w-3 h-3 text-amber-400 animate-spin shrink-0" />
+                  <span className="text-amber-400 font-bold">Auto-saving...</span>
                 </>
               ) : lastSaved ? (
                 <>
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <Check className="w-3 h-3 text-emerald-400 shrink-0" />
                   <span className="text-emerald-400 font-medium">Auto-saved at {lastSaved}</span>
                 </>
               ) : (
                 <>
-                  <span className="w-2 h-2 rounded-full bg-muted-foreground/30" />
+                  <Save className="w-3 h-3 text-muted-foreground/60 shrink-0" />
                   <span>Continuous database auto-save</span>
                 </>
               )}

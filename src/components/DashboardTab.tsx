@@ -16,6 +16,8 @@ import { WindowedStudyLog } from './WindowedStudyLog';
 import QuickNotes from './QuickNotes';
 import { BrandingLogo } from './BrandingLogo';
 import TimerSection from './TimerSection';
+import AnimatedCounter from './AnimatedCounter';
+import ScrollReveal from './ScrollReveal';
 import { CLASS_11_SYLLABUS, CLASS_12_SYLLABUS } from '../data/syllabus';
 
 interface DashboardTabProps {
@@ -369,31 +371,46 @@ const DashboardTab = memo(function DashboardTab({
 
             {/* Focused Daily Metrics */}
             <div className="pt-2 grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 max-w-xl">
-              <div className="glass-panel p-3.5 squircle-card-sm border border-white/15 hover:border-white/30 tactile-press transition-all duration-200 cursor-default shadow-sm" title="Today's focused study minutes">
-                <span className="block text-[9px] uppercase font-numeric font-bold tracking-wider text-slate-300">Study Time</span>
+              <div 
+                className="glass-panel p-3.5 squircle-card-sm border border-white/15 hover:border-white/35 hover:-translate-y-1 hover:shadow-lg active:scale-95 transition-all duration-200 cursor-default select-none shadow-sm group" 
+                title="Today's focused study minutes"
+              >
+                <span className="block text-[9px] uppercase font-numeric font-bold tracking-wider text-slate-300 group-hover:text-white transition-colors">Study Time</span>
                 <span className="text-base sm:text-lg font-bold font-numeric tracking-tight text-white mt-1 block tabular-nums">
-                  {(studyMinutesToday / 60).toFixed(1)}<span className="text-xs font-normal text-slate-300 ml-0.5">hrs</span>
+                  <AnimatedCounter value={studyMinutesToday / 60} decimals={1} />
+                  <span className="text-xs font-normal text-slate-300 ml-0.5">hrs</span>
                 </span>
               </div>
 
-              <div className="glass-panel p-3.5 squircle-card-sm border border-white/15 hover:border-white/30 tactile-press transition-all duration-200 cursor-default shadow-sm" title="Today's total questions solved">
-                <span className="block text-[9px] uppercase font-numeric font-bold tracking-wider text-slate-300">Questions</span>
+              <div 
+                className="glass-panel p-3.5 squircle-card-sm border border-white/15 hover:border-white/35 hover:-translate-y-1 hover:shadow-lg active:scale-95 transition-all duration-200 cursor-default select-none shadow-sm group" 
+                title="Today's total questions solved"
+              >
+                <span className="block text-[9px] uppercase font-numeric font-bold tracking-wider text-slate-300 group-hover:text-white transition-colors">Questions</span>
                 <span className="text-base sm:text-lg font-bold font-numeric tracking-tight text-white mt-1 block tabular-nums">
-                  {questionsSolvedToday}<span className="text-xs font-normal text-slate-300 ml-0.5">solved</span>
+                  <AnimatedCounter value={questionsSolvedToday} />
+                  <span className="text-xs font-normal text-slate-300 ml-0.5">solved</span>
                 </span>
               </div>
 
-              <div className="glass-panel p-3.5 squircle-card-sm border border-white/15 hover:border-white/30 tactile-press transition-all duration-200 cursor-default shadow-sm" title="NCERT syllabus completed">
-                <span className="block text-[9px] uppercase font-numeric font-bold tracking-wider text-slate-300">NCERT Mastery</span>
+              <div 
+                className="glass-panel p-3.5 squircle-card-sm border border-white/15 hover:border-white/35 hover:-translate-y-1 hover:shadow-lg active:scale-95 transition-all duration-200 cursor-default select-none shadow-sm group" 
+                title="NCERT syllabus completed"
+              >
+                <span className="block text-[9px] uppercase font-numeric font-bold tracking-wider text-slate-300 group-hover:text-white transition-colors">NCERT Mastery</span>
                 <span className="text-base sm:text-lg font-bold font-numeric tracking-tight text-white mt-1 block tabular-nums">
-                  {syllabusStats.percentage}<span className="text-xs font-normal text-slate-300 ml-0.5">%</span>
+                  <AnimatedCounter value={syllabusStats.percentage} suffix="%" />
                 </span>
               </div>
 
-              <div className="glass-panel p-3.5 squircle-card-sm border border-white/15 hover:border-white/30 tactile-press transition-all duration-200 cursor-default shadow-sm" title="Consecutive day study streak">
-                <span className="block text-[9px] uppercase font-numeric font-bold tracking-wider text-slate-300">Daily Streak</span>
+              <div 
+                className="glass-panel p-3.5 squircle-card-sm border border-white/15 hover:border-white/35 hover:-translate-y-1 hover:shadow-lg active:scale-95 transition-all duration-200 cursor-default select-none shadow-sm group" 
+                title="Consecutive day study streak"
+              >
+                <span className="block text-[9px] uppercase font-numeric font-bold tracking-wider text-slate-300 group-hover:text-white transition-colors">Daily Streak</span>
                 <span className="text-base sm:text-lg font-bold font-numeric tracking-tight text-white mt-1 flex items-center gap-1 tabular-nums">
-                  {streakStats.currentStreak}<span className="text-xs font-normal text-slate-300">days</span>
+                  <AnimatedCounter value={streakStats.currentStreak} />
+                  <span className="text-xs font-normal text-slate-300">days</span>
                   {streakStats.currentStreak > 0 && <span className="text-sm">🔥</span>}
                 </span>
               </div>
@@ -423,47 +440,47 @@ const DashboardTab = memo(function DashboardTab({
       <div className={`border-t ${themeStyles.borderStyle} my-8 opacity-65`} />
       
       {/* GAMIFIED STUDY STREAK COUNTER */}
-      <motion.div 
-        variants={dashboardItemVariants}
-        className={`bg-card border border-border rounded-2xl md:rounded-3xl p-6 md:p-7 shadow-sm ${themeStyles.cardBg} relative overflow-hidden dashboard-card-gpu`}
-      >
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="flex items-center gap-4.5">
-            <div className={`relative shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex flex-col items-center justify-center border transition-all duration-300 ${
-              streakStats.currentStreak > 0
-                ? 'bg-gradient-to-br from-amber-500/20 to-orange-500/20 border-orange-500/40 text-orange-400 shadow-sm'
-                : 'bg-accent/10 border-border/70 text-muted-foreground/50'
-            }`}>
-              {streakStats.currentStreak > 0 && (
-                <div className="absolute inset-0 bg-orange-500/10 rounded-2xl blur-md pointer-events-none" />
-              )}
-              
-              <Flame className={`w-7 h-7 sm:w-8 sm:h-8 ${streakStats.currentStreak > 0 ? 'text-orange-500 animate-pulse' : 'text-muted-foreground/40'}`} fill={streakStats.currentStreak > 0 ? 'currentColor' : 'none'} />
-            </div>
-
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <h3 className="text-base sm:text-lg font-bold font-display tracking-tight text-foreground">
-                  {streakStats.currentStreak} Day Study Streak
-                </h3>
+      <ScrollReveal delay={0.04}>
+        <div 
+          className={`bg-card border border-border rounded-2xl md:rounded-3xl p-6 md:p-7 shadow-sm ${themeStyles.cardBg} relative overflow-hidden dashboard-card-gpu hover:border-border/90 hover:shadow-md transition-all duration-200`}
+        >
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <div className="flex items-center gap-4.5">
+              <div className={`relative shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex flex-col items-center justify-center border transition-all duration-300 ${
+                streakStats.currentStreak > 0
+                  ? 'bg-gradient-to-br from-amber-500/20 to-orange-500/20 border-orange-500/40 text-orange-400 shadow-sm'
+                  : 'bg-accent/10 border-border/70 text-muted-foreground/50'
+              }`}>
                 {streakStats.currentStreak > 0 && (
-                  <span className="text-[9px] uppercase tracking-wider font-mono font-bold text-orange-400 bg-orange-500/15 border border-orange-500/25 px-2 py-0.5 rounded-full select-none">
-                    Active Momentum
-                  </span>
+                  <div className="absolute inset-0 bg-orange-500/10 rounded-2xl blur-md pointer-events-none" />
                 )}
+                
+                <Flame className={`w-7 h-7 sm:w-8 sm:h-8 ${streakStats.currentStreak > 0 ? 'text-orange-500 animate-pulse' : 'text-muted-foreground/40'}`} fill={streakStats.currentStreak > 0 ? 'currentColor' : 'none'} />
               </div>
-              <p className="text-xs text-muted-foreground leading-relaxed max-w-md">
-                {streakStats.currentStreak > 0
-                  ? `You have met your daily goals for ${streakStats.currentStreak} consecutive days. Consistency creates rank!`
-                  : "Complete either your daily study hours target or question quota today to ignite your streak."}
-              </p>
-              
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pt-1 text-[10px] font-mono text-muted-foreground">
-                <span className="flex items-center gap-1.5">
-                  <Award className="w-3.5 h-3.5 text-primary" />
-                  Peak Streak: <strong className="text-foreground font-bold">{streakStats.maxStreak} days</strong>
-                </span>
-                <span>•</span>
+
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-base sm:text-lg font-bold font-display tracking-tight text-foreground">
+                    <AnimatedCounter value={streakStats.currentStreak} /> Day Study Streak
+                  </h3>
+                  {streakStats.currentStreak > 0 && (
+                    <span className="text-[9px] uppercase tracking-wider font-mono font-bold text-orange-400 bg-orange-500/15 border border-orange-500/25 px-2 py-0.5 rounded-full select-none">
+                      Active Momentum
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed max-w-md">
+                  {streakStats.currentStreak > 0
+                    ? `You have met your daily goals for ${streakStats.currentStreak} consecutive days. Consistency creates rank!`
+                    : "Complete either your daily study hours target or question quota today to ignite your streak."}
+                </p>
+                
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pt-1 text-[10px] font-mono text-muted-foreground">
+                  <span className="flex items-center gap-1.5">
+                    <Award className="w-3.5 h-3.5 text-primary" />
+                    Peak Streak: <strong className="text-foreground font-bold"><AnimatedCounter value={streakStats.maxStreak} /> days</strong>
+                  </span>
+                  <span>•</span>
                 <span className="flex items-center gap-1">
                   Today's Status: {streakStats.metToday ? (
                     <strong className="text-emerald-400 font-bold">Goal Met 🔥</strong>
@@ -525,122 +542,122 @@ const DashboardTab = memo(function DashboardTab({
             </div>
           </div>
         </div>
-      </motion.div>
+        </div>
+      </ScrollReveal>
 
       {/* Subtle horizontal section divider */}
       <div className={`border-t ${themeStyles.borderStyle} my-8 opacity-65`} />
 
       {/* STUDY PROGRESS AND PROBLEM SOLVED MILESTONES */}
-      <motion.div 
-        variants={dashboardItemVariants}
-        className="grid grid-cols-1 md:grid-cols-2 gap-6"
-      >
-        {/* HOURS TARGETS */}
-        <div className="flex flex-col sm:flex-row items-center gap-5 p-5.5 rounded-2xl bg-slate-500/5 border border-slate-500/10 dark:bg-white/[0.02] dark:border-white/[0.05] hover:bg-slate-500/10 dark:hover:bg-white/[0.04] transition-all duration-300">
-          <div className="relative w-32 h-32 flex-shrink-0 flex items-center justify-center">
-            <div className="absolute inset-0 rounded-full bg-indigo-500/5 blur-md" />
-            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 128 128">
-              <circle
-                cx="64"
-                cy="64"
-                r="50"
-                className="stroke-slate-200 dark:stroke-white/10 fill-transparent"
-                strokeWidth="8"
-              />
-              <motion.circle
-                cx="64"
-                cy="64"
-                r="50"
-                className="stroke-indigo-500 dark:stroke-indigo-400 fill-transparent"
-                strokeWidth="8"
-                strokeLinecap="round"
-                strokeDasharray="314.16"
-                initial={{ strokeDashoffset: 314.16 }}
-                animate={{ strokeDashoffset: 314.16 - (Math.min(100, (studyMinutesToday / (settings.dailyStudyMinutesGoal ?? 180)) * 100) / 100) * 314.16 }}
-                transition={{ duration: 1.2, ease: "easeOut" }}
-              />
-            </svg>
-            <div className="absolute flex flex-col items-center justify-center text-center">
-              <span className="text-xl font-black font-mono tracking-tight text-foreground">
-                {Math.min(100, Math.round((studyMinutesToday / (settings.dailyStudyMinutesGoal ?? 180)) * 100))}%
-              </span>
-              <span className="text-[9px] uppercase font-bold tracking-wider text-muted-foreground font-sans">
-                Studied
-              </span>
+      <ScrollReveal delay={0.06}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* HOURS TARGETS */}
+          <div className="flex flex-col sm:flex-row items-center gap-5 p-5.5 rounded-2xl bg-slate-500/5 border border-slate-500/10 dark:bg-white/[0.02] dark:border-white/[0.05] hover:bg-slate-500/10 dark:hover:bg-white/[0.04] hover:-translate-y-1 hover:shadow-md transition-all duration-200">
+            <div className="relative w-32 h-32 flex-shrink-0 flex items-center justify-center">
+              <div className="absolute inset-0 rounded-full bg-indigo-500/5 blur-md" />
+              <svg className="w-full h-full transform -rotate-90" viewBox="0 0 128 128">
+                <circle
+                  cx="64"
+                  cy="64"
+                  r="50"
+                  className="stroke-slate-200 dark:stroke-white/10 fill-transparent"
+                  strokeWidth="8"
+                />
+                <motion.circle
+                  cx="64"
+                  cy="64"
+                  r="50"
+                  className="stroke-indigo-500 dark:stroke-indigo-400 fill-transparent"
+                  strokeWidth="8"
+                  strokeLinecap="round"
+                  strokeDasharray="314.16"
+                  initial={{ strokeDashoffset: 314.16 }}
+                  animate={{ strokeDashoffset: 314.16 - (Math.min(100, (studyMinutesToday / (settings.dailyStudyMinutesGoal ?? 180)) * 100) / 100) * 314.16 }}
+                  transition={{ duration: 1.2, ease: "easeOut" }}
+                />
+              </svg>
+              <div className="absolute flex flex-col items-center justify-center text-center">
+                <span className="text-xl font-black font-mono tracking-tight text-foreground">
+                  <AnimatedCounter value={Math.min(100, Math.round((studyMinutesToday / (settings.dailyStudyMinutesGoal ?? 180)) * 100))} suffix="%" />
+                </span>
+                <span className="text-[9px] uppercase font-bold tracking-wider text-muted-foreground font-sans">
+                  Studied
+                </span>
+              </div>
+            </div>
+
+            <div className="flex-1 space-y-2.5 text-center sm:text-left w-full">
+              <div className="flex items-center justify-center sm:justify-start gap-2">
+                <div className="p-1.5 bg-indigo-500/10 rounded-lg text-indigo-500 shrink-0">
+                  <BookOpen className="w-4 h-4" />
+                </div>
+                <span className="text-sm font-bold text-foreground">Focused Study Hours</span>
+              </div>
+              <div className="space-y-1">
+                <span className="text-xs text-muted-foreground font-medium block">
+                  <AnimatedCounter value={studyMinutesToday / 60} decimals={1} suffix="h" /> of {((settings.dailyStudyMinutesGoal ?? 180) / 60).toFixed(1)}h target complete
+                </span>
+                <div className="text-[10px] text-muted-foreground/80 font-mono">
+                  <AnimatedCounter value={studyMinutesToday} /> mins / {(settings.dailyStudyMinutesGoal ?? 180)} mins goal
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="flex-1 space-y-2.5 text-center sm:text-left w-full">
-            <div className="flex items-center justify-center sm:justify-start gap-2">
-              <div className="p-1.5 bg-indigo-500/10 rounded-lg text-indigo-500 shrink-0">
-                <BookOpen className="w-4 h-4" />
+          {/* PROBLEMS SOLVED GOAL */}
+          <div className="flex flex-col sm:flex-row items-center gap-5 p-5.5 rounded-2xl bg-slate-500/5 border border-slate-500/10 dark:bg-white/[0.02] dark:border-white/[0.05] hover:bg-slate-500/10 dark:hover:bg-white/[0.04] hover:-translate-y-1 hover:shadow-md transition-all duration-200">
+            <div className="relative w-32 h-32 flex-shrink-0 flex items-center justify-center">
+              <div className="absolute inset-0 rounded-full bg-emerald-500/5 blur-md" />
+              <svg className="w-full h-full transform -rotate-90" viewBox="0 0 128 128">
+                <circle
+                  cx="64"
+                  cy="64"
+                  r="50"
+                  className="stroke-slate-200 dark:stroke-white/10 fill-transparent"
+                  strokeWidth="8"
+                />
+                <motion.circle
+                  cx="64"
+                  cy="64"
+                  r="50"
+                  className="stroke-emerald-500 dark:stroke-emerald-400 fill-transparent"
+                  strokeWidth="8"
+                  strokeLinecap="round"
+                  strokeDasharray="314.16"
+                  initial={{ strokeDashoffset: 314.16 }}
+                  animate={{ strokeDashoffset: 314.16 - (Math.min(100, (questionsSolvedToday / (settings.dailyQuestionsSolvedGoal ?? 30)) * 100) / 100) * 314.16 }}
+                  transition={{ duration: 1.2, ease: "easeOut" }}
+                />
+              </svg>
+              <div className="absolute flex flex-col items-center justify-center text-center">
+                <span className="text-xl font-black font-mono tracking-tight text-foreground">
+                  <AnimatedCounter value={Math.min(100, Math.round((questionsSolvedToday / (settings.dailyQuestionsSolvedGoal ?? 30)) * 100))} suffix="%" />
+                </span>
+                <span className="text-[9px] uppercase font-bold tracking-wider text-muted-foreground font-sans">
+                  Solved
+                </span>
               </div>
-              <span className="text-sm font-bold text-foreground">Focused Study Hours</span>
             </div>
-            <div className="space-y-1">
-              <span className="text-xs text-muted-foreground font-medium block">
-                {(studyMinutesToday / 60).toFixed(1)}h of {((settings.dailyStudyMinutesGoal ?? 180) / 60).toFixed(1)}h target complete
-              </span>
-              <div className="text-[10px] text-muted-foreground/80 font-mono">
-                {studyMinutesToday} mins / {(settings.dailyStudyMinutesGoal ?? 180)} mins goal
+
+            <div className="flex-1 space-y-2.5 text-center sm:text-left w-full">
+              <div className="flex items-center justify-center sm:justify-start gap-2">
+                <div className="p-1.5 bg-emerald-500/10 rounded-lg text-emerald-500 shrink-0">
+                  <CheckCircle className="w-4 h-4" />
+                </div>
+                <span className="text-sm font-bold text-foreground">Daily Problem Solves</span>
+              </div>
+              <div className="space-y-1">
+                <span className="text-xs text-muted-foreground font-medium block">
+                  <AnimatedCounter value={questionsSolvedToday} /> of {(settings.dailyQuestionsSolvedGoal ?? 30)} questions tracked
+                </span>
+                <div className="text-[10px] text-muted-foreground/80 font-mono">
+                  <AnimatedCounter value={questionsSolvedToday} /> Qs / {(settings.dailyQuestionsSolvedGoal ?? 30)} Qs goal
+                </div>
               </div>
             </div>
           </div>
         </div>
-
-        {/* PROBLEMS SOLVED GOAL */}
-        <div className="flex flex-col sm:flex-row items-center gap-5 p-5.5 rounded-2xl bg-slate-500/5 border border-slate-500/10 dark:bg-white/[0.02] dark:border-white/[0.05] hover:bg-slate-500/10 dark:hover:bg-white/[0.04] transition-all duration-300">
-          <div className="relative w-32 h-32 flex-shrink-0 flex items-center justify-center">
-            <div className="absolute inset-0 rounded-full bg-emerald-500/5 blur-md" />
-            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 128 128">
-              <circle
-                cx="64"
-                cy="64"
-                r="50"
-                className="stroke-slate-200 dark:stroke-white/10 fill-transparent"
-                strokeWidth="8"
-              />
-              <motion.circle
-                cx="64"
-                cy="64"
-                r="50"
-                className="stroke-emerald-500 dark:stroke-emerald-400 fill-transparent"
-                strokeWidth="8"
-                strokeLinecap="round"
-                strokeDasharray="314.16"
-                initial={{ strokeDashoffset: 314.16 }}
-                animate={{ strokeDashoffset: 314.16 - (Math.min(100, (questionsSolvedToday / (settings.dailyQuestionsSolvedGoal ?? 30)) * 100) / 100) * 314.16 }}
-                transition={{ duration: 1.2, ease: "easeOut" }}
-              />
-            </svg>
-            <div className="absolute flex flex-col items-center justify-center text-center">
-              <span className="text-xl font-black font-mono tracking-tight text-foreground">
-                {Math.min(100, Math.round((questionsSolvedToday / (settings.dailyQuestionsSolvedGoal ?? 30)) * 100))}%
-              </span>
-              <span className="text-[9px] uppercase font-bold tracking-wider text-muted-foreground font-sans">
-                Solved
-              </span>
-            </div>
-          </div>
-
-          <div className="flex-1 space-y-2.5 text-center sm:text-left w-full">
-            <div className="flex items-center justify-center sm:justify-start gap-2">
-              <div className="p-1.5 bg-emerald-500/10 rounded-lg text-emerald-500 shrink-0">
-                <CheckCircle className="w-4 h-4" />
-              </div>
-              <span className="text-sm font-bold text-foreground">Daily Problem Solves</span>
-            </div>
-            <div className="space-y-1">
-              <span className="text-xs text-muted-foreground font-medium block">
-                {questionsSolvedToday} of {(settings.dailyQuestionsSolvedGoal ?? 30)} questions tracked
-              </span>
-              <div className="text-[10px] text-muted-foreground/80 font-mono">
-                {questionsSolvedToday} Qs / {(settings.dailyQuestionsSolvedGoal ?? 30)} Qs goal
-              </div>
-            </div>
-          </div>
-        </div>
-      </motion.div>
+      </ScrollReveal>
 
       {/* Fun motivative dynamic notification */}
       {(studyMinutesToday >= (settings.dailyStudyMinutesGoal ?? 180) && questionsSolvedToday >= (settings.dailyQuestionsSolvedGoal ?? 30)) ? (
@@ -663,161 +680,160 @@ const DashboardTab = memo(function DashboardTab({
       <div className={`border-t ${themeStyles.borderStyle} my-8 opacity-65`} />
 
       {/* Fast Daily Quick Solves card */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* Solved ratios quick guide */}
-        <motion.div 
-          variants={dashboardItemVariants}
-          className="bg-card border border-border rounded-2xl p-6.5 space-y-4 dashboard-card-gpu"
-        >
-          <h4 className="text-sm font-bold font-display tracking-tight flex items-center gap-1.5 text-foreground">
-            <TrendingUp className="w-4 h-4 text-emerald-500" /> Today's Focus Pulse
-          </h4>
+      <ScrollReveal delay={0.08}>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          {/* Solved ratios quick guide */}
+          <div 
+            className="bg-card border border-border rounded-2xl p-6.5 space-y-4 dashboard-card-gpu hover:border-border/80 hover:shadow-md transition-all duration-200"
+          >
+            <h4 className="text-sm font-bold font-display tracking-tight flex items-center gap-1.5 text-foreground">
+              <TrendingUp className="w-4 h-4 text-emerald-500" /> Today's Focus Pulse
+            </h4>
 
-          <div className="space-y-3.5 text-xs text-muted-foreground leading-relaxed">
-            <p>JEE success depends critically on daily problem cycles. Logging questions establishes fine grain muscle memory.</p>
-            <div className="space-y-2 font-medium">
-              <div className="flex justify-between border-b border-border/40 pb-1.5">
-                <span>Total Solved Questions:</span>
-                <span className="font-bold font-mono text-foreground">{questionAggregatess.normal} Qs</span>
-              </div>
-              <div className="flex justify-between border-b border-border/40 pb-1.5">
-                <span>Success PYQs Solved:</span>
-                <span className="font-bold font-mono text-emerald-500">{questionAggregatess.pyqs} Qs</span>
-              </div>
-              <div className="flex justify-between">
-                <span>NCERT Checklist status:</span>
-                <span className="font-bold text-indigo-500">
-                  {Object.values(chapterCompletions).filter(Boolean).length} Done
-                </span>
+            <div className="space-y-3.5 text-xs text-muted-foreground leading-relaxed">
+              <p>JEE success depends critically on daily problem cycles. Logging questions establishes fine grain muscle memory.</p>
+              <div className="space-y-2 font-medium">
+                <div className="flex justify-between border-b border-border/40 pb-1.5">
+                  <span>Total Solved Questions:</span>
+                  <span className="font-bold font-numeric text-foreground"><AnimatedCounter value={questionAggregatess.normal} /> Qs</span>
+                </div>
+                <div className="flex justify-between border-b border-border/40 pb-1.5">
+                  <span>Success PYQs Solved:</span>
+                  <span className="font-bold font-numeric text-emerald-500"><AnimatedCounter value={questionAggregatess.pyqs} /> Qs</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>NCERT Checklist status:</span>
+                  <span className="font-bold text-indigo-500">
+                    <AnimatedCounter value={Object.values(chapterCompletions).filter(Boolean).length} /> Done
+                  </span>
+                </div>
               </div>
             </div>
           </div>
-        </motion.div>
 
-        {/* Study History Snapshot */}
-        <motion.div 
-          variants={dashboardItemVariants}
-          className="lg:col-span-2 bg-card border border-border rounded-2xl p-6.5 space-y-4 dashboard-card-gpu"
-        >
-          <div className="flex items-center justify-between">
-            <h4 className="text-sm font-bold font-display tracking-tight flex items-center gap-1.5 text-foreground">
-              <History className="w-4.5 h-4.5 text-indigo-500 animate-spin-slow" /> Recent Actions Study Log
-            </h4>
-            <button
-              onClick={() => onTabChange('analytics')}
-              className="text-[10px] uppercase font-bold text-indigo-500 hover:text-indigo-400 flex items-center gap-1 cursor-pointer"
-            >
-              All Logs <ArrowUpRight className="w-3.5 h-3.5" />
-            </button>
+          {/* Study History Snapshot */}
+          <div 
+            className="lg:col-span-2 bg-card border border-border rounded-2xl p-6.5 space-y-4 dashboard-card-gpu hover:border-border/80 hover:shadow-md transition-all duration-200"
+          >
+            <div className="flex items-center justify-between">
+              <h4 className="text-sm font-bold font-display tracking-tight flex items-center gap-1.5 text-foreground">
+                <History className="w-4.5 h-4.5 text-indigo-500 animate-spin-slow" /> Recent Actions Study Log
+              </h4>
+              <button
+                onClick={() => onTabChange('analytics')}
+                className="text-[10px] uppercase font-bold text-indigo-500 hover:text-indigo-400 flex items-center gap-1 cursor-pointer transition-transform hover:translate-x-0.5 active:scale-95"
+              >
+                All Logs <ArrowUpRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            <WindowedStudyLog
+              sessions={sessions}
+              onDeleteSession={onDeleteStudySession}
+              maxHeight="170px"
+              isAnalyticsVariant={false}
+            />
           </div>
 
-          <WindowedStudyLog
-            sessions={sessions}
-            onDeleteSession={onDeleteStudySession}
-            maxHeight="170px"
-            isAnalyticsVariant={false}
-          />
-        </motion.div>
-
-      </div>
+        </div>
+      </ScrollReveal>
 
       {/* QUICK NOTES SECTION */}
-      <motion.div variants={dashboardItemVariants}>
+      <ScrollReveal delay={0.1}>
         <QuickNotes theme={settings.theme} cardBgClass={themeStyles.cardBg} />
-      </motion.div>
+      </ScrollReveal>
 
       {/* DYNAMIC JEE LIVE TOOL LINKS & TELEGRAM GROUP */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 pt-2">
-        
-        {/* Telegram Community */}
-        <motion.div 
-          variants={dashboardItemVariants}
-          className="bg-card border border-border rounded-2xl p-5.5 shadow-sm flex flex-col justify-between hover:border-border/80 transition-all group"
-        >
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] uppercase font-mono font-bold text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-0.5 rounded-full">
-                Community Sync
-              </span>
+      <ScrollReveal delay={0.12}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 pt-2">
+          
+          {/* Telegram Community */}
+          <div 
+            className="bg-card border border-border rounded-2xl p-5.5 shadow-sm flex flex-col justify-between hover:border-indigo-500/40 hover:-translate-y-1 hover:shadow-lg transition-all duration-200 group"
+          >
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] uppercase font-mono font-bold text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-0.5 rounded-full">
+                  Community Sync
+                </span>
+              </div>
+              <h4 className="text-base font-bold font-display tracking-tight text-foreground group-hover:text-primary transition-colors">
+                JEE CIRCLES Telegram
+              </h4>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Join active JEE aspirants. Share doubts, discuss tough concepts, and collaborate with peers preparing for Main & Advanced.
+              </p>
             </div>
-            <h4 className="text-base font-bold font-display tracking-tight text-foreground group-hover:text-primary transition-colors">
-              JEE CIRCLES Telegram
-            </h4>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Join active JEE aspirants. Share doubts, discuss tough concepts, and collaborate with peers preparing for Main & Advanced.
-            </p>
+
+            <a
+              href="https://t.me/JEECIRCLES"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-5 bg-indigo-500/10 hover:bg-indigo-600 text-indigo-400 hover:text-white text-xs font-mono font-semibold py-2.5 px-4 rounded-xl text-center border border-indigo-500/25 flex items-center justify-center gap-1.5 transition-all outline-none hover:shadow-md active:scale-95"
+            >
+              Join JEE CIRCLES <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+            </a>
           </div>
 
-          <a
-            href="https://t.me/JEECIRCLES"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-5 bg-indigo-500/10 hover:bg-indigo-600 text-indigo-400 hover:text-white text-xs font-mono font-semibold py-2.5 px-4 rounded-xl text-center border border-indigo-500/25 flex items-center justify-center gap-1.5 transition-all outline-none"
+          {/* Exam Countdown timer link */}
+          <div 
+            className="bg-card border border-border rounded-2xl p-5.5 shadow-sm flex flex-col justify-between hover:border-amber-500/40 hover:-translate-y-1 hover:shadow-lg transition-all duration-200 group"
           >
-            Join JEE CIRCLES <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-          </a>
-        </motion.div>
-
-        {/* Exam Countdown timer link */}
-        <motion.div 
-          variants={dashboardItemVariants}
-          className="bg-card border border-border rounded-2xl p-5.5 shadow-sm flex flex-col justify-between hover:border-border/80 transition-all group"
-        >
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] uppercase font-mono font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 rounded-full">
-                Live Countdown
-              </span>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] uppercase font-mono font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 rounded-full">
+                  Live Countdown
+                </span>
+              </div>
+              <h4 className="text-base font-bold font-display tracking-tight text-foreground group-hover:text-amber-400 transition-colors">
+                JEE & NEET Exam Clock
+              </h4>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Track live countdowns and remaining preparation hours to stay grounded and keep the exam dates front and center.
+              </p>
             </div>
-            <h4 className="text-base font-bold font-display tracking-tight text-foreground group-hover:text-amber-400 transition-colors">
-              JEE & NEET Exam Clock
-            </h4>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Track live countdowns and remaining preparation hours to stay grounded and keep the exam dates front and center.
-            </p>
+
+            <a
+              href="https://examclock-jee-neet-aspirants.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-5 bg-amber-500/10 hover:bg-amber-600 text-amber-400 hover:text-white text-xs font-mono font-semibold py-2.5 px-4 rounded-xl text-center border border-amber-500/25 flex items-center justify-center gap-1.5 transition-all outline-none hover:shadow-md active:scale-95"
+            >
+              Open Exam Clock <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+            </a>
           </div>
 
-          <a
-            href="https://examclock-jee-neet-aspirants.vercel.app/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-5 bg-amber-500/10 hover:bg-amber-600 text-amber-400 hover:text-white text-xs font-mono font-semibold py-2.5 px-4 rounded-xl text-center border border-amber-500/25 flex items-center justify-center gap-1.5 transition-all outline-none"
+          {/* IIT JEE Guide link */}
+          <div 
+            className="bg-card border border-border rounded-2xl p-5.5 shadow-sm flex flex-col justify-between hover:border-emerald-500/40 hover:-translate-y-1 hover:shadow-lg transition-all duration-200 group"
           >
-            Open Exam Clock <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-          </a>
-        </motion.div>
-
-        {/* IIT JEE Guide link */}
-        <motion.div 
-          variants={dashboardItemVariants}
-          className="bg-card border border-border rounded-2xl p-5.5 shadow-sm flex flex-col justify-between hover:border-border/80 transition-all group"
-        >
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] uppercase font-mono font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full">
-                Strategy & Pyqs
-              </span>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] uppercase font-mono font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full">
+                  Strategy & Pyqs
+                </span>
+              </div>
+              <h4 className="text-base font-bold font-display tracking-tight text-foreground group-hover:text-emerald-400 transition-colors">
+                IIT JEE Guide Hub
+              </h4>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Subject prep frameworks, chapter-wise weightage analysis, and curated problem strategies for Physics, Chem & Math.
+              </p>
             </div>
-            <h4 className="text-base font-bold font-display tracking-tight text-foreground group-hover:text-emerald-400 transition-colors">
-              IIT JEE Guide Hub
-            </h4>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Subject prep frameworks, chapter-wise weightage analysis, and curated problem strategies for Physics, Chem & Math.
-            </p>
+
+            <a
+              href="https://iit-jee-guide.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-5 bg-emerald-500/10 hover:bg-emerald-600 text-emerald-400 hover:text-white text-xs font-mono font-semibold py-2.5 px-4 rounded-xl text-center border border-emerald-500/25 flex items-center justify-center gap-1.5 transition-all outline-none hover:shadow-md active:scale-95"
+            >
+              View Study Guides <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+            </a>
           </div>
 
-          <a
-            href="https://iit-jee-guide.vercel.app/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-5 bg-emerald-500/10 hover:bg-emerald-600 text-emerald-400 hover:text-white text-xs font-mono font-semibold py-2.5 px-4 rounded-xl text-center border border-emerald-500/25 flex items-center justify-center gap-1.5 transition-all outline-none"
-          >
-            View Study Guides <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-          </a>
-        </motion.div>
-
-      </div>
+        </div>
+      </ScrollReveal>
     </motion.div>
   );
 });

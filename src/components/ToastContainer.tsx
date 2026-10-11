@@ -46,7 +46,7 @@ function ToastCard({ toast, onClose, theme }: ToastCardProps) {
   // Styling based on theme
   const containerStyle =
     theme === 'cyber'
-      ? 'bg-black/95 border-2 border-emerald-500/30 text-emerald-400 font-mono shadow-[0_0_20px_rgba(16,185,129,0.15)]'
+      ? 'bg-black/95 border-2 border-emerald-500/30 text-emerald-400 font-sans shadow-[0_0_20px_rgba(16,185,129,0.15)]'
       : theme === 'slate'
       ? 'bg-slate-900/95 border border-slate-700/85 text-slate-100 shadow-2xl'
       : theme === 'light'

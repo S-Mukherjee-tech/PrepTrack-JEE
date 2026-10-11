@@ -460,6 +460,7 @@ const TimerSection = memo(function TimerSection({ settings, onSaveSession, curre
         duration: 3,
         ease: "easeInOut"
       }}
+      id="study-timer-container"
       className="bg-card border border-border squircle-card p-6 lg:p-8 shadow-xl flex flex-col md:flex-row gap-8 items-center relative overflow-hidden dashboard-card-gpu glass-panel"
     >
       
@@ -866,8 +867,8 @@ const TimerSection = memo(function TimerSection({ settings, onSaveSession, curre
               </div>
 
               {visualNotification.type === 'work_done' && (
-                <div className="border border-border/80 rounded-xl px-3 py-2 bg-accent/15 inline-block mx-auto text-[10px] font-mono text-muted-foreground">
-                  📊 Automatically saved <span className="font-bold text-foreground">{settings.pomodoroWorkDuration} mins</span> session to history logs.
+                <div className="border border-border/80 rounded-xl px-3 py-2 bg-accent/15 inline-block mx-auto text-[10px] font-sans text-muted-foreground">
+                  📊 Automatically saved <span className="font-bold text-foreground font-numeric">{settings.pomodoroWorkDuration} mins</span> session to history logs.
                 </div>
               )}
 

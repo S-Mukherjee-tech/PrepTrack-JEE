@@ -877,7 +877,7 @@ const MockTestTracker = memo(function MockTestTracker({
                 <div className="flex flex-wrap items-center justify-between gap-4 bg-accent/10 dark:bg-black/20 p-4 rounded-2xl border border-white/5">
                   <div className="flex items-center gap-2">
                     <Filter className="w-3.5 h-3.5 text-muted-foreground" />
-                    <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">Chart Filters</span>
+                    <span className="text-[10px] font-sans font-bold text-muted-foreground uppercase tracking-wider">Chart Filters</span>
                   </div>
                   
                   <div className="flex flex-wrap items-center gap-2.5">
@@ -931,14 +931,14 @@ const MockTestTracker = memo(function MockTestTracker({
                 {/* SVG Animated Chart Layout */}
                 <div className="p-5 rounded-2xl bg-card border border-border flex flex-col justify-center relative overflow-hidden">
                   <div className="absolute top-4 left-4 select-none pointer-events-none">
-                    <span className="text-[10px] font-mono text-muted-foreground block uppercase tracking-wider">Performance curve</span>
+                    <span className="text-[10px] font-sans font-bold text-muted-foreground block uppercase tracking-wider">Performance curve</span>
                     <h4 className="text-xs font-bold text-foreground mt-0.5 flex items-center gap-1.5">
                       <TrendingUp className="w-3.5 h-3.5 text-emerald-400" /> Plotting Marks percentage (%) Chronologically
                     </h4>
                   </div>
                   
                   {/* Legend indicator */}
-                  <div className="absolute top-4 right-4 flex items-center gap-4 text-[10px] font-mono text-muted-foreground select-none pointer-events-none">
+                  <div className="absolute top-4 right-4 flex items-center gap-4 text-[10px] font-sans font-medium text-muted-foreground select-none pointer-events-none">
                     <div className="flex items-center gap-1.5">
                       <span className={`w-2.5 h-2.5 rounded-full ${theme === 'cyber' ? 'bg-emerald-400' : 'bg-indigo-500'}`} />
                       <span>{chartSubjectFilter === 'total' ? 'Overall score' : `${chartSubjectFilter.charAt(0).toUpperCase() + chartSubjectFilter.slice(1)}`}</span>
@@ -966,7 +966,7 @@ const MockTestTracker = memo(function MockTestTracker({
                                 x={svgDimensions.padding - 10}
                                 y={y + 3}
                                 textAnchor="end"
-                                className="fill-slate-300 dark:fill-slate-100 text-[10px] font-mono font-semibold"
+                                className="fill-slate-300 dark:fill-slate-100 text-[10px] font-numeric font-semibold"
                               >
                                 {val}%
                               </text>
@@ -1060,7 +1060,7 @@ const MockTestTracker = memo(function MockTestTracker({
                                   x={pt.x}
                                   y={svgDimensions.height - svgDimensions.padding + 18}
                                   textAnchor="middle"
-                                  className="fill-slate-300 dark:fill-slate-100 text-[10px] font-mono font-semibold"
+                                  className="fill-slate-300 dark:fill-slate-100 text-[10px] font-numeric font-semibold"
                                 >
                                   {pt.test.date.split('-').slice(1).join('/')}
                                 </text>
@@ -1111,28 +1111,28 @@ const MockTestTracker = memo(function MockTestTracker({
                             }`}>
                               {hoveredDataPoint.test.pattern}
                             </span>
-                            <span className="text-xs text-muted-foreground font-mono flex items-center gap-1">
+                            <span className="text-xs text-muted-foreground font-sans flex items-center gap-1 font-medium">
                               <Calendar className="w-3 h-3" /> {hoveredDataPoint.test.date}
                             </span>
                           </div>
-                          <div className="text-sm font-bold text-foreground">
-                            Score: {hoveredDataPoint.test.totalMarksScored} / {hoveredDataPoint.test.fullMarks} ({hoveredDataPoint.scorePercentage.toFixed(1)}%)
+                          <div className="text-sm font-bold text-foreground font-numeric">
+                            Score: <span className="tabular-nums">{hoveredDataPoint.test.totalMarksScored} / {hoveredDataPoint.test.fullMarks}</span> ({hoveredDataPoint.scorePercentage.toFixed(1)}%)
                           </div>
                         </div>
 
                         {/* Subject stats preview in tooltip */}
-                        <div className="flex gap-4 text-xs font-mono">
+                        <div className="flex gap-4 text-xs font-numeric">
                           <div className="border-l border-white/5 pl-3">
-                            <div className="text-sky-400 font-semibold">Physics</div>
-                            <div>{hoveredDataPoint.test.physics?.score ?? 0}m</div>
+                            <div className="text-sky-400 font-sans font-semibold">Physics</div>
+                            <div className="tabular-nums font-bold">{hoveredDataPoint.test.physics?.score ?? 0}m</div>
                           </div>
                           <div className="border-l border-white/5 pl-3">
-                            <div className="text-amber-400 font-semibold">Chemistry</div>
-                            <div>{hoveredDataPoint.test.chemistry?.score ?? 0}m</div>
+                            <div className="text-amber-400 font-sans font-semibold">Chemistry</div>
+                            <div className="tabular-nums font-bold">{hoveredDataPoint.test.chemistry?.score ?? 0}m</div>
                           </div>
                           <div className="border-l border-white/5 pl-3">
-                            <div className="text-purple-400 font-semibold">Maths</div>
-                            <div>{hoveredDataPoint.test.math?.score ?? 0}m</div>
+                            <div className="text-purple-400 font-sans font-semibold">Maths</div>
+                            <div className="tabular-nums font-bold">{hoveredDataPoint.test.math?.score ?? 0}m</div>
                           </div>
                         </div>
                       </motion.div>
@@ -1144,7 +1144,7 @@ const MockTestTracker = memo(function MockTestTracker({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div className="p-5 rounded-2xl bg-primary/[0.02] border border-white/5 flex flex-col justify-between">
                     <div>
-                      <h4 className="text-xs font-mono text-muted-foreground uppercase tracking-wider">Overall Syllabus Curve Progress</h4>
+                      <h4 className="text-xs font-sans font-bold text-muted-foreground uppercase tracking-wider">Overall Syllabus Curve Progress</h4>
                       <h3 className="text-base font-bold font-display text-foreground mt-1.5">Aggregate Consistency</h3>
                       <p className="text-xs text-muted-foreground mt-2 leading-relaxed">
                         Based on your accumulated history of {mockTests.length} examinations, your current average score stands at <span className="text-foreground font-bold">{overallPerformance?.avgPercentage.toFixed(1)}%</span>.
@@ -1158,7 +1158,7 @@ const MockTestTracker = memo(function MockTestTracker({
 
                   {/* High Yield Suggestion block */}
                   <div className="p-5 rounded-2xl bg-accent/5 dark:bg-black/35 border border-white/5 space-y-4 select-none">
-                    <h4 className="text-xs font-mono text-muted-foreground uppercase tracking-wider flex items-center gap-1">
+                    <h4 className="text-xs font-sans font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
                       <BrainCircuit className="w-4 h-4 text-amber-400 shrink-0" /> Recommended Strategy Core Rules
                     </h4>
                     <ul className="space-y-2.5 text-[11px] text-muted-foreground leading-relaxed">
@@ -1231,7 +1231,7 @@ const MockTestTracker = memo(function MockTestTracker({
                             }`}>
                               {test.pattern}
                             </span>
-                            <span className="text-xs text-muted-foreground font-mono flex items-center gap-1">
+                            <span className="text-xs text-muted-foreground font-sans flex items-center gap-1 font-medium">
                               <Calendar className="w-3.5 h-3.5" /> {test.date}
                             </span>
                           </div>
@@ -1242,9 +1242,9 @@ const MockTestTracker = memo(function MockTestTracker({
 
                         <div className="flex items-center gap-4">
                           <div className="text-right">
-                            <span className="text-[10px] text-muted-foreground block font-mono">Total score</span>
-                            <span className={`text-base font-black ${accentColorText}`}>
-                              {test.totalMarksScored} <span className="text-xs text-muted-foreground font-normal">/ {test.fullMarks}</span>
+                            <span className="text-[10px] text-muted-foreground block font-sans font-medium">Total score</span>
+                            <span className={`text-base font-black font-numeric tabular-nums ${accentColorText}`}>
+                              {test.totalMarksScored} <span className="text-xs text-muted-foreground font-normal font-sans">/ {test.fullMarks}</span>
                             </span>
                           </div>
                           
@@ -1263,8 +1263,8 @@ const MockTestTracker = memo(function MockTestTracker({
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="p-3 bg-sky-500/[0.01] border border-sky-500/10 rounded-xl space-y-1">
                           <div className="text-xs font-bold text-sky-400">Physics</div>
-                          <div className="text-sm font-bold">{p.score ?? 0} marks</div>
-                          <div className="text-[10px] font-mono text-muted-foreground flex justify-between">
+                          <div className="text-sm font-bold font-numeric tabular-nums">{p.score ?? 0} marks</div>
+                          <div className="text-[10px] font-numeric text-muted-foreground flex justify-between tabular-nums">
                             <span>{p.correct ?? 0} correct</span>
                             <span>{p.incorrect ?? 0} incorrect</span>
                           </div>
@@ -1272,8 +1272,8 @@ const MockTestTracker = memo(function MockTestTracker({
 
                         <div className="p-3 bg-amber-500/[0.01] border border-amber-500/10 rounded-xl space-y-1">
                           <div className="text-xs font-bold text-amber-400">Chemistry</div>
-                          <div className="text-sm font-bold">{c.score ?? 0} marks</div>
-                          <div className="text-[10px] font-mono text-muted-foreground flex justify-between">
+                          <div className="text-sm font-bold font-numeric tabular-nums">{c.score ?? 0} marks</div>
+                          <div className="text-[10px] font-numeric text-muted-foreground flex justify-between tabular-nums">
                             <span>{c.correct ?? 0} correct</span>
                             <span>{c.incorrect ?? 0} incorrect</span>
                           </div>
@@ -1281,8 +1281,8 @@ const MockTestTracker = memo(function MockTestTracker({
 
                         <div className="p-3 bg-purple-500/[0.01] border border-purple-500/10 rounded-xl space-y-1">
                           <div className="text-xs font-bold text-purple-400">Mathematics</div>
-                          <div className="text-sm font-bold">{m.score ?? 0} marks</div>
-                          <div className="text-[10px] font-mono text-muted-foreground flex justify-between">
+                          <div className="text-sm font-bold font-numeric tabular-nums">{m.score ?? 0} marks</div>
+                          <div className="text-[10px] font-numeric text-muted-foreground flex justify-between tabular-nums">
                             <span>{m.correct ?? 0} correct</span>
                             <span>{m.incorrect ?? 0} incorrect</span>
                           </div>
@@ -1299,7 +1299,7 @@ const MockTestTracker = memo(function MockTestTracker({
                         </p>
                         
                         <div className="space-y-1.5 pt-1 border-t border-white/5">
-                          <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block">Key Actionable Guidelines:</span>
+                          <span className="text-[10px] font-sans font-bold uppercase tracking-wider text-muted-foreground block">Key Actionable Guidelines:</span>
                           <ul className="space-y-1 text-[11px] text-muted-foreground pl-1">
                             {coach.tips.map((tip, index) => (
                               <li key={index} className="flex items-start gap-1.5">
