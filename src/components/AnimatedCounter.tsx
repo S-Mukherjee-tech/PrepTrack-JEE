@@ -45,8 +45,8 @@ export const AnimatedCounter = memo(function AnimatedCounter({
       if (!startTime) startTime = timestamp;
       const progress = Math.min((timestamp - startTime) / duration, 1);
       
-      // Ease out cubic: 1 - Math.pow(1 - progress, 3)
-      const easeProgress = 1 - Math.pow(1 - progress, 3);
+      // Quartic ease-out for hyper-smooth velvet deceleration: 1 - Math.pow(1 - progress, 4)
+      const easeProgress = 1 - Math.pow(1 - progress, 4);
       const current = startVal + (endVal - startVal) * easeProgress;
       
       setDisplayValue(current);

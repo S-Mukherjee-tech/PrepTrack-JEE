@@ -47,7 +47,7 @@ export const PageTransition = memo(function PageTransition({
 }: PageTransitionProps) {
   const shouldReduceMotion = useReducedMotion();
   const isSubview = variant === 'subview';
-  const xOffset = isSubview ? 8 : 10;
+  const xOffset = isSubview ? 10 : 14;
   const yOffset = isSubview ? 4 : 6;
 
   const variants: Variants = {
@@ -55,16 +55,13 @@ export const PageTransition = memo(function PageTransition({
       if (shouldReduceMotion) {
         return {
           opacity: 0,
-          y: 0,
-          scale: 1,
         };
       }
       return {
         opacity: 0,
         x: dir * xOffset,
         y: yOffset,
-        scale: 0.998,
-        filter: 'blur(2px)',
+        scale: 0.996,
       };
     },
     animate: {
@@ -72,18 +69,15 @@ export const PageTransition = memo(function PageTransition({
       x: 0,
       y: 0,
       scale: 1,
-      filter: 'blur(0px)',
       pointerEvents: 'auto' as const,
       transition: {
-        duration: shouldReduceMotion ? 0.08 : isSubview ? 0.16 : 0.2,
-        ease: [0.16, 1, 0.3, 1] as const,
+        type: 'spring',
+        stiffness: isSubview ? 420 : 380,
+        damping: isSubview ? 34 : 32,
+        mass: 0.75,
         opacity: {
-          duration: shouldReduceMotion ? 0.08 : 0.15,
-          ease: [0.16, 1, 0.3, 1] as const,
-        },
-        filter: {
-          duration: 0.16,
-          ease: 'easeOut',
+          duration: shouldReduceMotion ? 0.08 : 0.16,
+          ease: [0.22, 1, 0.36, 1] as const,
         },
       },
     },
@@ -91,26 +85,24 @@ export const PageTransition = memo(function PageTransition({
       if (shouldReduceMotion) {
         return {
           opacity: 0,
-          y: 0,
-          scale: 1,
           pointerEvents: 'none' as const,
           transition: {
-            duration: 0.06,
+            duration: 0.05,
           },
         };
       }
       return {
         opacity: 0,
-        x: -dir * Math.round(xOffset * 0.5),
-        y: -4,
-        scale: 0.998,
-        filter: 'blur(2px)',
+        x: -dir * Math.round(xOffset * 0.4),
+        y: -3,
+        scale: 0.996,
         pointerEvents: 'none' as const,
         transition: {
-          duration: isSubview ? 0.11 : 0.13,
-          ease: [0.4, 0, 1, 1] as const,
+          duration: isSubview ? 0.07 : 0.08,
+          ease: [0.32, 0, 0.67, 0] as const,
           opacity: {
-            duration: 0.1,
+            duration: 0.07,
+            ease: 'easeOut',
           },
         },
       };
@@ -132,7 +124,7 @@ export const PageTransition = memo(function PageTransition({
           initial="initial"
           animate="animate"
           exit="exit"
-          className="w-full page-transition-layer will-change-[transform,opacity]"
+          className="w-full page-transition-layer will-change-[transform,opacity] transform-gpu"
         >
           {children}
         </motion.div>

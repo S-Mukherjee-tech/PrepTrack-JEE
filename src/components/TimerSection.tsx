@@ -15,7 +15,12 @@ const TimerSection = memo(function TimerSection({ settings, onSaveSession, curre
     return (secureStorage.getItem('preptrack_timer_mode') as StudyMode) || 'normal';
   });
   const [sessionNameInput, setSessionNameInput] = useState(() => {
-    return secureStorage.getItem('preptrack_timer_nameInput') || '';
+    const saved = secureStorage.getItem('preptrack_timer_nameInput') || '';
+    if (saved.startsWith('U2FsdGVkX1')) {
+      secureStorage.setItem('preptrack_timer_nameInput', '');
+      return '';
+    }
+    return saved;
   });
   const [sessionSelected, setSessionSelected] = useState(() => {
     return secureStorage.getItem('preptrack_timer_selected') || 'Session Auto';
@@ -76,6 +81,14 @@ const TimerSection = memo(function TimerSection({ settings, onSaveSession, curre
       baseTimeElapsedRef.current = timeElapsed;
     }
   }, []);
+
+  // Ensure corrupt ciphertext legacy state is immediately cleared from UI
+  useEffect(() => {
+    if (sessionNameInput.startsWith('U2FsdGVkX1')) {
+      setSessionNameInput('');
+      secureStorage.setItem('preptrack_timer_nameInput', '');
+    }
+  }, [sessionNameInput]);
 
   const alarmSoundRef = useRef(alarmSound);
   const isMutedRef = useRef(isMuted);
@@ -542,10 +555,10 @@ const TimerSection = memo(function TimerSection({ settings, onSaveSession, curre
           {/* Core glass ring overlay with inner shadow */}
           <div className={`absolute w-[182px] h-[182px] rounded-full border-2 backdrop-blur-xl flex flex-col items-center justify-center z-10 transition-all duration-500 ${
             isRunning && !isPaused
-              ? isThemeCyber ? 'border-emerald-500/40 bg-slate-950/80 shadow-[inset_0_0_20px_rgba(16,185,129,0.15)]' :
-                isThemeLight ? 'border-rose-500/40 bg-white/90 shadow-[inset_0_0_20px_rgba(244,63,94,0.1)]' :
-                isThemeSlate ? 'border-cyan-500/40 bg-slate-950/80 shadow-[inset_0_0_20px_rgba(6,182,212,0.15)]' :
-                'border-indigo-500/40 bg-slate-950/80 shadow-[inset_0_0_20px_rgba(99,102,241,0.15)]'
+              ? isThemeCyber ? 'border-emerald-500/60 bg-slate-950/80 shadow-[inset_0_0_24px_rgba(16,185,129,0.3),0_0_32px_rgba(16,185,129,0.25)]' :
+                isThemeLight ? 'border-rose-500/60 bg-white/90 shadow-[inset_0_0_24px_rgba(244,63,94,0.25),0_0_32px_rgba(244,63,94,0.2)]' :
+                isThemeSlate ? 'border-cyan-500/60 bg-slate-950/80 shadow-[inset_0_0_24px_rgba(6,182,212,0.3),0_0_32px_rgba(6,182,212,0.25)]' :
+                'border-indigo-500/60 bg-slate-950/80 shadow-[inset_0_0_24px_rgba(99,102,241,0.3),0_0_32px_rgba(99,102,241,0.25)]'
               : 'border-border/60 bg-card/75 shadow-xs'
           }`}>
             

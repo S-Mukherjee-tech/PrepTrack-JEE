@@ -1045,15 +1045,16 @@ export default function App() {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
               return (
-                <button
+                <motion.button
                   key={tab.id}
+                  whileTap={{ scale: 0.95 }}
                   onMouseEnter={() => handlePreloadTab(tab.id)}
                   onFocus={() => handlePreloadTab(tab.id)}
                   onClick={() => handleTabChange(tab.id as any)}
-                  className={`px-3 py-1.5 flex items-center gap-1.5 text-xs font-semibold relative transition-all duration-150 cursor-pointer outline-none rounded-xl select-none whitespace-nowrap shrink-0 tactile-press ${
+                  className={`px-3 py-1.5 flex items-center gap-1.5 text-xs font-semibold relative transition-colors duration-150 cursor-pointer outline-none rounded-xl select-none whitespace-nowrap shrink-0 ${
                     isActive 
                       ? 'text-foreground font-bold shadow-xs' 
-                      : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.08] hover:-translate-y-0.5'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.08]'
                   }`}
                 >
                   {isActive && (
@@ -1065,7 +1066,7 @@ export default function App() {
                   )}
                   <Icon className={`w-3.5 h-3.5 shrink-0 z-10 transition-colors ${isActive ? 'text-primary' : 'opacity-70 group-hover:opacity-100'}`} />
                   <span className="z-10">{tab.label}</span>
-                </button>
+                </motion.button>
               );
             })}
           </nav>
@@ -1121,8 +1122,8 @@ export default function App() {
           return (
             <motion.button
               key={tab.id}
-              whileTap={{ scale: 0.84 }}
-              transition={{ type: 'spring', stiffness: 450, damping: 25 }}
+              whileTap={{ scale: 0.92 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 30 }}
               onTouchStart={() => handlePreloadTab(tab.id)}
               onMouseEnter={() => handlePreloadTab(tab.id)}
               onClick={() => handleTabChange(tab.id as any)}

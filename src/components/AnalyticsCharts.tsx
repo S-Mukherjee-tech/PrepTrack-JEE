@@ -364,20 +364,31 @@ const AnalyticsCharts = memo(function AnalyticsCharts({ sessions, questions, err
             </div>
           </div>
 
-          <div className="flex bg-accent/20 border border-border p-1 rounded-lg text-xs gap-1">
-            {(['day', 'week', 'month'] as PeriodType[]).map((p) => (
-              <button
-                key={p}
-                onClick={() => setSessionPeriod(p)}
-                className={`px-3 py-1.5 rounded-md font-medium capitalize transition-all duration-250 cursor-pointer border ${
-                  sessionPeriod === p
-                    ? 'bg-primary text-primary-foreground border-primary shadow-md font-bold scale-[1.01]'
-                    : 'bg-accent/10 border-border/30 text-muted-foreground hover:text-foreground hover:bg-accent/35 hover:border-border/60'
-                }`}
-              >
-                {p}
-              </button>
-            ))}
+          <div className="flex bg-accent/20 border border-border p-1 rounded-lg text-xs gap-1 relative">
+            {(['day', 'week', 'month'] as PeriodType[]).map((p) => {
+              const isSelected = sessionPeriod === p;
+              return (
+                <motion.button
+                  key={p}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setSessionPeriod(p)}
+                  className={`px-3 py-1.5 rounded-md font-medium capitalize cursor-pointer relative select-none transition-colors duration-150 ${
+                    isSelected
+                      ? 'text-primary-foreground font-bold shadow-xs'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {isSelected && (
+                    <motion.div
+                      layoutId="studyPeriodPill"
+                      className="absolute inset-0 bg-primary rounded-md -z-0 shadow-xs"
+                      transition={{ type: 'spring', stiffness: 500, damping: 35, mass: 0.6 }}
+                    />
+                  )}
+                  <span className="z-10 relative">{p}</span>
+                </motion.button>
+              );
+            })}
           </div>
         </div>
 
@@ -406,7 +417,7 @@ const AnalyticsCharts = memo(function AnalyticsCharts({ sessions, questions, err
                   <motion.div
                     initial={{ height: 0 }}
                     animate={{ height: `${pct}%` }}
-                    transition={{ type: 'spring', stiffness: 80, damping: 15 }}
+                    transition={{ type: 'spring', stiffness: 280, damping: 24, mass: 0.6 }}
                     className="w-full bg-gradient-to-t from-indigo-600 to-violet-500 rounded-t-lg flex items-center justify-center group-hover:brightness-110 origin-bottom shadow-md relative"
                   >
                     {d.value > 0.3 && (
@@ -444,20 +455,31 @@ const AnalyticsCharts = memo(function AnalyticsCharts({ sessions, questions, err
             </div>
           </div>
 
-          <div className="flex bg-accent/20 border border-border p-1 rounded-lg text-xs gap-1">
-            {(['day', 'week', 'month'] as PeriodType[]).map((p) => (
-              <button
-                key={p}
-                onClick={() => setQuestionsPeriod(p)}
-                className={`px-3 py-1.5 rounded-md font-medium capitalize transition-all duration-250 cursor-pointer border ${
-                  questionsPeriod === p
-                    ? 'bg-primary text-primary-foreground border-primary shadow-md font-bold scale-[1.01]'
-                    : 'bg-accent/10 border-border/30 text-muted-foreground hover:text-foreground hover:bg-accent/35 hover:border-border/60'
-                }`}
-              >
-                {p}
-              </button>
-            ))}
+          <div className="flex bg-accent/20 border border-border p-1 rounded-lg text-xs gap-1 relative">
+            {(['day', 'week', 'month'] as PeriodType[]).map((p) => {
+              const isSelected = questionsPeriod === p;
+              return (
+                <motion.button
+                  key={p}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setQuestionsPeriod(p)}
+                  className={`px-3 py-1.5 rounded-md font-medium capitalize cursor-pointer relative select-none transition-colors duration-150 ${
+                    isSelected
+                      ? 'text-primary-foreground font-bold shadow-xs'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {isSelected && (
+                    <motion.div
+                      layoutId="questionsPeriodPill"
+                      className="absolute inset-0 bg-primary rounded-md -z-0 shadow-xs"
+                      transition={{ type: 'spring', stiffness: 500, damping: 35, mass: 0.6 }}
+                    />
+                  )}
+                  <span className="z-10 relative">{p}</span>
+                </motion.button>
+              );
+            })}
           </div>
         </div>
 

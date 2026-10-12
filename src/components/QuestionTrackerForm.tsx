@@ -1,4 +1,5 @@
 import { useState, useEffect, memo } from 'react';
+import { motion } from 'motion/react';
 import { DailyQuestions } from '../types';
 import { Hash, Plus, Calendar, Save, Trash2, CheckCircle2, Atom, FlaskConical, Binary } from 'lucide-react';
 import { validateNumber, validateDate } from '../utils/validators';
@@ -141,39 +142,57 @@ const QuestionTrackerForm = memo(function QuestionTrackerForm({ questionsList, o
 
         <div className="flex items-center gap-2">
           {/* Quick Date Shortcuts */}
-          <div className="flex items-center gap-1 bg-accent/10 border border-border/60 p-1 rounded-xl text-xs">
-            <button
-              type="button"
-              onClick={() => setSelectedDate(getTodayStr())}
-              className={`px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
-                selectedDate === getTodayStr()
-                  ? 'bg-primary text-primary-foreground shadow-xs'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              Today
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                const y = new Date();
-                y.setDate(y.getDate() - 1);
-                const yStr = `${y.getFullYear()}-${String(y.getMonth() + 1).padStart(2, '0')}-${String(y.getDate()).padStart(2, '0')}`;
-                setSelectedDate(yStr);
-              }}
-              className={`px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
-                (() => {
-                  const y = new Date();
-                  y.setDate(y.getDate() - 1);
-                  const yStr = `${y.getFullYear()}-${String(y.getMonth() + 1).padStart(2, '0')}-${String(y.getDate()).padStart(2, '0')}`;
-                  return selectedDate === yStr;
-                })()
-                  ? 'bg-primary text-primary-foreground shadow-xs'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              Yesterday
-            </button>
+          <div className="flex items-center gap-1 bg-accent/10 border border-border/60 p-1 rounded-xl text-xs relative">
+            {(() => {
+              const todayStr = getTodayStr();
+              const y = new Date();
+              y.setDate(y.getDate() - 1);
+              const yesterdayStr = `${y.getFullYear()}-${String(y.getMonth() + 1).padStart(2, '0')}-${String(y.getDate()).padStart(2, '0')}`;
+              
+              return (
+                <>
+                  <motion.button
+                    type="button"
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setSelectedDate(todayStr)}
+                    className={`px-2.5 py-1 rounded-lg font-semibold relative select-none cursor-pointer transition-colors duration-150 ${
+                      selectedDate === todayStr
+                        ? 'text-primary-foreground font-bold shadow-xs'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    {selectedDate === todayStr && (
+                      <motion.div
+                        layoutId="questionDateShortcutPill"
+                        className="absolute inset-0 bg-primary rounded-lg -z-0 shadow-xs"
+                        transition={{ type: 'spring', stiffness: 500, damping: 35, mass: 0.6 }}
+                      />
+                    )}
+                    <span className="z-10 relative">Today</span>
+                  </motion.button>
+
+                  <motion.button
+                    type="button"
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setSelectedDate(yesterdayStr)}
+                    className={`px-2.5 py-1 rounded-lg font-semibold relative select-none cursor-pointer transition-colors duration-150 ${
+                      selectedDate === yesterdayStr
+                        ? 'text-primary-foreground font-bold shadow-xs'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    {selectedDate === yesterdayStr && (
+                      <motion.div
+                        layoutId="questionDateShortcutPill"
+                        className="absolute inset-0 bg-primary rounded-lg -z-0 shadow-xs"
+                        transition={{ type: 'spring', stiffness: 500, damping: 35, mass: 0.6 }}
+                      />
+                    )}
+                    <span className="z-10 relative">Yesterday</span>
+                  </motion.button>
+                </>
+              );
+            })()}
           </div>
 
           <div className="flex items-center gap-2 bg-accent/15 border border-border/70 px-3 py-1.5 rounded-xl shadow-xs">
@@ -192,7 +211,7 @@ const QuestionTrackerForm = memo(function QuestionTrackerForm({ questionsList, o
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
         {/* PHYSICS SECTION */}
-        <div className="bg-accent/10 border border-border/70 hover:border-indigo-500/30 rounded-2xl p-5 space-y-4 transition-colors">
+        <div className="bg-accent/10 border border-border/70 hover:border-indigo-400 hover:shadow-[0_16px_36px_-6px_rgba(99,102,241,0.42),0_0_28px_2px_rgba(99,102,241,0.35)] hover:-translate-y-1 rounded-2xl p-5 space-y-4 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]">
           <div className="flex justify-between items-center border-b border-border/60 pb-3">
             <div className="flex items-center gap-2">
               <div className="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
@@ -252,7 +271,7 @@ const QuestionTrackerForm = memo(function QuestionTrackerForm({ questionsList, o
         </div>
 
         {/* CHEMISTRY SECTION */}
-        <div className="bg-accent/10 border border-border/70 hover:border-emerald-500/30 rounded-2xl p-5 space-y-4 transition-colors">
+        <div className="bg-accent/10 border border-border/70 hover:border-emerald-400 hover:shadow-[0_16px_36px_-6px_rgba(16,185,129,0.42),0_0_28px_2px_rgba(16,185,129,0.35)] hover:-translate-y-1 rounded-2xl p-5 space-y-4 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]">
           <div className="flex justify-between items-center border-b border-border/60 pb-3">
             <div className="flex items-center gap-2">
               <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
@@ -312,7 +331,7 @@ const QuestionTrackerForm = memo(function QuestionTrackerForm({ questionsList, o
         </div>
 
         {/* MATHS SECTION */}
-        <div className="bg-accent/10 border border-border/70 hover:border-violet-500/30 rounded-2xl p-5 space-y-4 transition-colors">
+        <div className="bg-accent/10 border border-border/70 hover:border-violet-400 hover:shadow-[0_16px_36px_-6px_rgba(139,92,246,0.42),0_0_28px_2px_rgba(139,92,246,0.35)] hover:-translate-y-1 rounded-2xl p-5 space-y-4 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]">
           <div className="flex justify-between items-center border-b border-border/60 pb-3">
             <div className="flex items-center gap-2">
               <div className="p-1.5 rounded-lg bg-violet-500/10 text-violet-400 border border-violet-500/20">

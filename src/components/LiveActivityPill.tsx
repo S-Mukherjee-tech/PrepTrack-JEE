@@ -26,7 +26,9 @@ export const LiveActivityPill = memo(function LiveActivityPill({
       const paused = secureStorage.getItem('preptrack_timer_isPaused') === 'true';
       const timerMode = (secureStorage.getItem('preptrack_timer_mode') as any) || 'normal';
       const stage = (secureStorage.getItem('preptrack_timer_pomodoroStage') as any) || 'work';
-      const name = secureStorage.getItem('preptrack_timer_nameInput') || 
+      const rawName = secureStorage.getItem('preptrack_timer_nameInput');
+      const validName = (rawName && !rawName.startsWith('U2FsdGVkX1')) ? rawName : '';
+      const name = validName || 
                    secureStorage.getItem('preptrack_timer_selected') || 'Deep Focus';
       
       const savedTime = parseInt(secureStorage.getItem('preptrack_timer_timeElapsed') || '0', 10);
@@ -91,7 +93,7 @@ export const LiveActivityPill = memo(function LiveActivityPill({
         onClick={handlePillClick}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.96 }}
-        className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/80 dark:bg-black/80 border border-white/10 hover:border-white/20 text-white backdrop-blur-2xl shadow-sm cursor-pointer select-none transition-colors group"
+        className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/80 dark:bg-black/80 border border-white/10 hover:border-emerald-400 hover:shadow-[0_4px_24px_rgba(16,185,129,0.5),0_0_16px_rgba(16,185,129,0.4)] text-white backdrop-blur-2xl shadow-sm cursor-pointer select-none transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group"
         title="Click to open Pomodoro & Stopwatch"
       >
         <span className="relative flex h-2 w-2">
@@ -119,7 +121,7 @@ export const LiveActivityPill = memo(function LiveActivityPill({
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
       onClick={handlePillClick}
-      className={`relative flex items-center justify-between gap-2.5 px-3 py-1.5 rounded-full bg-slate-950/90 dark:bg-black/95 border border-white/15 text-white shadow-[0_8px_32px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.15)] backdrop-blur-2xl cursor-pointer select-none transition-all duration-300 transform-gpu ${
+      className={`relative flex items-center justify-between gap-2.5 px-3 py-1.5 rounded-full bg-slate-950/90 dark:bg-black/95 border border-white/15 hover:border-emerald-400/60 hover:shadow-[0_8px_36px_rgba(16,185,129,0.45),0_0_24px_rgba(16,185,129,0.35)] text-white shadow-[0_8px_32px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.15)] backdrop-blur-2xl cursor-pointer select-none transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] transform-gpu ${
         isExpanded ? 'ring-2 ring-white/20 px-4 py-2' : ''
       }`}
       title="Click to open timer"

@@ -1,5 +1,5 @@
 import { useEffect, useState, memo } from 'react';
-import { useReducedMotion } from 'motion/react';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { ThemeType } from '../types';
 
 interface NavigationProgressBarProps {
@@ -8,46 +8,31 @@ interface NavigationProgressBarProps {
 }
 
 /**
- * Ultra-lightweight top navigation route progress bar.
- * Gives instantaneous visual feedback on route/tab change without blocking navigation.
- * Uses GPU transform exclusively for zero-layout-overhead 120fps animation.
+ * Hyper-smooth top navigation route progress indicator.
+ * Provides continuous hardware-accelerated fluid loading sensation
+ * with an integrated glowing particle head on route/tab change.
  */
 export const NavigationProgressBar = memo(function NavigationProgressBar({
   activeKey,
   theme
 }: NavigationProgressBarProps) {
-  const [progress, setProgress] = useState(0);
-  const [isVisible, setIsVisible] = useState(false);
+  const [animating, setAnimating] = useState(false);
   const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
     if (shouldReduceMotion) return;
 
-    // Trigger subtle top loader pulse on route change
-    setIsVisible(true);
-    setProgress(35);
-
-    const midTimer = setTimeout(() => {
-      setProgress(85);
-    }, 80);
-
+    setAnimating(true);
     const finishTimer = setTimeout(() => {
-      setProgress(100);
-    }, 180);
-
-    const fadeTimer = setTimeout(() => {
-      setIsVisible(false);
-      setProgress(0);
+      setAnimating(false);
     }, 320);
 
     return () => {
-      clearTimeout(midTimer);
       clearTimeout(finishTimer);
-      clearTimeout(fadeTimer);
     };
   }, [activeKey, shouldReduceMotion]);
 
-  if (shouldReduceMotion || !isVisible) {
+  if (shouldReduceMotion) {
     return null;
   }
 
@@ -58,25 +43,45 @@ export const NavigationProgressBar = memo(function NavigationProgressBar({
     'from-indigo-400 via-purple-300 to-indigo-500';
 
   const glowShadow = 
-    theme === 'cyber' ? '0 0 10px rgba(16, 185, 129, 0.7)' :
-    theme === 'light' ? '0 0 10px rgba(79, 70, 229, 0.7)' :
-    theme === 'slate' ? '0 0 10px rgba(6, 182, 212, 0.7)' :
-    '0 0 10px rgba(129, 140, 248, 0.7)';
+    theme === 'cyber' ? 'rgba(16, 185, 129, 0.95)' :
+    theme === 'light' ? 'rgba(79, 70, 229, 0.95)' :
+    theme === 'slate' ? 'rgba(6, 182, 212, 0.95)' :
+    'rgba(129, 140, 248, 0.95)';
 
   return (
-    <div 
-      className="fixed top-0 left-0 right-0 h-[2px] z-[9999] pointer-events-none overflow-hidden"
-      aria-hidden="true"
-    >
-      <div
-        className={`h-full bg-gradient-to-r ${barColor} origin-left transition-all ease-out`}
-        style={{
-          transform: `scaleX(${progress / 100})`,
-          transitionDuration: progress === 100 ? '120ms' : '100ms',
-          boxShadow: glowShadow
-        }}
-      />
-    </div>
+    <AnimatePresence>
+      {animating && (
+        <motion.div 
+          key={activeKey}
+          initial={{ opacity: 1 }}
+          exit={{ opacity: 0, transition: { duration: 0.18, ease: 'easeOut' } }}
+          className="fixed top-0 left-0 right-0 h-[2.5px] z-[9999] pointer-events-none overflow-hidden"
+          aria-hidden="true"
+        >
+          {/* Main animated progress runner */}
+          <motion.div
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{
+              duration: 0.28,
+              ease: [0.16, 1, 0.3, 1],
+            }}
+            className={`h-full w-full bg-gradient-to-r ${barColor} origin-left relative will-change-transform transform-gpu`}
+            style={{
+              boxShadow: `0 0 12px ${glowShadow}`,
+            }}
+          >
+            {/* Ultra-luminous leading edge head */}
+            <div
+              className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-r from-transparent via-white/80 to-white"
+              style={{
+                boxShadow: `0 0 16px ${glowShadow}, 0 0 6px #ffffff`,
+              }}
+            />
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 });
 

@@ -177,28 +177,36 @@ const NotesAndErrors = memo(function NotesAndErrors({
       
       {/* Tab Switchers and Subject Filter */}
       <div className="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between border-b border-border/60 pb-5">
-        <div className="flex bg-accent/20 border border-border p-1 rounded-xl text-xs gap-1.5 self-start">
-          <button
-            onClick={() => handleSubTabChange('error')}
-            className={`px-4 py-2 rounded-lg font-semibold flex items-center gap-1.5 cursor-pointer transition-all ${
-              activeTab === 'error'
-                ? 'bg-primary text-primary-foreground shadow-md font-bold scale-[1.01]'
-                : 'bg-accent/10 border border-border/30 text-muted-foreground hover:text-foreground hover:bg-accent/35 hover:border-border/60'
-            }`}
-          >
-            <AlertCircle className="w-4 h-4 text-rose-500" /> Error Book (Mistakes Log)
-          </button>
-          
-          <button
-            onClick={() => handleSubTabChange('special')}
-            className={`px-4 py-2 rounded-lg font-semibold flex items-center gap-1.5 cursor-pointer transition-all ${
-              activeTab === 'special'
-                ? 'bg-primary text-primary-foreground shadow-md font-bold scale-[1.01]'
-                : 'bg-accent/10 border border-border/30 text-muted-foreground hover:text-foreground hover:bg-accent/35 hover:border-border/60'
-            }`}
-          >
-            <Star className="w-4 h-4 text-amber-500 fill-amber-500/10" /> Special Importance Book
-          </button>
+        <div className="flex bg-accent/20 border border-border p-1 rounded-xl text-xs gap-1.5 self-start relative">
+          {[
+            { id: 'error' as const, label: 'Error Book (Mistakes Log)', icon: AlertCircle, iconColor: 'text-rose-500' },
+            { id: 'special' as const, label: 'Special Importance Book', icon: Star, iconColor: 'text-amber-500 fill-amber-500/10' },
+          ].map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <motion.button
+                key={tab.id}
+                whileTap={{ scale: 0.96 }}
+                onClick={() => handleSubTabChange(tab.id)}
+                className={`px-4 py-2 rounded-lg font-semibold flex items-center gap-1.5 cursor-pointer relative select-none transition-colors duration-150 ${
+                  isActive
+                    ? 'text-primary-foreground font-bold shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {isActive && (
+                  <motion.div
+                    layoutId="notesSubTabIndicator"
+                    className="absolute inset-0 bg-primary rounded-lg -z-0 shadow-sm"
+                    transition={{ type: 'spring', stiffness: 500, damping: 35, mass: 0.6 }}
+                  />
+                )}
+                <Icon className={`w-4 h-4 z-10 shrink-0 ${tab.iconColor}`} />
+                <span className="z-10">{tab.label}</span>
+              </motion.button>
+            );
+          })}
         </div>
 
         {/* Filter bar */}
@@ -207,20 +215,31 @@ const NotesAndErrors = memo(function NotesAndErrors({
             <Filter className="w-3.5 h-3.5 text-indigo-500" /> Filter Subject:
           </span>
 
-          <div className="flex flex-wrap bg-accent/15 border border-border rounded-xl p-1 text-xs gap-1">
-            {(['all', 'physics', 'chemistry', 'math', 'general'] as const).map((sub) => (
-              <button
-                key={sub}
-                onClick={() => setSubjectFilter(sub)}
-                className={`px-3 py-1.5 rounded-lg font-semibold capitalize cursor-pointer transition-all ${
-                  subjectFilter === sub
-                    ? 'bg-primary text-primary-foreground shadow-md font-bold scale-[1.01]'
-                    : 'bg-accent/10 border border-border/30 text-muted-foreground hover:text-foreground hover:bg-accent/35 hover:border-border/60'
-                }`}
-              >
-                {sub === 'general' ? 'general / common' : sub}
-              </button>
-            ))}
+          <div className="flex flex-wrap bg-accent/15 border border-border rounded-xl p-1 text-xs gap-1 relative">
+            {(['all', 'physics', 'chemistry', 'math', 'general'] as const).map((sub) => {
+              const isSelected = subjectFilter === sub;
+              return (
+                <motion.button
+                  key={sub}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setSubjectFilter(sub)}
+                  className={`px-3 py-1.5 rounded-lg font-semibold capitalize cursor-pointer relative select-none transition-colors duration-150 ${
+                    isSelected
+                      ? 'text-primary-foreground font-bold shadow-xs'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {isSelected && (
+                    <motion.div
+                      layoutId="notesSubjectFilterIndicator"
+                      className="absolute inset-0 bg-primary rounded-lg -z-0 shadow-xs"
+                      transition={{ type: 'spring', stiffness: 500, damping: 35, mass: 0.6 }}
+                    />
+                  )}
+                  <span className="z-10 relative">{sub === 'general' ? 'general / common' : sub}</span>
+                </motion.button>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -510,7 +529,7 @@ const NotesAndErrors = memo(function NotesAndErrors({
               {filteredErrors.map((item) => (
                 <div
                   key={item.id}
-                  className="border border-border bg-card hover:border-rose-400/20 active:scale-[0.99] transition-all duration-150 p-4 rounded-2xl space-y-3 relative group"
+                  className="border border-border bg-card hover:border-rose-400/60 hover:-translate-y-1 hover:shadow-[0_16px_36px_-6px_rgba(244,63,94,0.4),0_0_28px_2px_rgba(244,63,94,0.3)] active:scale-[0.99] transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] p-4 rounded-2xl space-y-3 relative group"
                 >
                   <button
                     onClick={() => onDeleteErrorItem(item.id)}
@@ -695,7 +714,7 @@ const NotesAndErrors = memo(function NotesAndErrors({
               {filteredImportance.map((item) => (
                 <div
                   key={item.id}
-                  className="border border-border bg-card hover:border-amber-400/20 active:scale-[0.99] transition-all duration-150 p-4 rounded-2xl relative group flex flex-col justify-between"
+                  className="border border-border bg-card hover:border-amber-400/60 hover:-translate-y-1 hover:shadow-[0_16px_36px_-6px_rgba(245,158,11,0.4),0_0_28px_2px_rgba(245,158,11,0.3)] active:scale-[0.99] transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] p-4 rounded-2xl relative group flex flex-col justify-between"
                 >
                   <div>
                     <button

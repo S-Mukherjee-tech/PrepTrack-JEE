@@ -4,24 +4,25 @@ import { useReducedMotion } from 'motion/react';
 interface ScrollRevealProps {
   children: React.ReactNode;
   className?: string;
-  delay?: number; // Delay in seconds (e.g. 0.05, 0.1)
+  delay?: number; // Delay in seconds (e.g. 0.04, 0.08)
   direction?: 'up' | 'down' | 'left' | 'right' | 'none';
   distance?: number; // Distance in pixels
   threshold?: number;
 }
 
 /**
- * Ultra-high-performance Scroll Reveal container.
- * Uses native IntersectionObserver to animate only compositor properties (transform & opacity).
- * Disconnects observer once triggered for zero ongoing CPU or GPU cost during continuous scrolling.
+ * Hyper-smooth, GPU-accelerated Scroll Reveal component.
+ * Uses native IntersectionObserver with zero continuous overhead.
+ * Smoothly cascades elements into view with Apple/Stripe-calibrated easing [0.22, 1, 0.36, 1]
+ * combining subtle micro-scaling and vertical translation.
  */
 export const ScrollReveal = memo(function ScrollReveal({
   children,
   className = '',
   delay = 0,
   direction = 'up',
-  distance = 18,
-  threshold = 0.08
+  distance = 16,
+  threshold = 0.06
 }: ScrollRevealProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -54,7 +55,7 @@ export const ScrollReveal = memo(function ScrollReveal({
       },
       {
         threshold,
-        rootMargin: '0px 0px -30px 0px'
+        rootMargin: '0px 0px -20px 0px'
       }
     );
 
@@ -70,19 +71,19 @@ export const ScrollReveal = memo(function ScrollReveal({
   }
 
   const getTransform = () => {
-    if (isVisible) return 'translate3d(0, 0, 0)';
+    if (isVisible) return 'translate3d(0, 0, 0) scale(1)';
     switch (direction) {
       case 'up':
-        return `translate3d(0, ${distance}px, 0)`;
+        return `translate3d(0, ${distance}px, 0) scale(0.994)`;
       case 'down':
-        return `translate3d(0, -${distance}px, 0)`;
+        return `translate3d(0, -${distance}px, 0) scale(0.994)`;
       case 'left':
-        return `translate3d(${distance}px, 0, 0)`;
+        return `translate3d(${distance}px, 0, 0) scale(0.994)`;
       case 'right':
-        return `translate3d(-${distance}px, 0, 0)`;
+        return `translate3d(-${distance}px, 0, 0) scale(0.994)`;
       case 'none':
       default:
-        return 'translate3d(0, 0, 0)';
+        return 'translate3d(0, 0, 0) scale(0.994)';
     }
   };
 
@@ -94,9 +95,11 @@ export const ScrollReveal = memo(function ScrollReveal({
         opacity: isVisible ? 1 : 0,
         transform: getTransform(),
         transitionProperty: 'opacity, transform',
-        transitionDuration: '360ms',
-        transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
-        transitionDelay: `${delay}s`
+        transitionDuration: '440ms',
+        transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
+        transitionDelay: `${delay}s`,
+        backfaceVisibility: 'hidden',
+        WebkitBackfaceVisibility: 'hidden',
       }}
     >
       {children}

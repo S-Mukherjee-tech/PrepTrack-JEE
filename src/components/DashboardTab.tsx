@@ -372,7 +372,7 @@ const DashboardTab = memo(function DashboardTab({
             {/* Focused Daily Metrics */}
             <div className="pt-2 grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 max-w-xl">
               <div 
-                className="glass-panel p-3.5 squircle-card-sm border border-white/15 hover:border-white/35 hover:-translate-y-1 hover:shadow-lg active:scale-95 transition-all duration-200 cursor-default select-none shadow-sm group" 
+                className="glass-panel p-3.5 squircle-card-sm border border-white/15 hover:border-white/50 hover:-translate-y-1 hover:shadow-[0_12px_28px_-6px_rgba(255,255,255,0.22),0_0_24px_2px_rgba(129,140,248,0.38)] active:scale-95 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] cursor-default select-none shadow-sm group" 
                 title="Today's focused study minutes"
               >
                 <span className="block text-[9px] uppercase font-numeric font-bold tracking-wider text-slate-300 group-hover:text-white transition-colors">Study Time</span>
@@ -383,7 +383,7 @@ const DashboardTab = memo(function DashboardTab({
               </div>
 
               <div 
-                className="glass-panel p-3.5 squircle-card-sm border border-white/15 hover:border-white/35 hover:-translate-y-1 hover:shadow-lg active:scale-95 transition-all duration-200 cursor-default select-none shadow-sm group" 
+                className="glass-panel p-3.5 squircle-card-sm border border-white/15 hover:border-white/50 hover:-translate-y-1 hover:shadow-[0_12px_28px_-6px_rgba(255,255,255,0.22),0_0_24px_2px_rgba(129,140,248,0.38)] active:scale-95 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] cursor-default select-none shadow-sm group" 
                 title="Today's total questions solved"
               >
                 <span className="block text-[9px] uppercase font-numeric font-bold tracking-wider text-slate-300 group-hover:text-white transition-colors">Questions</span>
@@ -394,7 +394,7 @@ const DashboardTab = memo(function DashboardTab({
               </div>
 
               <div 
-                className="glass-panel p-3.5 squircle-card-sm border border-white/15 hover:border-white/35 hover:-translate-y-1 hover:shadow-lg active:scale-95 transition-all duration-200 cursor-default select-none shadow-sm group" 
+                className="glass-panel p-3.5 squircle-card-sm border border-white/15 hover:border-white/50 hover:-translate-y-1 hover:shadow-[0_12px_28px_-6px_rgba(255,255,255,0.22),0_0_24px_2px_rgba(129,140,248,0.38)] active:scale-95 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] cursor-default select-none shadow-sm group" 
                 title="NCERT syllabus completed"
               >
                 <span className="block text-[9px] uppercase font-numeric font-bold tracking-wider text-slate-300 group-hover:text-white transition-colors">NCERT Mastery</span>
@@ -404,7 +404,7 @@ const DashboardTab = memo(function DashboardTab({
               </div>
 
               <div 
-                className="glass-panel p-3.5 squircle-card-sm border border-white/15 hover:border-white/35 hover:-translate-y-1 hover:shadow-lg active:scale-95 transition-all duration-200 cursor-default select-none shadow-sm group" 
+                className="glass-panel p-3.5 squircle-card-sm border border-white/15 hover:border-white/50 hover:-translate-y-1 hover:shadow-[0_12px_28px_-6px_rgba(255,255,255,0.22),0_0_24px_2px_rgba(129,140,248,0.38)] active:scale-95 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] cursor-default select-none shadow-sm group" 
                 title="Consecutive day study streak"
               >
                 <span className="block text-[9px] uppercase font-numeric font-bold tracking-wider text-slate-300 group-hover:text-white transition-colors">Daily Streak</span>
@@ -552,7 +552,7 @@ const DashboardTab = memo(function DashboardTab({
       <ScrollReveal delay={0.06}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* HOURS TARGETS */}
-          <div className="flex flex-col sm:flex-row items-center gap-5 p-5.5 rounded-2xl bg-slate-500/5 border border-slate-500/10 dark:bg-white/[0.02] dark:border-white/[0.05] hover:bg-slate-500/10 dark:hover:bg-white/[0.04] hover:-translate-y-1 hover:shadow-md transition-all duration-200">
+          <div className="flex flex-col sm:flex-row items-center gap-5 p-5.5 rounded-2xl bg-slate-500/5 border border-slate-500/10 dark:bg-white/[0.02] dark:border-white/[0.05] hover:bg-slate-500/10 dark:hover:bg-white/[0.04] hover:border-indigo-500/40 hover:-translate-y-1 hover:shadow-[0_16px_36px_-6px_rgba(99,102,241,0.38),0_0_28px_2px_rgba(99,102,241,0.28)] transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]">
             <div className="relative w-32 h-32 flex-shrink-0 flex items-center justify-center">
               <div className="absolute inset-0 rounded-full bg-indigo-500/5 blur-md" />
               <svg className="w-full h-full transform -rotate-90" viewBox="0 0 128 128">
@@ -605,7 +605,7 @@ const DashboardTab = memo(function DashboardTab({
           </div>
 
           {/* PROBLEMS SOLVED GOAL */}
-          <div className="flex flex-col sm:flex-row items-center gap-5 p-5.5 rounded-2xl bg-slate-500/5 border border-slate-500/10 dark:bg-white/[0.02] dark:border-white/[0.05] hover:bg-slate-500/10 dark:hover:bg-white/[0.04] hover:-translate-y-1 hover:shadow-md transition-all duration-200">
+          <div className="flex flex-col sm:flex-row items-center gap-5 p-5.5 rounded-2xl bg-slate-500/5 border border-slate-500/10 dark:bg-white/[0.02] dark:border-white/[0.05] hover:bg-slate-500/10 dark:hover:bg-white/[0.04] hover:border-emerald-500/40 hover:-translate-y-1 hover:shadow-[0_16px_36px_-6px_rgba(16,185,129,0.38),0_0_28px_2px_rgba(16,185,129,0.28)] transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]">
             <div className="relative w-32 h-32 flex-shrink-0 flex items-center justify-center">
               <div className="absolute inset-0 rounded-full bg-emerald-500/5 blur-md" />
               <svg className="w-full h-full transform -rotate-90" viewBox="0 0 128 128">
@@ -750,7 +750,7 @@ const DashboardTab = memo(function DashboardTab({
           
           {/* Telegram Community */}
           <div 
-            className="bg-card border border-border rounded-2xl p-5.5 shadow-sm flex flex-col justify-between hover:border-indigo-500/40 hover:-translate-y-1 hover:shadow-lg transition-all duration-200 group"
+            className="bg-card border border-border rounded-2xl p-5.5 shadow-sm flex flex-col justify-between hover:border-indigo-400 hover:-translate-y-1 hover:shadow-[0_16px_40px_-6px_rgba(99,102,241,0.45),0_0_32px_2px_rgba(99,102,241,0.35)] transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group"
           >
             <div className="space-y-2">
               <div className="flex items-center justify-between">
@@ -770,7 +770,7 @@ const DashboardTab = memo(function DashboardTab({
               href="https://t.me/JEECIRCLES"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-5 bg-indigo-500/10 hover:bg-indigo-600 text-indigo-400 hover:text-white text-xs font-mono font-semibold py-2.5 px-4 rounded-xl text-center border border-indigo-500/25 flex items-center justify-center gap-1.5 transition-all outline-none hover:shadow-md active:scale-95"
+              className="mt-5 bg-indigo-500/10 hover:bg-indigo-600 text-indigo-400 hover:text-white text-xs font-mono font-semibold py-2.5 px-4 rounded-xl text-center border border-indigo-500/25 flex items-center justify-center gap-1.5 transition-all outline-none hover:shadow-[0_4px_20px_rgba(99,102,241,0.4)] active:scale-95"
             >
               Join JEE CIRCLES <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
             </a>
@@ -778,7 +778,7 @@ const DashboardTab = memo(function DashboardTab({
 
           {/* Exam Countdown timer link */}
           <div 
-            className="bg-card border border-border rounded-2xl p-5.5 shadow-sm flex flex-col justify-between hover:border-amber-500/40 hover:-translate-y-1 hover:shadow-lg transition-all duration-200 group"
+            className="bg-card border border-border rounded-2xl p-5.5 shadow-sm flex flex-col justify-between hover:border-amber-400 hover:-translate-y-1 hover:shadow-[0_16px_40px_-6px_rgba(245,158,11,0.45),0_0_32px_2px_rgba(245,158,11,0.35)] transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group"
           >
             <div className="space-y-2">
               <div className="flex items-center justify-between">
@@ -798,7 +798,7 @@ const DashboardTab = memo(function DashboardTab({
               href="https://examclock-jee-neet-aspirants.vercel.app/"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-5 bg-amber-500/10 hover:bg-amber-600 text-amber-400 hover:text-white text-xs font-mono font-semibold py-2.5 px-4 rounded-xl text-center border border-amber-500/25 flex items-center justify-center gap-1.5 transition-all outline-none hover:shadow-md active:scale-95"
+              className="mt-5 bg-amber-500/10 hover:bg-amber-600 text-amber-400 hover:text-white text-xs font-mono font-semibold py-2.5 px-4 rounded-xl text-center border border-amber-500/25 flex items-center justify-center gap-1.5 transition-all outline-none hover:shadow-[0_4px_20px_rgba(245,158,11,0.4)] active:scale-95"
             >
               Open Exam Clock <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
             </a>
@@ -806,7 +806,7 @@ const DashboardTab = memo(function DashboardTab({
 
           {/* IIT JEE Guide link */}
           <div 
-            className="bg-card border border-border rounded-2xl p-5.5 shadow-sm flex flex-col justify-between hover:border-emerald-500/40 hover:-translate-y-1 hover:shadow-lg transition-all duration-200 group"
+            className="bg-card border border-border rounded-2xl p-5.5 shadow-sm flex flex-col justify-between hover:border-emerald-400 hover:-translate-y-1 hover:shadow-[0_16px_40px_-6px_rgba(16,185,129,0.45),0_0_32px_2px_rgba(16,185,129,0.35)] transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group"
           >
             <div className="space-y-2">
               <div className="flex items-center justify-between">
@@ -826,7 +826,7 @@ const DashboardTab = memo(function DashboardTab({
               href="https://iit-jee-guide.vercel.app/"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-5 bg-emerald-500/10 hover:bg-emerald-600 text-emerald-400 hover:text-white text-xs font-mono font-semibold py-2.5 px-4 rounded-xl text-center border border-emerald-500/25 flex items-center justify-center gap-1.5 transition-all outline-none hover:shadow-md active:scale-95"
+              className="mt-5 bg-emerald-500/10 hover:bg-emerald-600 text-emerald-400 hover:text-white text-xs font-mono font-semibold py-2.5 px-4 rounded-xl text-center border border-emerald-500/25 flex items-center justify-center gap-1.5 transition-all outline-none hover:shadow-[0_4px_20px_rgba(16,185,129,0.4)] active:scale-95"
             >
               View Study Guides <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
             </a>

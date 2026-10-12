@@ -15,21 +15,28 @@ export const secureStorage = {
   getItem(key: string): string | null {
     try {
       const val = localStorage.getItem(key);
-      if (!val) return null;
+      if (val === null || val === undefined) return null;
 
       // Check if it's already encrypted using CryptoJS AES format (always starts with 'U2FsdGVkX1')
       if (val.startsWith('U2FsdGVkX1')) {
         try {
           const bytes = CryptoJS.AES.decrypt(val, ENCRYPTION_KEY);
           const decrypted = bytes.toString(CryptoJS.enc.Utf8);
-          if (decrypted) {
+          // Return decrypted string (even if empty string "")
+          if (typeof decrypted === 'string') {
+            // Guard against nested/corrupted ciphertext
+            if (decrypted.startsWith('U2FsdGVkX1')) {
+              return '';
+            }
             return decrypted;
           }
+          return '';
         } catch (err) {
-          console.warn(`Decryption failed for key "${key}", falling back to raw value:`, err);
+          console.warn(`Decryption failed for key "${key}":`, err);
+          return ''; // NEVER leak raw ciphertext to the caller or form inputs
         }
       }
-      return val; // Fallback to plain text if not encrypted or decryption fails
+      return val; // Fallback to plain text if not encrypted
     } catch {
       return null;
     }
@@ -37,12 +44,16 @@ export const secureStorage = {
 
   setItem(key: string, value: string): void {
     try {
+      if (!value) {
+        localStorage.setItem(key, '');
+        return;
+      }
       const encrypted = CryptoJS.AES.encrypt(value, ENCRYPTION_KEY).toString();
       localStorage.setItem(key, encrypted);
     } catch (e) {
       console.error(`Failed to securely save item "${key}":`, e);
       try {
-        localStorage.setItem(key, value);
+        localStorage.setItem(key, value || '');
       } catch (inner) {
         console.error(`Fallback raw write failed for key "${key}":`, inner);
       }

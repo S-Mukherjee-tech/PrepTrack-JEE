@@ -52,10 +52,10 @@ const SyllabusChapterItem = memo(function SyllabusChapterItem({
   return (
     <button
       onClick={() => onToggleChapter(ch.id, !isCompleted)}
-      className={`p-3.5 rounded-xl border text-left cursor-pointer flex items-start gap-3 select-none transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] ${
+      className={`p-3.5 rounded-xl border text-left cursor-pointer flex items-start gap-3 select-none transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 active:scale-[0.98] ${
         isCompleted
-          ? 'bg-emerald-500/[0.04] dark:bg-emerald-500/10 border-emerald-500/30 hover:border-emerald-500/50 shadow-xs'
-          : 'bg-card border-border/80 hover:bg-accent/15 hover:border-primary/40 shadow-2xs'
+          ? 'bg-emerald-500/[0.04] dark:bg-emerald-500/10 border-emerald-500/30 hover:border-emerald-500/60 hover:shadow-[0_8px_20px_-4px_rgba(16,185,129,0.2)]'
+          : 'bg-card border-border/80 hover:bg-accent/15 hover:border-primary/40 hover:shadow-[0_8px_20px_-4px_rgba(129,140,248,0.18)]'
       }`}
     >
       <motion.div 
@@ -206,37 +206,59 @@ const SyllabusTracker = memo(function SyllabusTracker({ completions, onToggleCha
           </div>
 
           {/* Class Filter */}
-          <div className="flex bg-accent/15 border border-border rounded-xl p-1 text-xs gap-1">
-            {(['all', '11', '12'] as const).map((cl) => (
-              <button
-                key={cl}
-                onClick={() => setActiveClass(cl)}
-                className={`px-3 py-1.5 rounded-lg font-semibold capitalize cursor-pointer transition-all ${
-                  activeClass === cl
-                    ? 'bg-primary text-primary-foreground shadow-md font-bold scale-[1.01]'
-                    : 'bg-accent/10 border border-border/30 text-muted-foreground hover:text-foreground hover:bg-accent/35 hover:border-border/60'
-                }`}
-              >
-                {cl === 'all' ? 'All Classes' : `Class ${cl}`}
-              </button>
-            ))}
+          <div className="flex bg-accent/15 border border-border rounded-xl p-1 text-xs gap-1 relative">
+            {(['all', '11', '12'] as const).map((cl) => {
+              const isSelected = activeClass === cl;
+              return (
+                <motion.button
+                  key={cl}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setActiveClass(cl)}
+                  className={`px-3 py-1.5 rounded-lg font-semibold capitalize cursor-pointer relative select-none transition-colors duration-150 ${
+                    isSelected
+                      ? 'text-primary-foreground font-bold shadow-xs'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {isSelected && (
+                    <motion.div
+                      layoutId="syllabusClassPill"
+                      className="absolute inset-0 bg-primary rounded-lg -z-0 shadow-xs"
+                      transition={{ type: 'spring', stiffness: 500, damping: 35, mass: 0.6 }}
+                    />
+                  )}
+                  <span className="z-10 relative">{cl === 'all' ? 'All Classes' : `Class ${cl}`}</span>
+                </motion.button>
+              );
+            })}
           </div>
 
           {/* Subject Filter */}
-          <div className="flex bg-accent/15 border border-border rounded-xl p-1 text-xs gap-1">
-            {(['all', 'physics', 'chemistry', 'math'] as const).map((sub) => (
-              <button
-                key={sub}
-                onClick={() => setActiveSubject(sub)}
-                className={`px-3 py-1.5 rounded-lg font-semibold capitalize cursor-pointer transition-all ${
-                  activeSubject === sub
-                    ? 'bg-primary text-primary-foreground shadow-md font-bold scale-[1.01]'
-                    : 'bg-accent/10 border border-border/30 text-muted-foreground hover:text-foreground hover:bg-accent/35 hover:border-border/60'
-                }`}
-              >
-                {sub}
-              </button>
-            ))}
+          <div className="flex bg-accent/15 border border-border rounded-xl p-1 text-xs gap-1 relative">
+            {(['all', 'physics', 'chemistry', 'math'] as const).map((sub) => {
+              const isSelected = activeSubject === sub;
+              return (
+                <motion.button
+                  key={sub}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setActiveSubject(sub)}
+                  className={`px-3 py-1.5 rounded-lg font-semibold capitalize cursor-pointer relative select-none transition-colors duration-150 ${
+                    isSelected
+                      ? 'text-primary-foreground font-bold shadow-xs'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {isSelected && (
+                    <motion.div
+                      layoutId="syllabusSubjectPill"
+                      className="absolute inset-0 bg-primary rounded-lg -z-0 shadow-xs"
+                      transition={{ type: 'spring', stiffness: 500, damping: 35, mass: 0.6 }}
+                    />
+                  )}
+                  <span className="z-10 relative">{sub}</span>
+                </motion.button>
+              );
+            })}
           </div>
 
           {/* High Yield Filter */}
@@ -257,13 +279,13 @@ const SyllabusTracker = memo(function SyllabusTracker({ completions, onToggleCha
         <div className="flex bg-accent/10 border border-border/70 rounded-2xl p-1.5 items-center gap-2 lg:self-start xl:self-auto shrink-0">
           <button
             onClick={() => handleDownloadSyllabus('main')}
-            className="flex items-center gap-1.5 text-[11px] font-numeric font-bold text-indigo-400 hover:text-white cursor-pointer bg-card hover:bg-indigo-600 px-3 py-1.5 rounded-xl border border-border/80 hover:border-indigo-500 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-95 shadow-2xs"
+            className="flex items-center gap-1.5 text-[11px] font-numeric font-bold text-indigo-400 hover:text-white cursor-pointer bg-card hover:bg-indigo-600 px-3 py-1.5 rounded-xl border border-border/80 hover:border-indigo-400 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-2px_rgba(99,102,241,0.5),0_0_20px_1px_rgba(99,102,241,0.4)] active:scale-95 shadow-2xs"
           >
             <Download className="w-3.5 h-3.5" /> Main Syllabus
           </button>
           <button
             onClick={() => handleDownloadSyllabus('advanced')}
-            className="flex items-center gap-1.5 text-[11px] font-numeric font-bold text-emerald-400 hover:text-white cursor-pointer bg-card hover:bg-emerald-600 px-3 py-1.5 rounded-xl border border-border/80 hover:border-emerald-500 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md active:scale-95 shadow-2xs"
+            className="flex items-center gap-1.5 text-[11px] font-numeric font-bold text-emerald-400 hover:text-white cursor-pointer bg-card hover:bg-emerald-600 px-3 py-1.5 rounded-xl border border-border/80 hover:border-emerald-400 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-2px_rgba(16,185,129,0.5),0_0_20px_1px_rgba(16,185,129,0.4)] active:scale-95 shadow-2xs"
           >
             <Download className="w-3.5 h-3.5" /> Adv Syllabus
           </button>

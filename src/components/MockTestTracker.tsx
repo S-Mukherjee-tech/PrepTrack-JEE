@@ -473,50 +473,53 @@ const MockTestTracker = memo(function MockTestTracker({
         </div>
 
         {/* Dynamic sub-tab switcher */}
-        <div className="flex bg-accent/15 dark:bg-black/40 p-1 rounded-2xl border border-white/5 self-start lg:self-center gap-1.5">
-          <button
-            onClick={() => handleSubTabChange('log')}
-            className={`flex items-center gap-2 px-4 py-2 text-xs rounded-xl transition-all cursor-pointer ${
-              activeSubTab === 'log' ? (activeTabAccent + ' scale-[1.01]') : 'bg-accent/10 border border-border/30 text-muted-foreground hover:text-foreground hover:bg-accent/35 hover:border-border/60'
-            }`}
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Log Score</span>
-          </button>
-          <button
-            onClick={() => handleSubTabChange('analytics')}
-            className={`flex items-center gap-2 px-4 py-2 text-xs rounded-xl transition-all cursor-pointer relative ${
-              activeSubTab === 'analytics' ? (activeTabAccent + ' scale-[1.01]') : 'bg-accent/10 border border-border/30 text-muted-foreground hover:text-foreground hover:bg-accent/35 hover:border-border/60'
-            }`}
-          >
-            <BarChart2 className="w-3.5 h-3.5" />
-            <span>Interactive Trend</span>
-            {mockTests.length > 0 && (
-              <span className="absolute -top-1 -right-1 flex h-2 w-2">
-                <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                  theme === 'cyber' ? 'bg-emerald-400' :
-                  theme === 'light' ? 'bg-rose-400' :
-                  theme === 'slate' ? 'bg-cyan-400' :
-                  'bg-indigo-400'
-                }`}></span>
-                <span className={`relative inline-flex rounded-full h-2 w-2 ${
-                  theme === 'cyber' ? 'bg-emerald-500' :
-                  theme === 'light' ? 'bg-rose-500' :
-                  theme === 'slate' ? 'bg-cyan-500' :
-                  'bg-indigo-500'
-                }`}></span>
-              </span>
-            )}
-          </button>
-          <button
-            onClick={() => handleSubTabChange('history')}
-            className={`flex items-center gap-2 px-4 py-2 text-xs rounded-xl transition-all cursor-pointer ${
-              activeSubTab === 'history' ? (activeTabAccent + ' scale-[1.01]') : 'bg-accent/10 border border-border/30 text-muted-foreground hover:text-foreground hover:bg-accent/35 hover:border-border/60'
-            }`}
-          >
-            <BookOpen className="w-3.5 h-3.5" />
-            <span>Test History ({mockTests.length})</span>
-          </button>
+        <div className="flex bg-accent/15 dark:bg-black/40 p-1 rounded-2xl border border-white/5 self-start lg:self-center gap-1.5 relative">
+          {[
+            { id: 'log' as const, label: 'Log Score', icon: Plus },
+            { id: 'analytics' as const, label: 'Interactive Trend', icon: BarChart2, ping: mockTests.length > 0 },
+            { id: 'history' as const, label: `Test History (${mockTests.length})`, icon: BookOpen },
+          ].map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeSubTab === tab.id;
+            return (
+              <motion.button
+                key={tab.id}
+                whileTap={{ scale: 0.96 }}
+                onClick={() => handleSubTabChange(tab.id)}
+                className={`flex items-center gap-2 px-4 py-2 text-xs rounded-xl cursor-pointer relative select-none transition-colors duration-150 ${
+                  isActive
+                    ? 'text-foreground font-bold shadow-xs'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {isActive && (
+                  <motion.div
+                    layoutId="activeMockSubTabPill"
+                    className={`absolute inset-0 rounded-xl -z-0 ${activeTabAccent}`}
+                    transition={{ type: 'spring', stiffness: 480, damping: 34, mass: 0.6 }}
+                  />
+                )}
+                <Icon className={`w-3.5 h-3.5 z-10 shrink-0 ${isActive && theme === 'cyber' ? 'text-black' : ''}`} />
+                <span className={`z-10 ${isActive && theme === 'cyber' ? 'text-black font-extrabold' : ''}`}>{tab.label}</span>
+                {tab.ping && (
+                  <span className="absolute -top-1 -right-1 flex h-2 w-2 z-20">
+                    <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                      theme === 'cyber' ? 'bg-emerald-400' :
+                      theme === 'light' ? 'bg-rose-400' :
+                      theme === 'slate' ? 'bg-cyan-400' :
+                      'bg-indigo-400'
+                    }`}></span>
+                    <span className={`relative inline-flex rounded-full h-2 w-2 ${
+                      theme === 'cyber' ? 'bg-emerald-500' :
+                      theme === 'light' ? 'bg-rose-500' :
+                      theme === 'slate' ? 'bg-cyan-500' :
+                      'bg-indigo-500'
+                    }`}></span>
+                  </span>
+                )}
+              </motion.button>
+            );
+          })}
         </div>
       </div>
 
@@ -1217,7 +1220,7 @@ const MockTestTracker = memo(function MockTestTracker({
                   return (
                     <div
                       key={test.id}
-                      className="p-5 rounded-2xl bg-card border border-border space-y-5 transition-all hover:border-border/80 hover:shadow-md"
+                      className="p-5 rounded-2xl bg-card border border-border space-y-5 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-primary/40 hover:-translate-y-1 hover:shadow-[0_16px_36px_-8px_rgba(0,0,0,0.5)]"
                     >
                       {/* Top Header Row of log item */}
                       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/5 pb-4">

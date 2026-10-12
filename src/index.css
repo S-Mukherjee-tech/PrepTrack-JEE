@@ -18,6 +18,10 @@ html, body, #root {
 /* High-Contrast, Vibrant Theme Selection Overrides */
 .theme-glass {
   --primary: #818cf8;
+  --glow-color: rgba(129, 140, 248, 0.55);
+  --glow-ambient: rgba(99, 102, 241, 0.38);
+  --glow-border: rgba(165, 180, 252, 0.55);
+  --glow-bright: rgba(165, 180, 252, 0.75);
 }
 
 .theme-glass .bg-card {
@@ -66,6 +70,10 @@ html, body, #root {
 /* Deep Slate Dark Theme Overrides */
 .theme-slate {
   --primary: #06b6d4;
+  --glow-color: rgba(6, 182, 212, 0.55);
+  --glow-ambient: rgba(14, 165, 233, 0.38);
+  --glow-border: rgba(56, 189, 248, 0.55);
+  --glow-bright: rgba(56, 189, 248, 0.8);
 }
 
 .theme-slate .bg-card {
@@ -104,6 +112,10 @@ html, body, #root {
 /* Emerald Studio Theme Overrides */
 .theme-cyber {
   --primary: #10b981;
+  --glow-color: rgba(16, 185, 129, 0.6);
+  --glow-ambient: rgba(52, 211, 153, 0.42);
+  --glow-border: rgba(52, 211, 153, 0.65);
+  --glow-bright: rgba(52, 211, 153, 0.85);
 }
 
 .theme-cyber .bg-card {
@@ -140,12 +152,16 @@ html, body, #root {
 .theme-cyber h4,
 .theme-cyber h5 {
   color: #10b981 !important;
-  text-shadow: 0 0 16px rgba(16, 185, 129, 0.2);
+  text-shadow: 0 0 16px rgba(16, 185, 129, 0.35);
 }
 
 /* Classic Light Theme Overrides */
 .theme-light {
   --primary: #4f46e5;
+  --glow-color: rgba(79, 70, 229, 0.45);
+  --glow-ambient: rgba(99, 102, 241, 0.32);
+  --glow-border: rgba(129, 140, 248, 0.65);
+  --glow-bright: rgba(99, 102, 241, 0.8);
 }
 
 .theme-light .bg-card {
@@ -271,18 +287,20 @@ button, a, select, input, textarea, [role="button"], .clickable-item {
   touch-action: manipulation !important;
 }
 
-/* Subtle, high-performance button & link micro-interactions */
+/* Subtle, high-performance button & link micro-interactions with gradual return transition */
 button:not(:disabled), a:not(:disabled) {
-  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.15s ease,
-              background-color 0.15s ease,
-              opacity 0.15s ease;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.24s ease,
+              background-color 0.24s ease,
+              filter 0.24s ease,
+              opacity 0.24s ease;
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   button:not(:disabled):active, a:not(:disabled):active {
     transform: scale(0.97) !important;
+    transition: transform 0.12s ease !important;
   }
 }
 
@@ -290,121 +308,154 @@ button:not(:disabled), a:not(:disabled) {
 .scroll-reveal-container {
   backface-visibility: hidden !important;
   -webkit-backface-visibility: hidden !important;
+  transform: translateZ(0);
 }
 
-/* High-performance responsive hover effects for all cards inside main content area */
+/* Base card transition for smooth entry & gradual relaxation when cursor departs */
 main .bg-card:not(header):not(footer):not(.sticky):not(nav),
 main .rounded-2xl:not(header):not(footer):not(.sticky):not(nav),
-main .rounded-3xl:not(header):not(footer):not(.sticky):not(nav) {
-  /* Lightweight transitions only for background/border, keeping scroll entirely unburdened */
-  transition: border-color 0.2s ease, background-color 0.2s ease !important;
+main .rounded-3xl:not(header):not(footer):not(.sticky):not(nav),
+.interactive-card {
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), 
+              box-shadow 0.32s cubic-bezier(0.22, 1, 0.36, 1), 
+              border-color 0.28s ease, 
+              background-color 0.28s ease !important;
   backface-visibility: hidden !important;
   -webkit-backface-visibility: hidden !important;
 }
 
-/* Only trigger surface-up lift and premium tactile scale on hover-capable cursor devices (Desktops/Laptops) */
-@media (hover: hover) {
-  main .bg-card:not(header):not(footer):not(.sticky):not(nav),
-  main .rounded-2xl:not(header):not(footer):not(.sticky):not(nav),
-  main .rounded-3xl:not(header):not(footer):not(.sticky):not(nav) {
-    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), 
-                box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), 
-                border-color 0.15s ease, 
-                background-color 0.15s ease !important;
-  }
-
-  /* Translate elements on hover but do not use scale to save graphics processing time.
-     For theme-glass, we completely avoid transforms to prevent re-applying the glass blur filter. */
+/* GRADUAL, HYPER-SMOOTH HOVER REACTIONS (Desktop/Fine Pointers Only)
+   Provides gentle elevation motion and rich ambient glow that builds gradually */
+@media (hover: hover) and (pointer: fine) {
   main .bg-card:not(header):not(footer):not(.sticky):not(nav):hover,
   main .rounded-2xl:not(header):not(footer):not(.sticky):not(nav):hover,
-  main .rounded-3xl:not(header):not(footer):not(.sticky):not(nav):hover {
-    transform: translate3d(0, -2px, 0) !important;
+  main .rounded-3xl:not(header):not(footer):not(.sticky):not(nav):hover,
+  .interactive-card:hover {
+    transform: translate3d(0, -3px, 0) !important;
   }
-  
+}
+
+
+/* GRADUAL AMBIENT GLOW REFLECTIONS (Desktop/Fine Pointers Only) */
+@media (hover: hover) and (pointer: fine) {
   .theme-glass main .bg-card:not(header):not(footer):not(.sticky):not(nav):hover,
   .theme-glass main .rounded-2xl:not(header):not(footer):not(.sticky):not(nav):hover,
   .theme-glass main .rounded-3xl:not(header):not(footer):not(.sticky):not(nav):hover {
-    transform: none !important; /* Zero transform on glass theme hover to avoid redraw lag */
-  }
-}
-
-/* Eliminate active transform tap-down scale on touch devices to avoid layout recalculation and scrolling lag */
-@media (hover: none) {
-  main .bg-card:not(header):not(footer):not(.sticky):not(nav):active,
-  main .rounded-2xl:not(header):not(footer):not(.sticky):not(nav):active,
-  main .rounded-3xl:not(header):not(footer):not(.sticky):not(nav):active {
-    background-color: rgba(255, 255, 255, 0.02) !important;
-    opacity: 0.95 !important;
-    transition: opacity 0.15s ease !important;
-  }
-}
-
-/* Dynamic, refined edge highlights on hover - limited to desktop pointers to maximize mobile framerate */
-@media (hover: hover) {
-  .theme-glass main .bg-card:hover,
-  .theme-glass main .rounded-2xl:hover,
-  .theme-glass main .rounded-3xl:hover {
-    border-color: rgba(255, 255, 255, 0.16) !important;
-    box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.6), 
-                inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
-  }
-
-  .theme-slate main .bg-card:hover,
-  .theme-slate main .rounded-2xl:hover,
-  .theme-slate main .rounded-3xl:hover {
-    border-color: rgba(6, 182, 212, 0.3) !important;
+    border-color: rgba(165, 180, 252, 0.48) !important;
     box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.65), 
-                inset 0 1px 0 rgba(6, 182, 212, 0.12) !important;
+                0 0 0 1px rgba(165, 180, 252, 0.32),
+                0 0 12px 2px rgba(129, 140, 248, 0.38),
+                0 0 24px 2px rgba(129, 140, 248, 0.22),
+                inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
   }
 
-  .theme-cyber main .bg-card:hover,
-  .theme-cyber main .rounded-2xl:hover,
-  .theme-cyber main .rounded-3xl:hover {
-    border-color: rgba(16, 185, 129, 0.35) !important;
+  .theme-slate main .bg-card:not(header):not(footer):not(.sticky):not(nav):hover,
+  .theme-slate main .rounded-2xl:not(header):not(footer):not(.sticky):not(nav):hover,
+  .theme-slate main .rounded-3xl:not(header):not(footer):not(.sticky):not(nav):hover {
+    border-color: rgba(56, 189, 248, 0.52) !important;
     box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.7), 
-                inset 0 1px 0 rgba(16, 185, 129, 0.14) !important;
+                0 0 0 1px rgba(56, 189, 248, 0.36),
+                0 0 12px 2px rgba(6, 182, 212, 0.4),
+                0 0 24px 2px rgba(6, 182, 212, 0.24),
+                inset 0 1px 0 rgba(56, 189, 248, 0.25) !important;
   }
 
-  .theme-light main .bg-card:hover,
-  .theme-light main .rounded-2xl:hover,
-  .theme-light main .rounded-3xl:hover {
-    border-color: #cbd5e1 !important;
-    box-shadow: 0 10px 28px -6px rgba(0, 0, 0, 0.08), 
-                0 2px 6px rgba(0, 0, 0, 0.02) !important;
+  .theme-cyber main .bg-card:not(header):not(footer):not(.sticky):not(nav):hover,
+  .theme-cyber main .rounded-2xl:not(header):not(footer):not(.sticky):not(nav):hover,
+  .theme-cyber main .rounded-3xl:not(header):not(footer):not(.sticky):not(nav):hover {
+    border-color: rgba(52, 211, 153, 0.58) !important;
+    box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.75), 
+                0 0 0 1px rgba(52, 211, 153, 0.4),
+                0 0 14px 2px rgba(16, 185, 129, 0.42),
+                0 0 26px 2px rgba(16, 185, 129, 0.26),
+                inset 0 1px 0 rgba(52, 211, 153, 0.28) !important;
+  }
+
+  .theme-light main .bg-card:not(header):not(footer):not(.sticky):not(nav):hover,
+  .theme-light main .rounded-2xl:not(header):not(footer):not(.sticky):not(nav):hover,
+  .theme-light main .rounded-3xl:not(header):not(footer):not(.sticky):not(nav):hover {
+    border-color: rgba(99, 102, 241, 0.6) !important;
+    box-shadow: 0 14px 32px -8px rgba(15, 23, 42, 0.12), 
+                0 0 0 1px rgba(99, 102, 241, 0.3),
+                0 0 10px 1px rgba(79, 70, 229, 0.3),
+                0 0 20px 2px rgba(99, 102, 241, 0.18),
+                inset 0 1px 0 rgba(255, 255, 255, 1) !important;
   }
 }
 
 /* Modern inputs, buttons & interactable controls response */
-main button:not([disabled]):not(.cursor-default):not(.react-calendar__tile), 
-main a,
-main .clickable-item {
-  transition: background-color 0.15s ease, border-color 0.15s ease !important;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
-
-@media (hover: hover) {
+/* Interactive Buttons, Action Links, and Clickable Controls (Fine pointer devices) */
+@media (hover: hover) and (pointer: fine) {
   main button:not([disabled]):not(.cursor-default):not(.react-calendar__tile), 
-  main a,
-  main .clickable-item {
-    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-                box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-                background-color 0.15s ease,
-                border-color 0.15s ease !important;
+  main a:not(.cursor-default),
+  main .clickable-item,
+  .interactive-btn {
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+                background-color 0.24s ease,
+                border-color 0.24s ease,
+                filter 0.24s ease !important;
   }
 
   main button:not([disabled]):not(.cursor-default):not(.react-calendar__tile):hover, 
-  main a:hover,
-  main .clickable-item:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 6px 14px -3px rgba(0, 0, 0, 0.12) !important;
+  main a:not(.cursor-default):hover,
+  main .clickable-item:hover,
+  .interactive-btn:hover {
+    transform: translate3d(0, -2px, 0) !important;
+    box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.35), 
+                0 0 0 1px var(--glow-border, rgba(165, 180, 252, 0.4)),
+                0 0 8px 1.5px var(--glow-ambient, rgba(129, 140, 248, 0.35)),
+                0 0 16px 2px var(--glow-color, rgba(129, 140, 248, 0.22)) !important;
+  }
+
+  /* High-emphasis buttons (Primary action buttons) get a brilliant uniform radiant neon aura */
+  button.bg-primary:not(:disabled):hover,
+  a.bg-primary:hover,
+  [class*="bg-primary"]:is(button, a):not(:disabled):hover,
+  [class*="from-indigo-"]:is(button, a):not(:disabled):hover,
+  [class*="bg-indigo-"]:is(button, a):not(:disabled):hover {
+    transform: translate3d(0, -2.5px, 0) !important;
+    box-shadow: 0 6px 18px -2px rgba(0, 0, 0, 0.35),
+                0 0 0 1.5px var(--glow-bright, rgba(165, 180, 252, 0.6)),
+                0 0 10px 2px var(--glow-color, rgba(129, 140, 248, 0.5)),
+                0 0 20px 2.5px var(--glow-ambient, rgba(129, 140, 248, 0.35)) !important;
+    filter: brightness(1.08);
+  }
+
+  /* Form input uniform luminous hover glow - equal radiance on all 4 sides */
+  main input:not(:disabled):hover:not(:focus),
+  main select:not(:disabled):hover:not(:focus),
+  main textarea:not(:disabled):hover:not(:focus) {
+    border-color: var(--glow-border, rgba(165, 180, 252, 0.6)) !important;
+    box-shadow: 0 0 0 1.5px var(--glow-border, rgba(165, 180, 252, 0.5)),
+                0 0 8px 1px var(--glow-ambient, rgba(129, 140, 248, 0.35)),
+                0 0 14px 1.5px var(--glow-color, rgba(129, 140, 248, 0.22)) !important;
+    transition: border-color 0.26s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.26s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.26s ease !important;
   }
 }
 
-main button:not([disabled]):not(.cursor-default):not(.react-calendar__tile):active, 
-main a:active,
-main .clickable-item:active {
-  transform: translateY(1px) !important;
+/* MOBILE USER PROTECTION: Eliminate sticky hover transforms & glowing shadows on touch devices */
+@media (hover: none), (pointer: coarse) {
+  main .bg-card:hover,
+  main .rounded-2xl:hover,
+  main .rounded-3xl:hover,
+  main button:hover,
+  main a:hover,
+  main .clickable-item:hover,
+  .interactive-card:hover,
+  .interactive-btn:hover,
+  input:hover,
+  select:hover,
+  textarea:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Clean, instantaneous tap response on touch devices with zero persistent hover artifacts */
+  button:not(:disabled):active, a:not(:disabled):active {
+    transform: scale(0.97) !important;
+    transition: transform 0.08s ease !important;
+  }
 }
 
 /* For form controls, keep them super stable. We don't need scaling or translations on focus */
@@ -428,7 +479,7 @@ input, select, textarea {
 }
 .theme-glass input:focus, .theme-glass select:focus, .theme-glass textarea:focus {
   border-color: #818cf8 !important;
-  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.2) !important;
+  box-shadow: 0 0 0 2px rgba(129, 140, 248, 0.45), 0 0 8px 1px rgba(99, 102, 241, 0.3) !important;
   background-color: rgba(255, 255, 255, 0.06) !important;
 }
 
@@ -439,7 +490,7 @@ input, select, textarea {
 }
 .theme-slate input:focus, .theme-slate select:focus, .theme-slate textarea:focus {
   border-color: #06b6d4 !important;
-  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2) !important;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.45), 0 0 8px 1px rgba(6, 182, 212, 0.3) !important;
   background-color: rgba(15, 23, 42, 0.7) !important;
 }
 
@@ -451,7 +502,7 @@ input, select, textarea {
 }
 .theme-cyber input:focus, .theme-cyber select:focus, .theme-cyber textarea:focus {
   border-color: #10b981 !important;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25) !important;
+  box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.45), 0 0 8px 1px rgba(16, 185, 129, 0.3) !important;
   background-color: rgba(4, 22, 12, 0.8) !important;
 }
 
@@ -462,7 +513,7 @@ input, select, textarea {
 }
 .theme-light input:focus, .theme-light select:focus, .theme-light textarea:focus {
   border-color: #4f46e5 !important;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15) !important;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.4), 0 0 8px 1px rgba(79, 70, 229, 0.22) !important;
   background-color: #ffffff !important;
 }
 
@@ -497,7 +548,7 @@ input, select, textarea {
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeIn 0.22s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   will-change: transform, opacity;
 }
 
@@ -513,7 +564,7 @@ input, select, textarea {
 }
 
 .animate-tab-fade-in {
-  animation: tabFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: tabFadeIn 0.22s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   will-change: transform, opacity;
 }
 

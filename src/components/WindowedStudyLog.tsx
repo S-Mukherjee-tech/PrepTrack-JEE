@@ -90,7 +90,7 @@ export const WindowedStudyLog = memo(function WindowedStudyLog({
                 <div
                   key={s.id}
                   style={{ height: `${itemHeight - 12}px`, marginBottom: '12px' }}
-                  className="p-4 rounded-2xl bg-accent/10 border border-border/80 text-xs flex flex-col sm:flex-row sm:items-center sm:justify-between hover:border-accent/40 hover:bg-accent/15 transition-all gap-4 dashboard-card-gpu"
+                  className="p-4 rounded-2xl bg-accent/10 border border-border/80 text-xs flex flex-col sm:flex-row sm:items-center sm:justify-between hover:border-primary/40 hover:bg-accent/20 hover:shadow-[0_8px_24px_-4px_rgba(0,0,0,0.3)] transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] gap-4 dashboard-card-gpu"
                 >
                   <div className="space-y-1 min-w-0 flex-1">
                     <div className="flex gap-2 items-center">
@@ -127,7 +127,7 @@ export const WindowedStudyLog = memo(function WindowedStudyLog({
               <div
                 key={s.id}
                 style={{ height: `${itemHeight - 10}px`, marginBottom: '10px' }}
-                className="flex items-center justify-between p-3 rounded-xl bg-accent/15 border border-border/50 text-xs hover:border-accent/30 transition-all dashboard-card-gpu"
+                className="flex items-center justify-between p-3 rounded-xl bg-accent/15 border border-border/50 text-xs hover:border-primary/30 hover:bg-accent/25 hover:shadow-[0_6px_20px_-4px_rgba(0,0,0,0.25)] transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] dashboard-card-gpu"
               >
                 <div className="space-y-0.5 min-w-0 flex-1">
                   <span className="font-bold text-foreground block truncate">{s.sessionName}</span>
