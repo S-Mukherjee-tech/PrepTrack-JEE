@@ -10,15 +10,18 @@ import {
   History, 
   ArrowUpRight, 
   Flame, 
-  Award 
+  Award,
+  Target
 } from 'lucide-react';
 import { WindowedStudyLog } from './WindowedStudyLog';
-import QuickNotes from './QuickNotes';
+import TargetTracker from './TargetTracker';
+import TargetReminderModal from './TargetReminderModal';
 import { BrandingLogo } from './BrandingLogo';
 import TimerSection from './TimerSection';
 import AnimatedCounter from './AnimatedCounter';
 import ScrollReveal from './ScrollReveal';
 import { CLASS_11_SYLLABUS, CLASS_12_SYLLABUS } from '../data/syllabus';
+import { secureJsonParse, secureStorage } from '../utils/security';
 
 interface DashboardTabProps {
   settings: UserSettings;
@@ -150,6 +153,19 @@ const DashboardTab = memo(function DashboardTab({
   onDeleteStudySession,
   onTabChange,
 }: DashboardTabProps) {
+  // Target tracker integration states
+  const [activeTargetsCount, setActiveTargetsCount] = useState<number>(() => {
+    try {
+      const saved = secureStorage.getItem('preptrack_study_targets');
+      if (saved) {
+        const parsed = secureJsonParse<any[]>(saved, []);
+        return parsed.filter((t) => !t.completed).length;
+      }
+    } catch {}
+    return 0;
+  });
+  const [showReminderModal, setShowReminderModal] = useState(false);
+
   // Sessions today count tracker
   const sessionsTodayCount = useMemo(() => {
     const todayStr = new Date().toDateString();
@@ -415,6 +431,32 @@ const DashboardTab = memo(function DashboardTab({
                 </span>
               </div>
             </div>
+
+            {/* Prioritized Quick Targets Mission Trigger */}
+            <div className="pt-2 flex items-center gap-2.5 flex-wrap">
+              <button
+                onClick={() => {
+                  const el = document.getElementById('target-tracker-section');
+                  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }}
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.15] text-white text-xs font-semibold cursor-pointer transition-all hover:scale-[1.02] active:scale-95 group shadow-sm"
+                title="Jump directly to Target & Deadline Tracker"
+              >
+                <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
+                <span className="font-mono font-bold text-indigo-300">🎯 Targets:</span>
+                <span className="text-white font-numeric">{activeTargetsCount} Active</span>
+                <ArrowUpRight className="w-3.5 h-3.5 text-slate-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              </button>
+
+              <button
+                onClick={() => setShowReminderModal(true)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/35 border border-indigo-500/30 text-indigo-200 text-xs font-bold cursor-pointer transition-all hover:scale-[1.02] active:scale-95 shadow-sm"
+                title="View Daily Mission Briefing & Target Deadlines"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+                <span>Mission Briefing</span>
+              </button>
+            </div>
           </div>
 
           {/* Clock Widget on the Right (Desktop / Tablet) */}
@@ -433,6 +475,18 @@ const DashboardTab = memo(function DashboardTab({
           settings={settings}
           onSaveSession={onSaveStudySession}
           currentSessionsTodayCount={sessionsTodayCount}
+        />
+      </motion.div>
+      
+      {/* Subtle horizontal section divider */}
+      <div className={`border-t ${themeStyles.borderStyle} my-8 opacity-65`} />
+
+      {/* TARGET & DEADLINE MISSION CONTROL (PRIORITIZED TOP ELEVATION) */}
+      <motion.div variants={dashboardItemVariants}>
+        <TargetTracker 
+          theme={settings.theme} 
+          cardBgClass={themeStyles.cardBg}
+          onTargetsCountChange={(active) => setActiveTargetsCount(active)}
         />
       </motion.div>
       
@@ -739,10 +793,6 @@ const DashboardTab = memo(function DashboardTab({
         </div>
       </ScrollReveal>
 
-      {/* QUICK NOTES SECTION */}
-      <ScrollReveal delay={0.1}>
-        <QuickNotes theme={settings.theme} cardBgClass={themeStyles.cardBg} />
-      </ScrollReveal>
 
       {/* DYNAMIC JEE LIVE TOOL LINKS & TELEGRAM GROUP */}
       <ScrollReveal delay={0.12}>
@@ -834,6 +884,17 @@ const DashboardTab = memo(function DashboardTab({
 
         </div>
       </ScrollReveal>
+
+      {/* TARGET REMINDER POPUP MODAL (MISSION BRIEFING ON LAUNCH) */}
+      <TargetReminderModal 
+        isOpen={showReminderModal}
+        onClose={() => setShowReminderModal(false)}
+        onNavigateToTargets={() => {
+          const el = document.getElementById('target-tracker-section');
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }}
+        theme={settings.theme}
+      />
     </motion.div>
   );
 });

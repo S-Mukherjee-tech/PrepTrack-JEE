@@ -92,3 +92,23 @@ export interface MockTest {
   timestamp: number;
 }
 
+export type TargetCadence = 'daily' | 'weekly' | 'monthly' | 'custom';
+export type TargetStatus = 'active' | 'achieved' | 'failed';
+export type TargetCategory = 'general' | 'physics' | 'chemistry' | 'math' | 'revision' | 'mock_test';
+
+export interface StudyTarget {
+  id: string;
+  title: string;
+  cadence: TargetCadence;
+  deadline: number; // millisecond timestamp
+  createdAt: number;
+  completed: boolean;
+  completedAt?: number;
+  status: TargetStatus;
+  resultMessage?: string;
+  resetCount: number;
+  lastResetAt?: number;
+  category?: TargetCategory;
+  notes?: string;
+}
+
