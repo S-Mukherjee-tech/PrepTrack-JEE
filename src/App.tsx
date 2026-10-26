@@ -1047,7 +1047,8 @@ export default function App() {
               return (
                 <motion.button
                   key={tab.id}
-                  whileTap={{ scale: 0.95 }}
+                  whileTap={{ scale: 0.94 }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 28 }}
                   onMouseEnter={() => handlePreloadTab(tab.id)}
                   onFocus={() => handlePreloadTab(tab.id)}
                   onClick={() => handleTabChange(tab.id as any)}
@@ -1064,7 +1065,7 @@ export default function App() {
                       transition={{ type: 'spring', stiffness: 500, damping: 35, mass: 0.6 }}
                     />
                   )}
-                  <Icon className={`w-3.5 h-3.5 shrink-0 z-10 transition-colors ${isActive ? 'text-primary' : 'opacity-70 group-hover:opacity-100'}`} />
+                  <Icon className={`w-3.5 h-3.5 shrink-0 z-10 transition-transform duration-200 ${isActive ? 'text-primary scale-110' : 'opacity-70 group-hover:opacity-100'}`} />
                   <span className="z-10">{tab.label}</span>
                 </motion.button>
               );
@@ -1078,22 +1079,25 @@ export default function App() {
               timezone={settings.timezone}
               visible={activeTab !== 'dashboard' || isBannerClockScrolledOut} 
             />
-            <button
+            <motion.button
+              whileTap={{ scale: 0.88, rotate: -30 }}
+              whileHover={{ scale: 1.08 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 25 }}
               onClick={() => {
                 const themes: ThemeType[] = ['glass', 'slate', 'cyber', 'light'];
                 const currentIdx = themes.indexOf(settings.theme);
                 const nextTheme = themes[(currentIdx + 1) % themes.length];
                 handleSaveSettings({ ...settings, theme: nextTheme });
               }}
-              className="p-2 border border-border/50 rounded-2xl glass-panel text-muted-foreground hover:text-foreground transition-all duration-200 cursor-pointer tactile-press shadow-xs hover:border-primary/40 hover:scale-105 active:scale-95"
+              className="p-2 border border-border/50 rounded-2xl glass-panel text-muted-foreground hover:text-foreground cursor-pointer shadow-xs hover:border-primary/40 touch-target-expand select-none"
               title={`Switch Theme (Current: ${settings.theme})`}
               aria-label={`Switch Theme (Current: ${settings.theme})`}
             >
               <motion.div
                 key={settings.theme}
-                initial={{ rotate: -40, scale: 0.8 }}
+                initial={{ rotate: -50, scale: 0.75 }}
                 animate={{ rotate: 0, scale: 1 }}
-                transition={{ duration: 0.2, ease: "easeOut" }}
+                transition={{ type: 'spring', stiffness: 450, damping: 22 }}
               >
                 {settings.theme === 'light' ? (
                   <Moon className="w-4 h-4 text-indigo-500" />
@@ -1101,7 +1105,7 @@ export default function App() {
                   <Sun className="w-4 h-4 text-amber-400" />
                 )}
               </motion.div>
-            </button>
+            </motion.button>
           </div>
         </div>
       </header>
@@ -1122,12 +1126,12 @@ export default function App() {
           return (
             <motion.button
               key={tab.id}
-              whileTap={{ scale: 0.92 }}
-              transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+              whileTap={{ scale: 0.88 }}
+              transition={{ type: 'spring', stiffness: 520, damping: 28 }}
               onTouchStart={() => handlePreloadTab(tab.id)}
               onMouseEnter={() => handlePreloadTab(tab.id)}
               onClick={() => handleTabChange(tab.id as any)}
-              className={`flex-1 py-1.5 flex flex-col items-center justify-center gap-1 relative transition-all duration-150 outline-none select-none ${
+              className={`flex-1 py-1.5 flex flex-col items-center justify-center gap-1 relative transition-all duration-150 outline-none select-none cursor-pointer touch-target-expand ${
                 isActive
                   ? 'text-primary font-bold'
                   : 'text-muted-foreground hover:text-foreground font-medium'
@@ -1137,10 +1141,16 @@ export default function App() {
                 <motion.div
                    layoutId="activeMobileTabPill"
                    className="absolute inset-x-1 inset-y-0.5 rounded-2xl -z-0 bg-primary/15 border border-primary/25 shadow-xs"
-                   transition={{ type: 'spring', stiffness: 500, damping: 36, mass: 0.7 }}
+                   transition={{ type: 'spring', stiffness: 500, damping: 34, mass: 0.65 }}
                 />
               )}
-              <Icon className="w-4.5 h-4.5 z-10 shrink-0" />
+              <motion.div
+                animate={{ scale: isActive ? 1.12 : 1 }}
+                transition={{ type: 'spring', stiffness: 480, damping: 22 }}
+                className="z-10 shrink-0"
+              >
+                <Icon className="w-4.5 h-4.5" />
+              </motion.div>
               <span className="z-10 text-[8.5px] font-bold leading-none tracking-tight">{tab.label}</span>
             </motion.button>
           );

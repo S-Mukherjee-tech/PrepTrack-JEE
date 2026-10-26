@@ -716,17 +716,15 @@ const TimerSection = memo(function TimerSection({ settings, onSaveSession, curre
         <div className="pt-2 flex flex-wrap gap-3">
           {!isRunning ? (
             <motion.button
-              whileHover={{ scale: 1.04, translateY: -2 }}
-              whileTap={{ scale: 0.96 }}
+              whileHover={{ scale: 1.02, translateY: -1 }}
+              whileTap={{ scale: 0.94 }}
               animate={{
                 backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
               }}
               transition={{
-                backgroundPosition: {
-                  duration: 5,
-                  repeat: Infinity,
-                  ease: "linear"
-                }
+                scale: { type: 'spring', stiffness: 500, damping: 28 },
+                translateY: { type: 'spring', stiffness: 500, damping: 28 },
+                backgroundPosition: { duration: 6, repeat: Infinity, ease: 'linear' },
               }}
               style={{
                 backgroundSize: "200% 200%",
@@ -745,33 +743,9 @@ const TimerSection = memo(function TimerSection({ settings, onSaveSession, curre
             <>
               {isPaused ? (
                 <motion.button
-                  whileHover={{ scale: 1.04, translateY: -2 }}
-                  whileTap={{ scale: 0.96 }}
-                  animate={{
-                    backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
-                    boxShadow: [
-                      isThemeCyber ? '0 0 0 0px rgba(16,185,129,0.2)' :
-                      isThemeLight ? '0 0 0 0px rgba(79,70,229,0.2)' :
-                      isThemeSlate ? '0 0 0 0px rgba(6,182,212,0.2)' :
-                      '0 0 0 0px rgba(99,102,241,0.2)',
-                      isThemeCyber ? '0 0 0 10px rgba(16,185,129,0)' :
-                      isThemeLight ? '0 0 0 10px rgba(79,70,229,0)' :
-                      isThemeSlate ? '0 0 0 10px rgba(6,182,212,0)' :
-                      '0 0 0 10px rgba(99,102,241,0)'
-                    ]
-                  }}
-                  transition={{
-                    backgroundPosition: {
-                      duration: 4,
-                      repeat: Infinity,
-                      ease: "linear"
-                    },
-                    boxShadow: {
-                      repeat: Infinity,
-                      duration: 2,
-                      ease: "easeOut"
-                    }
-                  }}
+                  whileHover={{ scale: 1.02, translateY: -1 }}
+                  whileTap={{ scale: 0.94 }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 28 }}
                   style={{
                     backgroundSize: "200% 200%",
                   }}
@@ -788,9 +762,10 @@ const TimerSection = memo(function TimerSection({ settings, onSaveSession, curre
               ) : (
                 <motion.button
                   whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  whileTap={{ scale: 0.94 }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 28 }}
                   onClick={handlePause}
-                  className={`flex-1 font-bold text-sm py-4 px-6 rounded-2xl flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer shadow-lg ${
+                  className={`flex-1 font-bold text-sm py-4 px-6 rounded-2xl flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer shadow-lg ${
                     isThemeCyber ? 'bg-amber-500/15 hover:bg-amber-500/25 text-amber-400 border border-amber-500/30' :
                     isThemeLight ? 'bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 shadow-amber-500/5' :
                     isThemeSlate ? 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30' :
@@ -803,9 +778,10 @@ const TimerSection = memo(function TimerSection({ settings, onSaveSession, curre
 
               <motion.button
                 whileHover={{ scale: 1.02, translateY: -1 }}
-                whileTap={{ scale: 0.98 }}
+                whileTap={{ scale: 0.94 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 28 }}
                 onClick={handleStopAndSave}
-                className={`font-bold text-sm py-4 px-5 rounded-2xl flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer shadow-lg ${
+                className={`font-bold text-sm py-4 px-5 rounded-2xl flex items-center justify-center gap-2 transition-all duration-200 cursor-pointer shadow-lg ${
                   isThemeCyber ? 'bg-slate-900 hover:bg-slate-800 text-emerald-400 border border-emerald-500/30 shadow-emerald-500/5' :
                   isThemeLight ? 'bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200' :
                   isThemeSlate ? 'bg-slate-900 hover:bg-slate-800 text-cyan-400 border border-cyan-500/30 shadow-cyan-500/5' :
@@ -817,10 +793,11 @@ const TimerSection = memo(function TimerSection({ settings, onSaveSession, curre
               </motion.button>
 
               <motion.button
-                whileHover={{ scale: 1.05, rotate: -45 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.08, rotate: -45 }}
+                whileTap={{ scale: 0.90 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 25 }}
                 onClick={handleReset}
-                className="border border-border bg-accent/10 hover:bg-accent/30 text-muted-foreground hover:text-foreground font-bold text-xs py-4 px-4 rounded-2xl flex items-center justify-center transition-all duration-300 cursor-pointer"
+                className="border border-border bg-accent/10 hover:bg-accent/30 text-muted-foreground hover:text-foreground font-bold text-xs py-4 px-4 rounded-2xl flex items-center justify-center transition-all duration-200 cursor-pointer"
                 title="Discard study session"
               >
                 <RotateCcw className="w-4 h-4" />

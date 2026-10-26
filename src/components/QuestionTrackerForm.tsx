@@ -430,19 +430,23 @@ const QuestionTrackerForm = memo(function QuestionTrackerForm({ questionsList, o
         </div>
 
         <div className="flex gap-2.5 w-full sm:w-auto">
-          <button
+          <motion.button
+            whileTap={{ scale: 0.94 }}
+            transition={{ type: 'spring', stiffness: 500, damping: 28 }}
             onClick={handleClear}
-            className="flex-1 sm:flex-none border border-border bg-accent/15 hover:bg-accent/35 text-muted-foreground hover:text-foreground font-semibold text-xs py-2.5 px-4 rounded-xl transition-all cursor-pointer"
+            className="flex-1 sm:flex-none border border-border bg-accent/15 hover:bg-accent/35 text-muted-foreground hover:text-foreground font-semibold text-xs py-2.5 px-4 rounded-xl transition-colors cursor-pointer select-none"
           >
             Clear Inputs
-          </button>
+          </motion.button>
           
-          <button
+          <motion.button
+            whileTap={{ scale: 0.94 }}
+            transition={{ type: 'spring', stiffness: 500, damping: 28 }}
             onClick={handleSave}
-            className="flex-1 sm:flex-none bg-primary text-primary-foreground font-bold text-xs py-2.5 px-6 rounded-xl flex items-center justify-center gap-2 shadow-sm shadow-primary/20 hover:opacity-90 active-scale-98 transition-all cursor-pointer"
+            className="flex-1 sm:flex-none bg-primary text-primary-foreground font-bold text-xs py-2.5 px-6 rounded-xl flex items-center justify-center gap-2 shadow-sm shadow-primary/20 hover:opacity-90 cursor-pointer select-none"
           >
             <Save className="w-4 h-4" /> Save Today's Logs
-          </button>
+          </motion.button>
         </div>
       </div>
 

@@ -242,15 +242,57 @@ button, a, input, select, textarea, [role="button"], label {
   border-radius: 28px !important;
 }
 
-/* Tactile Spring Press Physics */
+/* ==========================================================================
+   HYPER-TACTILE BUTTON & INTERACTIVE COMPONENT DYNAMICS (APPLE/STRIPE GRADE)
+   Instant 40ms press-in with mechanical spring recoil on release
+   ========================================================================== */
+
+/* Default State: Smooth elastic spring recoil when released or hovered */
+button:not(:disabled),
+a:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
 .tactile-press,
-.apple-press {
-  transition: transform 0.16s cubic-bezier(0.2, 0.9, 0.2, 1), opacity 0.16s ease !important;
+.apple-press,
+.btn-tactile {
+  touch-action: manipulation !important;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+              background-color 0.18s ease,
+              border-color 0.18s ease,
+              color 0.16s ease,
+              filter 0.16s ease,
+              opacity 0.16s ease;
+  transform: translateZ(0);
 }
 
+/* Active Down-stroke: Instant 40ms mechanical yield under finger or cursor */
+button:not(:disabled):active,
+a:not(:disabled):active,
+[role="button"]:not([aria-disabled="true"]):active,
 .tactile-press:active,
-.apple-press:active {
-  transform: scale(0.96) !important;
+.apple-press:active,
+.btn-tactile:active {
+  transform: scale(0.952) translateZ(0) !important;
+  transition: transform 0.04s cubic-bezier(0.1, 0.9, 0.2, 1) !important;
+  filter: brightness(0.94);
+}
+
+/* Specific scale utilities */
+.active-scale-98:active {
+  transform: scale(0.98) translateZ(0) !important;
+  transition: transform 0.04s ease-out !important;
+}
+
+.active-scale-95:active {
+  transform: scale(0.95) translateZ(0) !important;
+  transition: transform 0.04s ease-out !important;
+}
+
+.active-scale-90:active {
+  transform: scale(0.90) translateZ(0) !important;
+  transition: transform 0.04s ease-out !important;
 }
 
 /* Floating Navigation Dock */
@@ -295,23 +337,6 @@ button, a, input, select, textarea, [role="button"], label {
 /* Eliminate native mobile click delay on interactive components and provide smooth tactile transitions */
 button, a, select, input, textarea, [role="button"], .clickable-item {
   touch-action: manipulation !important;
-}
-
-/* Subtle, high-performance button & link micro-interactions with gradual return transition */
-button:not(:disabled), a:not(:disabled) {
-  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-              box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-              border-color 0.24s ease,
-              background-color 0.24s ease,
-              filter 0.24s ease,
-              opacity 0.24s ease;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  button:not(:disabled):active, a:not(:disabled):active {
-    transform: scale(0.97) !important;
-    transition: transform 0.12s ease !important;
-  }
 }
 
 /* Scroll reveal GPU hardware acceleration */
@@ -727,18 +752,21 @@ html {
     scroll-behavior: auto;
   }
 
-  /* Instant, tactile haptic-like active press feel on mobile & tablet */
-  button:active,
-  a:active,
-  [role="button"]:active {
-    transform: scale(0.975);
-    opacity: 0.9;
-    transition: transform 60ms ease-out, opacity 60ms ease-out !important;
-  }
-
   /* Prevent sticky hover effects after tap on touch screens */
   .hover\:-translate-y-1:hover {
     transform: none !important;
+  }
+
+  /* Expand touch target hit-box for small icon buttons on mobile/tablet */
+  .touch-target-expand {
+    position: relative;
+  }
+  .touch-target-expand::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    background: transparent;
+    pointer-events: auto;
   }
 }
 

@@ -72,11 +72,11 @@ export const PageTransition = memo(function PageTransition({
       pointerEvents: 'auto' as const,
       transition: {
         type: 'spring',
-        stiffness: isSubview ? 420 : 380,
-        damping: isSubview ? 34 : 32,
-        mass: 0.75,
+        stiffness: isSubview ? 460 : 440,
+        damping: isSubview ? 36 : 34,
+        mass: 0.65,
         opacity: {
-          duration: shouldReduceMotion ? 0.08 : 0.16,
+          duration: shouldReduceMotion ? 0.06 : 0.14,
           ease: [0.22, 1, 0.36, 1] as const,
         },
       },
@@ -87,21 +87,21 @@ export const PageTransition = memo(function PageTransition({
           opacity: 0,
           pointerEvents: 'none' as const,
           transition: {
-            duration: 0.05,
+            duration: 0.04,
           },
         };
       }
       return {
         opacity: 0,
-        x: -dir * Math.round(xOffset * 0.4),
-        y: -3,
-        scale: 0.996,
+        x: -dir * Math.round(xOffset * 0.35),
+        y: -2,
+        scale: 0.997,
         pointerEvents: 'none' as const,
         transition: {
-          duration: isSubview ? 0.07 : 0.08,
+          duration: isSubview ? 0.05 : 0.06,
           ease: [0.32, 0, 0.67, 0] as const,
           opacity: {
-            duration: 0.07,
+            duration: 0.05,
             ease: 'easeOut',
           },
         },
@@ -124,7 +124,7 @@ export const PageTransition = memo(function PageTransition({
           initial="initial"
           animate="animate"
           exit="exit"
-          className="w-full page-transition-layer will-change-[transform,opacity] transform-gpu"
+          className="w-full page-transition-layer transform-gpu"
         >
           {children}
         </motion.div>
