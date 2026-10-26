@@ -166,6 +166,22 @@ const DashboardTab = memo(function DashboardTab({
   });
   const [showReminderModal, setShowReminderModal] = useState(false);
 
+  // Trigger target reminder modal on first open in the session
+  useEffect(() => {
+    try {
+      const hasShown = sessionStorage.getItem('preptrack_session_reminder_seen');
+      if (!hasShown) {
+        const timer = setTimeout(() => {
+          setShowReminderModal(true);
+          sessionStorage.setItem('preptrack_session_reminder_seen', 'true');
+        }, 700);
+        return () => clearTimeout(timer);
+      }
+    } catch (e) {
+      console.warn('Session reminder check failed:', e);
+    }
+  }, []);
+
   // Sessions today count tracker
   const sessionsTodayCount = useMemo(() => {
     const todayStr = new Date().toDateString();

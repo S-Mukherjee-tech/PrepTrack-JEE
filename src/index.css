@@ -4,6 +4,16 @@ html, body, #root {
   width: 100%;
   margin: 0;
   padding: 0;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Zero-delay instant tap responsiveness on mobile and tablet touchscreens */
+button, a, input, select, textarea, [role="button"], label {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 @theme {
@@ -697,19 +707,39 @@ input, select, textarea {
   animation: spin 6s linear infinite;
 }
 
-/* Optimization for Dashboard Cards to maximize GPU rasterization */
+/* Optimization for Dashboard Cards to maximize GPU rasterization without memory bloat */
 .dashboard-card-gpu {
-  will-change: transform, opacity;
   contain: content;
-  transform: translate3d(0, 0, 0);
+  transform: translateZ(0);
   backface-visibility: hidden;
-  perspective: 1000px;
+  -webkit-backface-visibility: hidden;
 }
 
-/* Global scroll styling for extreme smoothness across PC and Mobile */
+/* Global scroll styling for extreme smoothness across PC, Tablet, and Mobile */
 html {
-  scroll-behavior: smooth !important;
   -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* On touch devices (phones & tablets), allow native 120Hz/ProMotion kinetic momentum physics */
+@media (hover: none) and (pointer: coarse) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  /* Instant, tactile haptic-like active press feel on mobile & tablet */
+  button:active,
+  a:active,
+  [role="button"]:active {
+    transform: scale(0.975);
+    opacity: 0.9;
+    transition: transform 60ms ease-out, opacity 60ms ease-out !important;
+  }
+
+  /* Prevent sticky hover effects after tap on touch screens */
+  .hover\:-translate-y-1:hover {
+    transform: none !important;
+  }
 }
 
 /* Smooth kinetic momentum scrolling for all custom scrollable list elements */
