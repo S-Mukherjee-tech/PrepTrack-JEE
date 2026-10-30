@@ -427,9 +427,9 @@ const DashboardTab = memo(function DashboardTab({
 
               <div 
                 className="glass-panel p-3.5 squircle-card-sm border border-white/15 hover:border-white/50 hover:-translate-y-1 hover:shadow-[0_12px_28px_-6px_rgba(255,255,255,0.22),0_0_24px_2px_rgba(129,140,248,0.38)] active:scale-95 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] cursor-default select-none shadow-sm group" 
-                title="NCERT syllabus completed"
+                title="JEE syllabus completed"
               >
-                <span className="block text-[9px] uppercase font-numeric font-bold tracking-wider text-slate-300 group-hover:text-white transition-colors">NCERT Mastery</span>
+                <span className="block text-[9px] uppercase font-numeric font-bold tracking-wider text-slate-300 group-hover:text-white transition-colors">Syllabus Mastery</span>
                 <span className="text-base sm:text-lg font-bold font-numeric tracking-tight text-white mt-1 block tabular-nums">
                   <AnimatedCounter value={syllabusStats.percentage} suffix="%" />
                 </span>

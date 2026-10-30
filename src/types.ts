@@ -51,6 +51,9 @@ export interface Chapter {
   subject: Subject;
   classLevel: '11' | '12';
   weightage?: 'high' | 'medium' | 'low';
+  weightagePercent?: string;
+  mainsWeightage?: string;
+  advWeightage?: string;
 }
 
 export interface FeedbackItem {

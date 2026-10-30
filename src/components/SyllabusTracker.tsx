@@ -72,7 +72,7 @@ const SyllabusChapterItem = memo(function SyllabusChapterItem({
       </motion.div>
 
       <div className="space-y-1.5 flex-1 min-w-0">
-        <span className={`text-xs font-semibold block leading-tight truncate transition-colors ${isCompleted ? 'text-emerald-400 line-through opacity-75' : 'text-foreground'}`}>
+        <span className={`text-xs font-semibold block leading-snug break-words transition-colors ${isCompleted ? 'text-emerald-400 line-through opacity-75' : 'text-foreground'}`}>
           {ch.name}
         </span>
         
@@ -81,6 +81,21 @@ const SyllabusChapterItem = memo(function SyllabusChapterItem({
             {ch.subject}
           </span>
           <span className="text-[9px] font-numeric text-muted-foreground">Class {ch.classLevel}</span>
+          
+          {ch.mainsWeightage && (
+            <span className="text-[9px] font-numeric font-bold bg-indigo-500/15 text-indigo-200 border border-indigo-500/30 px-1.5 py-0.5 rounded flex items-center gap-1 shadow-2xs">
+              <span className="text-[8px] font-sans uppercase font-bold text-indigo-400">Main:</span>
+              <span className="text-white font-mono">{ch.mainsWeightage}</span>
+            </span>
+          )}
+
+          {ch.advWeightage && (
+            <span className="text-[9px] font-numeric font-bold bg-purple-500/15 text-purple-200 border border-purple-500/30 px-1.5 py-0.5 rounded flex items-center gap-1 shadow-2xs">
+              <span className="text-[8px] font-sans uppercase font-bold text-purple-400">Adv:</span>
+              <span className="text-white font-mono">{ch.advWeightage}</span>
+            </span>
+          )}
+
           {ch.weightage === 'high' && (
             <span className="text-[9px] font-numeric font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20 px-1.5 py-0.5 rounded flex items-center gap-1">
               <Flame className="w-2.5 h-2.5 text-rose-400" /> High Yield
@@ -131,7 +146,7 @@ const SyllabusTracker = memo(function SyllabusTracker({ completions, onToggleCha
 
     const class11Total = CLASS_11_SYLLABUS.length;
     const class11Completed = CLASS_11_SYLLABUS.filter((ch) => completions[ch.id]).length;
-    const class11Pct = class11Total > 0 ? (class11Completed / class11Total) * 105 / 1.05 : 0; // wait, let's keep clean arithmetic
+    const class11Pct = class11Total > 0 ? (class11Completed / class11Total) * 100 : 0;
 
     return {
       total,
@@ -139,6 +154,7 @@ const SyllabusTracker = memo(function SyllabusTracker({ completions, onToggleCha
       pct,
       class11Total,
       class11Completed,
+      class11Pct,
       class12Total: CLASS_12_SYLLABUS.length,
       class12Completed: CLASS_12_SYLLABUS.filter((ch) => completions[ch.id]).length,
     };
@@ -166,7 +182,7 @@ const SyllabusTracker = memo(function SyllabusTracker({ completions, onToggleCha
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <h3 className="text-lg font-bold font-sans tracking-tight">JEE Syllabus Progress Tracker</h3>
-            <span className="text-[10px] font-bold bg-indigo-500/10 text-indigo-500 px-2 py-0.5 rounded-full uppercase">NCERT Core</span>
+            <span className="text-[10px] font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/25 px-2 py-0.5 rounded-full uppercase font-numeric">JEE Core Curriculum</span>
           </div>
           <p className="text-xs text-muted-foreground">Monitor topic-by-topic completion dynamically across Class 11 & 12</p>
         </div>
@@ -313,10 +329,10 @@ const SyllabusTracker = memo(function SyllabusTracker({ completions, onToggleCha
         </div>
       )}
 
-      {/* NCERT statement and Clear Checked Chapter buttons */}
+      {/* Curriculum statement and Clear Checked Chapter buttons */}
       <div className="border-t border-border/50 pt-5 flex flex-wrap gap-4 items-center justify-between">
-        <span className="text-[11px] text-muted-foreground italic flex items-center gap-1">
-          <HelpCircle className="w-3.5 h-3.5 text-indigo-500" /> Syllabus curriculum is completely configured based on active NCERT patterns.
+        <span className="text-[11px] text-muted-foreground italic flex items-center gap-1.5">
+          <HelpCircle className="w-3.5 h-3.5 text-indigo-400" /> Curriculum structured with real chapter-wise JEE weightages and problem velocity analysis.
         </span>
 
         <button
