@@ -14,26 +14,25 @@ if (import.meta.env.PROD && !import.meta.env.VITE_ENCRYPTION_KEY) {
 export const secureStorage = {
   getItem(key: string): string | null {
     try {
-      const val = localStorage.getItem(key);
-      if (val === null || val === undefined) return null;
+      const rawVal = localStorage.getItem(key);
+      if (rawVal === null || rawVal === undefined) return null;
+      const val = rawVal.trim();
 
-      // Check if it's already encrypted using CryptoJS AES format (always starts with 'U2FsdGVkX1')
-      if (val.startsWith('U2FsdGVkX1')) {
+      // Check if value is encrypted (CryptoJS AES format starts with or contains 'U2FsdGVkX1')
+      if (val.includes('U2FsdGVkX1')) {
         try {
-          const bytes = CryptoJS.AES.decrypt(val, ENCRYPTION_KEY);
+          // Extract ciphertext substring if wrapped in quotes or whitespace
+          const cipherMatch = val.match(/U2FsdGVkX1[A-Za-z0-9+/=]+/);
+          const cipherText = cipherMatch ? cipherMatch[0] : val;
+          const bytes = CryptoJS.AES.decrypt(cipherText, ENCRYPTION_KEY);
           const decrypted = bytes.toString(CryptoJS.enc.Utf8);
-          // Return decrypted string (even if empty string "")
-          if (typeof decrypted === 'string') {
-            // Guard against nested/corrupted ciphertext
-            if (decrypted.startsWith('U2FsdGVkX1')) {
-              return '';
-            }
+          if (typeof decrypted === 'string' && decrypted.length > 0 && !decrypted.includes('U2FsdGVkX1')) {
             return decrypted;
           }
-          return '';
+          return ''; // Safe empty fallback, never leak ciphertext
         } catch (err) {
           console.warn(`Decryption failed for key "${key}":`, err);
-          return ''; // NEVER leak raw ciphertext to the caller or form inputs
+          return ''; // NEVER leak raw ciphertext to caller or inputs
         }
       }
       return val; // Fallback to plain text if not encrypted
@@ -44,7 +43,7 @@ export const secureStorage = {
 
   setItem(key: string, value: string): void {
     try {
-      if (!value) {
+      if (!value || value.includes('U2FsdGVkX1')) {
         localStorage.setItem(key, '');
         return;
       }

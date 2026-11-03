@@ -144,7 +144,7 @@ export const LiveActivityPill = memo(function LiveActivityPill({
           </div>
         )}
 
-        <div className="flex flex-col">
+        <div className="hidden sm:flex flex-col">
           <span className="text-[10px] font-bold tracking-tight text-white leading-none">
             {isBreak ? 'Break Interval' : sessionName}
           </span>

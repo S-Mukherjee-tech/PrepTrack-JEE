@@ -457,10 +457,10 @@ const TargetTracker = memo(function TargetTracker({ theme, cardBgClass, onTarget
         </div>
 
         {/* TABS */}
-        <div className="flex bg-accent/15 dark:bg-black/40 p-1 rounded-2xl border border-white/10 shrink-0">
+        <div className="flex items-center max-w-full overflow-x-auto no-scrollbar bg-accent/15 dark:bg-black/40 p-1 rounded-2xl border border-white/10 shrink-0 gap-1">
           <button
             onClick={() => setActiveTab('active')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-xl transition-all font-sans cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-xl transition-all font-sans cursor-pointer whitespace-nowrap shrink-0 ${
               activeTab === 'active' ? activeTabAccent : 'text-muted-foreground hover:text-foreground'
             }`}
           >
@@ -469,7 +469,7 @@ const TargetTracker = memo(function TargetTracker({ theme, cardBgClass, onTarget
           </button>
           <button
             onClick={() => setActiveTab('achieved')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-xl transition-all font-sans cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-xl transition-all font-sans cursor-pointer whitespace-nowrap shrink-0 ${
               activeTab === 'achieved' ? activeTabAccent : 'text-muted-foreground hover:text-foreground'
             }`}
           >
@@ -478,7 +478,7 @@ const TargetTracker = memo(function TargetTracker({ theme, cardBgClass, onTarget
           </button>
           <button
             onClick={() => setActiveTab('scratchpad')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-xl transition-all font-sans cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-xl transition-all font-sans cursor-pointer whitespace-nowrap shrink-0 ${
               activeTab === 'scratchpad' ? activeTabAccent : 'text-muted-foreground hover:text-foreground'
             }`}
           >
@@ -588,14 +588,16 @@ const TargetTracker = memo(function TargetTracker({ theme, cardBgClass, onTarget
 
             {/* Custom Date Picker row when custom is picked */}
             {cadence === 'custom' && (
-              <div className="pt-2 border-t border-white/5 flex items-center gap-3">
-                <Calendar className="w-4 h-4 text-indigo-400 shrink-0" />
-                <span className="text-xs text-muted-foreground font-medium">Pick precise deadline date & time:</span>
+              <div className="pt-2 border-t border-white/5 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-indigo-400 shrink-0" />
+                  <span className="text-xs text-muted-foreground font-medium">Pick precise deadline date & time:</span>
+                </div>
                 <input
                   type="datetime-local"
                   value={customDeadlineDate}
                   onChange={(e) => setCustomDeadlineDate(e.target.value)}
-                  className="bg-card border border-border/80 text-foreground text-xs rounded-lg px-3 py-1.5 outline-none focus:border-indigo-500 cursor-pointer font-numeric"
+                  className="bg-card border border-border/80 text-foreground text-xs rounded-lg px-3 py-1.5 outline-none focus:border-indigo-500 cursor-pointer font-numeric w-full sm:w-auto"
                 />
               </div>
             )}

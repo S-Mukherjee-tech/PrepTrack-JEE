@@ -885,12 +885,12 @@ const MockTestTracker = memo(function MockTestTracker({
                   
                   <div className="flex flex-wrap items-center gap-2.5">
                     {/* Pattern filter */}
-                    <div className="flex items-center gap-1 bg-background p-1 rounded-xl border border-white/5">
+                    <div className="flex items-center gap-1 bg-background p-1 rounded-xl border border-white/5 max-w-full overflow-x-auto no-scrollbar">
                       {(['all', 'JEE Main', 'JEE Advanced'] as const).map((pat) => (
                         <button
                           key={pat}
                           onClick={() => setChartFilter(pat)}
-                          className={`px-3 py-1 text-[10px] rounded-lg transition-all cursor-pointer font-sans border ${
+                          className={`px-3 py-1 text-[10px] rounded-lg transition-all cursor-pointer font-sans border whitespace-nowrap ${
                             chartFilter === pat
                               ? theme === 'cyber' ? 'bg-emerald-500 text-black border-emerald-500 font-extrabold shadow-xs scale-[1.01]' :
                                 theme === 'light' ? 'bg-rose-500 text-white border-rose-500 font-bold shadow-xs scale-[1.01]' :
@@ -905,7 +905,7 @@ const MockTestTracker = memo(function MockTestTracker({
                     </div>
 
                     {/* Subject/Metrics filter */}
-                    <div className="flex items-center gap-1 bg-background p-1 rounded-xl border border-white/5">
+                    <div className="flex items-center gap-1 bg-background p-1 rounded-xl border border-white/5 max-w-full overflow-x-auto no-scrollbar">
                       {[
                         { id: 'total', label: 'Total Scored' },
                         { id: 'physics', label: 'Physics' },
@@ -915,7 +915,7 @@ const MockTestTracker = memo(function MockTestTracker({
                         <button
                           key={sub.id}
                           onClick={() => setChartSubjectFilter(sub.id as any)}
-                          className={`px-3 py-1 text-[10px] rounded-lg transition-all cursor-pointer font-sans border ${
+                          className={`px-3 py-1 text-[10px] rounded-lg transition-all cursor-pointer font-sans border whitespace-nowrap ${
                             chartSubjectFilter === sub.id
                               ? theme === 'cyber' ? 'bg-emerald-500 text-black border-emerald-500 font-extrabold shadow-xs scale-[1.01]' :
                                 theme === 'light' ? 'bg-rose-500 text-white border-rose-500 font-bold shadow-xs scale-[1.01]' :
@@ -932,23 +932,23 @@ const MockTestTracker = memo(function MockTestTracker({
                 </div>
 
                 {/* SVG Animated Chart Layout */}
-                <div className="p-5 rounded-2xl bg-card border border-border flex flex-col justify-center relative overflow-hidden">
-                  <div className="absolute top-4 left-4 select-none pointer-events-none">
-                    <span className="text-[10px] font-sans font-bold text-muted-foreground block uppercase tracking-wider">Performance curve</span>
-                    <h4 className="text-xs font-bold text-foreground mt-0.5 flex items-center gap-1.5">
-                      <TrendingUp className="w-3.5 h-3.5 text-emerald-400" /> Plotting Marks percentage (%) Chronologically
-                    </h4>
-                  </div>
-                  
-                  {/* Legend indicator */}
-                  <div className="absolute top-4 right-4 flex items-center gap-4 text-[10px] font-sans font-medium text-muted-foreground select-none pointer-events-none">
-                    <div className="flex items-center gap-1.5">
-                      <span className={`w-2.5 h-2.5 rounded-full ${theme === 'cyber' ? 'bg-emerald-400' : 'bg-indigo-500'}`} />
+                <div className="p-4 sm:p-5 rounded-2xl bg-card border border-border flex flex-col justify-center relative overflow-hidden">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-3 select-none">
+                    <div>
+                      <span className="text-[10px] font-sans font-bold text-muted-foreground block uppercase tracking-wider">Performance curve</span>
+                      <h4 className="text-xs font-bold text-foreground mt-0.5 flex items-center gap-1.5">
+                        <TrendingUp className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> Plotting Marks percentage (%) Chronologically
+                      </h4>
+                    </div>
+                    
+                    {/* Legend indicator */}
+                    <div className="flex items-center gap-2 self-start sm:self-auto text-[10px] font-sans font-medium text-muted-foreground">
+                      <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${theme === 'cyber' ? 'bg-emerald-400' : 'bg-indigo-500'}`} />
                       <span>{chartSubjectFilter === 'total' ? 'Overall score' : `${chartSubjectFilter.charAt(0).toUpperCase() + chartSubjectFilter.slice(1)}`}</span>
                     </div>
                   </div>
 
-                  <div className="w-full mt-10 overflow-x-auto no-scrollbar">
+                  <div className="w-full overflow-x-auto touch-pan-x" style={{ WebkitOverflowScrolling: 'touch' }}>
                     <div className="min-w-[640px] h-[340px] flex items-center justify-center">
                       <svg width={svgDimensions.width} height={svgDimensions.height} className="overflow-visible">
                         {/* Horizontal grid lines */}

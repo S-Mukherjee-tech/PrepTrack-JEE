@@ -292,16 +292,16 @@ const SyllabusTracker = memo(function SyllabusTracker({ completions, onToggleCha
         </div>
 
         {/* Download links */}
-        <div className="flex bg-accent/10 border border-border/70 rounded-2xl p-1.5 items-center gap-2 lg:self-start xl:self-auto shrink-0">
+        <div className="flex w-full sm:w-auto bg-accent/10 border border-border/70 rounded-2xl p-1.5 items-center gap-2 justify-stretch sm:justify-start shrink-0">
           <button
             onClick={() => handleDownloadSyllabus('main')}
-            className="flex items-center gap-1.5 text-[11px] font-numeric font-bold text-indigo-400 hover:text-white cursor-pointer bg-card hover:bg-indigo-600 px-3 py-1.5 rounded-xl border border-border/80 hover:border-indigo-400 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-2px_rgba(99,102,241,0.5),0_0_20px_1px_rgba(99,102,241,0.4)] active:scale-95 shadow-2xs"
+            className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 text-[11px] font-numeric font-bold text-indigo-400 hover:text-white cursor-pointer bg-card hover:bg-indigo-600 px-3 py-1.5 rounded-xl border border-border/80 hover:border-indigo-400 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-2px_rgba(99,102,241,0.5),0_0_20px_1px_rgba(99,102,241,0.4)] active:scale-95 shadow-2xs whitespace-nowrap"
           >
             <Download className="w-3.5 h-3.5" /> Main Syllabus
           </button>
           <button
             onClick={() => handleDownloadSyllabus('advanced')}
-            className="flex items-center gap-1.5 text-[11px] font-numeric font-bold text-emerald-400 hover:text-white cursor-pointer bg-card hover:bg-emerald-600 px-3 py-1.5 rounded-xl border border-border/80 hover:border-emerald-400 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-2px_rgba(16,185,129,0.5),0_0_20px_1px_rgba(16,185,129,0.4)] active:scale-95 shadow-2xs"
+            className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 text-[11px] font-numeric font-bold text-emerald-400 hover:text-white cursor-pointer bg-card hover:bg-emerald-600 px-3 py-1.5 rounded-xl border border-border/80 hover:border-emerald-400 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:shadow-[0_8px_24px_-2px_rgba(16,185,129,0.5),0_0_20px_1px_rgba(16,185,129,0.4)] active:scale-95 shadow-2xs whitespace-nowrap"
           >
             <Download className="w-3.5 h-3.5" /> Adv Syllabus
           </button>

@@ -57,10 +57,10 @@ const SettingsTab = memo(function SettingsTab({
         
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
           {[
-            { id: 'glass', name: 'Obsidian Glass', desc: 'Deep obsidian canvas with subtle translucent glassmorphic cards and soft indigo accents.', colorBg: 'bg-indigo-500', textC: 'text-white' },
-            { id: 'slate', name: 'Deep Slate', desc: 'Classic executive dark slate architecture with crisp hairline borders and sky-cyan highlights.', colorBg: 'bg-sky-400', textC: 'text-white' },
-            { id: 'cyber', name: 'Emerald Studio', desc: 'Restful dark graphite surface paired with calm botanical emerald accents.', colorBg: 'bg-[#10a37f]', textC: 'text-emerald-400' },
-            { id: 'light', name: 'Classic Light', desc: 'Clean, paper-soft daylight workspace with diffused card elevation and deep slate ink.', colorBg: 'bg-slate-200 border border-slate-300', textC: 'text-slate-900' },
+            { id: 'glass', name: 'Cosmic Obsidian', desc: 'Deep space canvas with multi-depth starfield, indigo nebulae, shooting stars, and frosted glass.', colorBg: 'bg-indigo-500', textC: 'text-white' },
+            { id: 'slate', name: 'Cosmic Slate', desc: 'Deep cosmic void with crisp starlight clusters, cyan nebulae, and delicate constellation threads.', colorBg: 'bg-sky-400', textC: 'text-white' },
+            { id: 'cyber', name: 'Cosmic Emerald', desc: 'Deep space atmosphere with emerald interstellar dust clouds, twinkling stars, and meteors.', colorBg: 'bg-[#10a37f]', textC: 'text-emerald-400' },
+            { id: 'light', name: 'Starlight Classic', desc: 'Clean daylight celestial workspace with subtle starlight accents and deep slate typography.', colorBg: 'bg-slate-200 border border-slate-300', textC: 'text-slate-900' },
           ].map((themeOpt) => (
             <button
               key={themeOpt.id}

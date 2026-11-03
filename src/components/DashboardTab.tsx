@@ -515,7 +515,7 @@ const DashboardTab = memo(function DashboardTab({
           className={`bg-card border border-border rounded-2xl md:rounded-3xl p-6 md:p-7 shadow-sm ${themeStyles.cardBg} relative overflow-hidden dashboard-card-gpu hover:border-border/90 hover:shadow-md transition-all duration-200`}
         >
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-            <div className="flex items-center gap-4.5">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3.5 sm:gap-4.5">
               <div className={`relative shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex flex-col items-center justify-center border transition-all duration-300 ${
                 streakStats.currentStreak > 0
                   ? 'bg-gradient-to-br from-amber-500/20 to-orange-500/20 border-orange-500/40 text-orange-400 shadow-sm'

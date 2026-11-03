@@ -353,9 +353,9 @@ const AnalyticsCharts = memo(function AnalyticsCharts({ sessions, questions, err
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
       {/* STUDY HOURS CARD */}
       <div className="bg-card border border-border rounded-2xl p-6 shadow-sm hover:border-accent/40 active-scale-99 transition-all duration-300">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-indigo-500/15 text-indigo-500 rounded-lg">
+            <div className="p-2 bg-indigo-500/15 text-indigo-500 rounded-lg shrink-0">
               <Clock className="w-5 h-5 animate-pulse" />
             </div>
             <div>
@@ -364,7 +364,7 @@ const AnalyticsCharts = memo(function AnalyticsCharts({ sessions, questions, err
             </div>
           </div>
 
-          <div className="flex bg-accent/20 border border-border p-1 rounded-lg text-xs gap-1 relative">
+          <div className="flex bg-accent/20 border border-border p-1 rounded-lg text-xs gap-1 relative self-start sm:self-auto">
             {(['day', 'week', 'month'] as PeriodType[]).map((p) => {
               const isSelected = sessionPeriod === p;
               return (
@@ -444,9 +444,9 @@ const AnalyticsCharts = memo(function AnalyticsCharts({ sessions, questions, err
 
       {/* QUESTIONS SOLVED CARD */}
       <div className="bg-card border border-border rounded-2xl p-6 shadow-sm hover:border-accent/40 active-scale-99 transition-all duration-300">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-emerald-500/15 text-emerald-500 rounded-lg">
+            <div className="p-2 bg-emerald-500/15 text-emerald-500 rounded-lg shrink-0">
               <Hash className="w-5 h-5 text-emerald-500 animate-bounce" />
             </div>
             <div>
@@ -455,7 +455,7 @@ const AnalyticsCharts = memo(function AnalyticsCharts({ sessions, questions, err
             </div>
           </div>
 
-          <div className="flex bg-accent/20 border border-border p-1 rounded-lg text-xs gap-1 relative">
+          <div className="flex bg-accent/20 border border-border p-1 rounded-lg text-xs gap-1 relative self-start sm:self-auto">
             {(['day', 'week', 'month'] as PeriodType[]).map((p) => {
               const isSelected = questionsPeriod === p;
               return (

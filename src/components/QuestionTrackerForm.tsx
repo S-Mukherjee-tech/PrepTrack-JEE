@@ -393,23 +393,23 @@ const QuestionTrackerForm = memo(function QuestionTrackerForm({ questionsList, o
       </div>
 
       {/* Stats Summary Panel */}
-      <div className="bg-accent/15 border border-border/70 rounded-2xl p-5 sm:p-6 grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="text-center sm:text-left">
+      <div className="bg-accent/15 border border-border/70 rounded-2xl p-4 sm:p-6 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+        <div className="text-center sm:text-left pb-2 sm:pb-0">
           <span className="block text-[10px] uppercase font-bold text-muted-foreground tracking-wider mb-1">Standard Practice</span>
           <span className="text-xl sm:text-2xl font-bold font-numeric text-indigo-400 tabular-nums">{totalNormal}</span>
         </div>
 
-        <div className="text-center sm:text-left border-l border-border/60 pl-0 sm:pl-4">
+        <div className="text-center sm:text-left border-l border-border/60 pl-3 sm:pl-4 pb-2 sm:pb-0">
           <span className="block text-[10px] uppercase font-bold text-muted-foreground tracking-wider mb-1">JEE Main PYQ</span>
           <span className="text-xl sm:text-2xl font-bold font-numeric text-emerald-400 tabular-nums">{totalMainPYQs}</span>
         </div>
 
-        <div className="text-center sm:text-left border-l border-border/60 pl-0 sm:pl-4">
+        <div className="text-center sm:text-left border-t sm:border-t-0 sm:border-l border-border/60 pt-2.5 sm:pt-0 sm:pl-4">
           <span className="block text-[10px] uppercase font-bold text-muted-foreground tracking-wider mb-1">JEE Advanced PYQ</span>
           <span className="text-xl sm:text-2xl font-bold font-numeric text-amber-400 tabular-nums">{totalAdvPYQs}</span>
         </div>
 
-        <div className="text-center sm:text-left border-l border-border/60 pl-0 sm:pl-4">
+        <div className="text-center sm:text-left border-t sm:border-t-0 border-l border-border/60 pt-2.5 sm:pt-0 pl-3 sm:pl-4">
           <span className="block text-[10px] uppercase font-bold text-muted-foreground tracking-wider mb-1">Grand Total</span>
           <span className="text-xl sm:text-2xl font-bold font-numeric text-primary flex items-center justify-center sm:justify-start gap-1 tabular-nums">
             {grandTotal} <span className="text-xs font-normal text-muted-foreground font-sans">Qs</span>

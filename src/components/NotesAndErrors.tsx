@@ -177,7 +177,7 @@ const NotesAndErrors = memo(function NotesAndErrors({
       
       {/* Tab Switchers and Subject Filter */}
       <div className="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between border-b border-border/60 pb-5">
-        <div className="flex bg-accent/20 border border-border p-1 rounded-xl text-xs gap-1.5 self-start relative">
+        <div className="flex max-w-full overflow-x-auto no-scrollbar bg-accent/20 border border-border p-1 rounded-xl text-xs gap-1.5 self-start relative">
           {[
             { id: 'error' as const, label: 'Error Book (Mistakes Log)', icon: AlertCircle, iconColor: 'text-rose-500' },
             { id: 'special' as const, label: 'Special Importance Book', icon: Star, iconColor: 'text-amber-500 fill-amber-500/10' },
@@ -189,7 +189,7 @@ const NotesAndErrors = memo(function NotesAndErrors({
                 key={tab.id}
                 whileTap={{ scale: 0.96 }}
                 onClick={() => handleSubTabChange(tab.id)}
-                className={`px-4 py-2 rounded-lg font-semibold flex items-center gap-1.5 cursor-pointer relative select-none transition-colors duration-150 ${
+                className={`px-3.5 sm:px-4 py-2 rounded-lg font-semibold flex items-center gap-1.5 cursor-pointer relative select-none transition-colors duration-150 whitespace-nowrap shrink-0 ${
                   isActive
                     ? 'text-primary-foreground font-bold shadow-sm'
                     : 'text-muted-foreground hover:text-foreground'
@@ -210,12 +210,12 @@ const NotesAndErrors = memo(function NotesAndErrors({
         </div>
 
         {/* Filter bar */}
-        <div className="flex items-center gap-3">
-          <span className="text-xs text-muted-foreground font-semibold flex items-center gap-1.5">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+          <span className="text-xs text-muted-foreground font-semibold flex items-center gap-1.5 shrink-0">
             <Filter className="w-3.5 h-3.5 text-indigo-500" /> Filter Subject:
           </span>
 
-          <div className="flex flex-wrap bg-accent/15 border border-border rounded-xl p-1 text-xs gap-1 relative">
+          <div className="flex flex-wrap bg-accent/15 border border-border rounded-xl p-1 text-xs gap-1 relative max-w-full overflow-x-auto no-scrollbar">
             {(['all', 'physics', 'chemistry', 'math', 'general'] as const).map((sub) => {
               const isSelected = subjectFilter === sub;
               return (
@@ -223,7 +223,7 @@ const NotesAndErrors = memo(function NotesAndErrors({
                   key={sub}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setSubjectFilter(sub)}
-                  className={`px-3 py-1.5 rounded-lg font-semibold capitalize cursor-pointer relative select-none transition-colors duration-150 ${
+                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg font-semibold capitalize cursor-pointer relative select-none transition-colors duration-150 whitespace-nowrap ${
                     isSelected
                       ? 'text-primary-foreground font-bold shadow-xs'
                       : 'text-muted-foreground hover:text-foreground'

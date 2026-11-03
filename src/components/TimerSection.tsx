@@ -16,14 +16,19 @@ const TimerSection = memo(function TimerSection({ settings, onSaveSession, curre
   });
   const [sessionNameInput, setSessionNameInput] = useState(() => {
     const saved = secureStorage.getItem('preptrack_timer_nameInput') || '';
-    if (saved.startsWith('U2FsdGVkX1')) {
+    if (saved.includes('U2FsdGVkX1')) {
       secureStorage.setItem('preptrack_timer_nameInput', '');
       return '';
     }
     return saved;
   });
   const [sessionSelected, setSessionSelected] = useState(() => {
-    return secureStorage.getItem('preptrack_timer_selected') || 'Session Auto';
+    const saved = secureStorage.getItem('preptrack_timer_selected') || 'Session Auto';
+    if (saved.includes('U2FsdGVkX1')) {
+      secureStorage.setItem('preptrack_timer_selected', 'Session Auto');
+      return 'Session Auto';
+    }
+    return saved;
   });
   const [isRunning, setIsRunning] = useState(() => {
     return secureStorage.getItem('preptrack_timer_isRunning') === 'true';
@@ -84,11 +89,15 @@ const TimerSection = memo(function TimerSection({ settings, onSaveSession, curre
 
   // Ensure corrupt ciphertext legacy state is immediately cleared from UI
   useEffect(() => {
-    if (sessionNameInput.startsWith('U2FsdGVkX1')) {
+    if (sessionNameInput.includes('U2FsdGVkX1')) {
       setSessionNameInput('');
       secureStorage.setItem('preptrack_timer_nameInput', '');
     }
-  }, [sessionNameInput]);
+    if (sessionSelected.includes('U2FsdGVkX1')) {
+      setSessionSelected('Session Auto');
+      secureStorage.setItem('preptrack_timer_selected', 'Session Auto');
+    }
+  }, [sessionNameInput, sessionSelected]);
 
   const alarmSoundRef = useRef(alarmSound);
   const isMutedRef = useRef(isMuted);

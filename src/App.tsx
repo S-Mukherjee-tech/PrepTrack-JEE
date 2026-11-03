@@ -31,6 +31,7 @@ import PageHeader from './components/PageHeader';
 import LiveActivityPill from './components/LiveActivityPill';
 import NavigationProgressBar from './components/NavigationProgressBar';
 import ScrollReveal from './components/ScrollReveal';
+import CosmicBackground from './components/CosmicBackground';
 import { secureStorage } from './utils/security';
 
 // Lazy loaded workspace features with preloaders for zero-latency navigation
@@ -156,6 +157,18 @@ export default function App() {
   const addImportanceLimiter = useMemo(() => new RateLimiter(1000), []);
   const saveMockTestLimiter = useMemo(() => new RateLimiter(1000), []);
   const toggleChapterLimiter = useMemo(() => new RateLimiter(300), []);
+
+  const [isNarrowScreen, setIsNarrowScreen] = useState(false);
+
+  // Track viewport width to ensure mobile and tablet users always have a live clock in the header
+  useEffect(() => {
+    const handleResize = () => {
+      setIsNarrowScreen(window.innerWidth < 1024);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize, { passive: true });
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Track scroll position to dynamically show/hide the header clock
   useEffect(() => {
@@ -863,11 +876,11 @@ export default function App() {
     document.body.classList.add(`theme-${settings.theme}`);
     
     // Set background color of body explicitly to match theme
-    let bgColor = '#050816'; // Default slate
-    if (settings.theme === 'glass') bgColor = '#060713';
-    else if (settings.theme === 'cyber') bgColor = '#020905';
-    else if (settings.theme === 'light') bgColor = '#fffbf7';
-    else if (settings.theme === 'slate') bgColor = '#050816';
+    let bgColor = '#030510'; // Deep cosmic space
+    if (settings.theme === 'glass') bgColor = '#040614';
+    else if (settings.theme === 'cyber') bgColor = '#010704';
+    else if (settings.theme === 'light') bgColor = '#f8fafc';
+    else if (settings.theme === 'slate') bgColor = '#030611';
     
     document.body.style.backgroundColor = bgColor;
     document.documentElement.style.backgroundColor = bgColor;
@@ -879,34 +892,34 @@ export default function App() {
     switch (settings.theme) {
       case 'glass':
         return {
-          bg: 'bg-[#080b14] text-slate-100 selection:bg-indigo-500/30 selection:text-indigo-200',
-          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-32 lg:py-12 space-y-10 md:space-y-12 relative z-10',
-          headerBg: 'bg-[#080b14]/85 backdrop-blur-xl border-b border-white/[0.08] sticky top-0 z-50',
+          bg: 'bg-[#040614]/90 text-slate-100 selection:bg-indigo-500/30 selection:text-indigo-200',
+          container: 'max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-36 xl:pb-14 xl:pt-8 space-y-8 sm:space-y-10 md:space-y-12 relative z-10',
+          headerBg: 'bg-[#040614]/85 backdrop-blur-xl border-b border-white/[0.08] sticky top-0 z-50',
           accentColor: 'text-indigo-400',
           borderStyle: 'border-white/[0.08]',
           cardBg: 'bg-[#0e1322]/85 backdrop-blur-xl border border-white/[0.08] text-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.4)]',
           navActive: 'bg-white/10 text-white font-semibold',
           navInactive: 'text-slate-400 hover:text-white hover:bg-white/[0.04] font-medium',
           bannerGradient: 'from-slate-900 via-indigo-950 to-slate-900 border border-white/10 shadow-xl',
-          themeBrand: 'Obsidian Glass'
+          themeBrand: 'Cosmic Obsidian'
         };
       case 'cyber':
         return {
-          bg: 'bg-[#030906] text-emerald-100 selection:bg-emerald-500/30 selection:text-emerald-300',
-          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-32 lg:py-12 space-y-10 md:space-y-12',
-          headerBg: 'bg-[#030906]/85 backdrop-blur-xl border-b border-emerald-500/20 sticky top-0 z-50',
+          bg: 'bg-[#010704]/90 text-emerald-100 selection:bg-emerald-500/30 selection:text-emerald-300',
+          container: 'max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-36 xl:pb-14 xl:pt-8 space-y-8 sm:space-y-10 md:space-y-12 relative z-10',
+          headerBg: 'bg-[#010704]/85 backdrop-blur-xl border-b border-emerald-500/20 sticky top-0 z-50',
           accentColor: 'text-emerald-400',
           borderStyle: 'border-emerald-500/20',
           cardBg: 'bg-[#06140b] border border-emerald-500/20 text-emerald-50 shadow-[0_8px_30px_rgb(0,0,0,0.5)]',
           navActive: 'bg-emerald-500/15 text-emerald-300 font-semibold',
           navInactive: 'text-emerald-400/70 hover:text-emerald-200 hover:bg-emerald-500/5 font-medium',
           bannerGradient: 'from-slate-950 via-emerald-950 to-slate-950 border border-emerald-500/25 shadow-xl',
-          themeBrand: 'Emerald Studio'
+          themeBrand: 'Cosmic Emerald'
         };
       case 'light':
         return {
-          bg: 'bg-[#f8fafc] text-slate-900 selection:bg-indigo-100 selection:text-indigo-900',
-          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-32 lg:py-12 space-y-10 md:space-y-12',
+          bg: 'bg-[#f8fafc]/95 text-slate-900 selection:bg-indigo-100 selection:text-indigo-900',
+          container: 'max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-36 xl:pb-14 xl:pt-8 space-y-8 sm:space-y-10 md:space-y-12 relative z-10',
           headerBg: 'bg-white/85 backdrop-blur-xl border-b border-slate-200/80 sticky top-0 z-50',
           accentColor: 'text-indigo-600',
           borderStyle: 'border-slate-200/80',
@@ -914,21 +927,21 @@ export default function App() {
           navActive: 'bg-slate-100 text-indigo-600 font-semibold shadow-xs',
           navInactive: 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/60 font-medium',
           bannerGradient: 'from-slate-900 via-indigo-950 to-slate-900 border border-slate-800 shadow-xl',
-          themeBrand: 'Classic Light'
+          themeBrand: 'Starlight Classic'
         };
       case 'slate':
       default:
         return {
-          bg: 'bg-[#070b14] text-slate-100 selection:bg-cyan-500/30 selection:text-cyan-200',
-          container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-32 lg:py-12 space-y-10 md:space-y-12',
-          headerBg: 'bg-[#070b14]/85 backdrop-blur-xl border-b border-white/[0.07] sticky top-0 z-50',
+          bg: 'bg-[#030611]/90 text-slate-100 selection:bg-cyan-500/30 selection:text-cyan-200',
+          container: 'max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-36 xl:pb-14 xl:pt-8 space-y-8 sm:space-y-10 md:space-y-12 relative z-10',
+          headerBg: 'bg-[#030611]/85 backdrop-blur-xl border-b border-white/[0.07] sticky top-0 z-50',
           accentColor: 'text-cyan-400',
           borderStyle: 'border-white/[0.07]',
           cardBg: 'bg-[#0c1224] border border-white/[0.07] text-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.45)]',
           navActive: 'bg-cyan-500/15 text-cyan-300 font-semibold',
           navInactive: 'text-slate-400 hover:text-cyan-200 hover:bg-cyan-500/5 font-medium',
           bannerGradient: 'from-slate-950 via-cyan-950 to-slate-950 border border-cyan-500/20 shadow-xl',
-          themeBrand: 'Deep Slate'
+          themeBrand: 'Cosmic Slate'
         };
     }
   }, [settings.theme]);
@@ -953,53 +966,19 @@ export default function App() {
       className={`min-h-screen font-sans transition-colors duration-500 relative ${themeStyles.bg} theme-${settings.theme}`}
       style={{
         backgroundColor: settings.theme === 'glass'
-          ? '#080915'
+          ? '#040614'
           : settings.theme === 'slate'
-          ? '#070a14'
+          ? '#030611'
           : settings.theme === 'cyber'
-          ? '#030805'
-          : '#f9fafb'
+          ? '#010704'
+          : '#f8fafc'
       }}
     >
       {/* Top Route Progress Bar for Smooth Page Transitions */}
       <NavigationProgressBar activeKey={activeTab} theme={settings.theme} />
 
-      {/* Sleek, Classic Studio Atmospheric Lighting Architecture */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none select-none z-0">
-        {/* Luminous Top Horizon Halo */}
-        <div 
-          className="absolute top-0 inset-x-0 h-[640px] transition-all duration-700 pointer-events-none"
-          style={{
-            background: settings.theme === 'glass'
-              ? 'radial-gradient(ellipse 90% 55% at 50% -5%, rgba(99, 102, 241, 0.16) 0%, rgba(139, 92, 246, 0.08) 35%, rgba(14, 165, 233, 0.03) 65%, transparent 100%)'
-              : settings.theme === 'slate'
-              ? 'radial-gradient(ellipse 90% 55% at 50% -5%, rgba(6, 182, 212, 0.15) 0%, rgba(30, 58, 138, 0.1) 40%, transparent 100%)'
-              : settings.theme === 'cyber'
-              ? 'radial-gradient(ellipse 90% 55% at 50% -5%, rgba(16, 185, 129, 0.14) 0%, rgba(13, 148, 136, 0.07) 40%, transparent 100%)'
-              : 'radial-gradient(ellipse 90% 55% at 50% -5%, rgba(99, 102, 241, 0.04) 0%, rgba(241, 245, 249, 0.7) 45%, transparent 100%)'
-          }}
-        />
-
-        {/* Soft Ambient Depth Accents */}
-        <div 
-          className="hidden lg:block absolute top-[160px] left-[8%] w-[450px] h-[450px] rounded-full blur-[140px] opacity-40 pointer-events-none transition-all duration-700"
-          style={{
-            backgroundColor: settings.theme === 'glass' ? 'rgba(99, 102, 241, 0.1)' :
-                             settings.theme === 'slate' ? 'rgba(6, 182, 212, 0.08)' :
-                             settings.theme === 'cyber' ? 'rgba(16, 185, 129, 0.07)' :
-                             'rgba(244, 63, 94, 0.03)'
-          }}
-        />
-        <div 
-          className="hidden lg:block absolute top-[260px] right-[8%] w-[480px] h-[480px] rounded-full blur-[150px] opacity-35 pointer-events-none transition-all duration-700"
-          style={{
-            backgroundColor: settings.theme === 'glass' ? 'rgba(168, 85, 247, 0.08)' :
-                             settings.theme === 'slate' ? 'rgba(59, 130, 246, 0.08)' :
-                             settings.theme === 'cyber' ? 'rgba(20, 184, 166, 0.07)' :
-                             'rgba(245, 158, 11, 0.03)'
-          }}
-        />
-      </div>
+      {/* Cosmic Deep Space Starfield & Volumetric Nebulae Architecture */}
+      <CosmicBackground theme={settings.theme} />
 
       {/* GLOBAL NAVBAR HEADER */}
       <header className={`${themeStyles.headerBg} border-b border-white/[0.08] backdrop-blur-2xl`}>
@@ -1077,7 +1056,7 @@ export default function App() {
             <HeaderClock 
               clockFormat={settings.clockFormat} 
               timezone={settings.timezone}
-              visible={activeTab !== 'dashboard' || isBannerClockScrolledOut} 
+              visible={activeTab !== 'dashboard' || isBannerClockScrolledOut || isNarrowScreen} 
             />
             <motion.button
               whileTap={{ scale: 0.88, rotate: -30 }}
@@ -1111,7 +1090,10 @@ export default function App() {
       </header>
 
       {/* MOBILE CONSOLE NAVIGATION DOCK */}
-      <div className="xl:hidden fixed bottom-3.5 inset-x-3.5 max-w-md mx-auto z-40 floating-dock rounded-[28px] flex items-center justify-around px-2 py-1.5 shadow-[0_16px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.18)]">
+      <nav 
+        aria-label="Mobile Navigation"
+        className="xl:hidden fixed bottom-[calc(0.875rem+env(safe-area-inset-bottom,0px))] inset-x-2.5 sm:inset-x-6 max-w-md sm:max-w-xl md:max-w-2xl mx-auto z-40 floating-dock rounded-[28px] flex items-center justify-around px-1 sm:px-3 py-1.5 shadow-[0_16px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.18)]"
+      >
         {[
           { id: 'dashboard', label: 'Home', icon: Timer },
           { id: 'analytics', label: 'Stats', icon: BarChart },
@@ -1131,7 +1113,7 @@ export default function App() {
               onTouchStart={() => handlePreloadTab(tab.id)}
               onMouseEnter={() => handlePreloadTab(tab.id)}
               onClick={() => handleTabChange(tab.id as any)}
-              className={`flex-1 py-1.5 flex flex-col items-center justify-center gap-1 relative transition-all duration-150 outline-none select-none cursor-pointer touch-target-expand ${
+              className={`flex-1 py-1 sm:py-1.5 flex flex-col items-center justify-center gap-0.5 sm:gap-1 relative transition-all duration-150 outline-none select-none cursor-pointer touch-target-expand min-w-0 ${
                 isActive
                   ? 'text-primary font-bold'
                   : 'text-muted-foreground hover:text-foreground font-medium'
@@ -1140,7 +1122,7 @@ export default function App() {
               {isActive && (
                 <motion.div
                    layoutId="activeMobileTabPill"
-                   className="absolute inset-x-1 inset-y-0.5 rounded-2xl -z-0 bg-primary/15 border border-primary/25 shadow-xs"
+                   className="absolute inset-x-0.5 sm:inset-x-1 inset-y-0.5 rounded-2xl -z-0 bg-primary/15 border border-primary/25 shadow-xs"
                    transition={{ type: 'spring', stiffness: 500, damping: 34, mass: 0.65 }}
                 />
               )}
@@ -1149,13 +1131,13 @@ export default function App() {
                 transition={{ type: 'spring', stiffness: 480, damping: 22 }}
                 className="z-10 shrink-0"
               >
-                <Icon className="w-4.5 h-4.5" />
+                <Icon className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
               </motion.div>
-              <span className="z-10 text-[8.5px] font-bold leading-none tracking-tight">{tab.label}</span>
+              <span className="z-10 text-[8px] sm:text-[10px] font-bold leading-none tracking-tight truncate max-w-full text-center px-0.5">{tab.label}</span>
             </motion.button>
           );
         })}
-      </div>
+      </nav>
 
       {/* CORE FRAME CONTAINER */}
       <main className={themeStyles.container}>
