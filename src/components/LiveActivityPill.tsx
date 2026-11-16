@@ -1,5 +1,4 @@
 import React, { useState, useEffect, memo } from 'react';
-import { motion } from 'motion/react';
 import { Play, Pause } from 'lucide-react';
 import { secureStorage } from '../utils/security';
 
@@ -10,7 +9,9 @@ interface LiveActivityPillProps {
 
 export const LiveActivityPill = memo(function LiveActivityPill({
   onOpenTimerTab,
+  theme = 'glass',
 }: LiveActivityPillProps) {
+  const isLight = theme === 'light';
   const [isRunning, setIsRunning] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [mode, setMode] = useState<'normal' | 'pomodoro' | 'stopwatch'>('normal');
@@ -88,41 +89,50 @@ export const LiveActivityPill = memo(function LiveActivityPill({
   // Idle state: sleek status badge
   if (!isRunning && timeElapsed === 0) {
     return (
-      <motion.div
-        layout
+      <button
+        type="button"
         onClick={handlePillClick}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.96 }}
-        className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/80 dark:bg-black/80 border border-white/10 hover:border-emerald-400 hover:shadow-[0_4px_24px_rgba(16,185,129,0.5),0_0_16px_rgba(16,185,129,0.4)] text-white backdrop-blur-2xl shadow-sm cursor-pointer select-none transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group"
+        className={`hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full border shadow-sm cursor-pointer select-none transition-colors duration-150 active:scale-95 group ${
+          isLight
+            ? 'bg-white border-indigo-200/90 hover:border-indigo-400 text-slate-800'
+            : 'bg-slate-900/90 dark:bg-black/85 border-white/10 hover:border-emerald-400/70 text-white'
+        }`}
         title="Click to open Pomodoro & Stopwatch"
       >
         <span className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60"></span>
           <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
         </span>
-        <span className="text-[11px] font-medium tracking-tight text-white/90 group-hover:text-white transition-colors">
+        <span className={`text-[11px] font-medium tracking-tight transition-colors ${
+          isLight ? 'text-slate-700 group-hover:text-slate-950' : 'text-white/90 group-hover:text-white'
+        }`}>
           Ready to Focus
         </span>
-        <span className="text-[9px] font-semibold font-numeric px-2 py-0.5 rounded-full bg-white/10 text-white/70">
+        <span className={`text-[9px] font-semibold font-numeric px-2 py-0.5 rounded-full ${
+          isLight
+            ? 'bg-indigo-50 text-indigo-700 border border-indigo-200/80'
+            : 'bg-white/10 text-white/70'
+        }`}>
           Focus Timer
         </span>
-      </motion.div>
+      </button>
     );
   }
 
   // Active / Paused Focus Tracker Capsule
   const isBreak = mode === 'pomodoro' && pomodoroStage === 'break';
-  const pulseColor = isPaused ? 'bg-amber-400' : isBreak ? 'bg-amber-400' : 'bg-emerald-400';
+  const pulseColor = isPaused ? 'bg-amber-400' : isBreak ? 'bg-amber-400' : 'bg-emerald-500';
 
   return (
-    <motion.div
-      layout
-      transition={{ type: 'spring', stiffness: 450, damping: 32, mass: 0.7 }}
+    <div
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
       onClick={handlePillClick}
-      className={`relative flex items-center justify-between gap-2.5 px-3 py-1.5 rounded-full bg-slate-950/90 dark:bg-black/95 border border-white/15 hover:border-emerald-400/60 hover:shadow-[0_8px_36px_rgba(16,185,129,0.45),0_0_24px_rgba(16,185,129,0.35)] text-white shadow-[0_8px_32px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.15)] backdrop-blur-2xl cursor-pointer select-none transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] transform-gpu ${
-        isExpanded ? 'ring-2 ring-white/20 px-4 py-2' : ''
+      className={`relative flex items-center justify-between gap-2.5 px-3 py-1.5 rounded-full border shadow-md cursor-pointer select-none transition-colors duration-150 active:scale-95 ${
+        isLight
+          ? 'bg-white border-indigo-300/90 hover:border-indigo-500 text-slate-900'
+          : 'bg-slate-950/95 dark:bg-black/95 border-white/15 hover:border-emerald-400/60 text-white'
+      } ${
+        isExpanded ? (isLight ? 'ring-1 ring-indigo-300 px-3.5' : 'ring-1 ring-white/25 px-3.5') : ''
       }`}
       title="Click to open timer"
     >
@@ -138,18 +148,18 @@ export const LiveActivityPill = memo(function LiveActivityPill({
         {/* Live Focus Wave Bars */}
         {!isPaused && (
           <div className="flex items-center gap-0.5 h-3 px-0.5">
-            <span className="w-0.5 h-2 bg-emerald-400 rounded-full animate-[pulse_0.8s_ease-in-out_infinite]" />
-            <span className="w-0.5 h-3 bg-emerald-400 rounded-full animate-[pulse_1.2s_ease-in-out_infinite]" />
-            <span className="w-0.5 h-1.5 bg-emerald-400 rounded-full animate-[pulse_0.6s_ease-in-out_infinite]" />
+            <span className="w-0.5 h-2 bg-emerald-500 rounded-full animate-[pulse_0.8s_ease-in-out_infinite]" />
+            <span className="w-0.5 h-3 bg-emerald-500 rounded-full animate-[pulse_1.2s_ease-in-out_infinite]" />
+            <span className="w-0.5 h-1.5 bg-emerald-500 rounded-full animate-[pulse_0.6s_ease-in-out_infinite]" />
           </div>
         )}
 
         <div className="hidden sm:flex flex-col">
-          <span className="text-[10px] font-bold tracking-tight text-white leading-none">
+          <span className={`text-[10px] font-bold tracking-tight leading-none ${isLight ? 'text-slate-900' : 'text-white'}`}>
             {isBreak ? 'Break Interval' : sessionName}
           </span>
           {isExpanded && (
-            <span className="text-[9px] text-white/60 tracking-tight leading-none mt-0.5">
+            <span className={`text-[9px] tracking-tight leading-none mt-0.5 ${isLight ? 'text-slate-500' : 'text-white/60'}`}>
               {isPaused ? 'Paused' : isBreak ? 'Resting' : 'Focus Active'}
             </span>
           )}
@@ -158,25 +168,29 @@ export const LiveActivityPill = memo(function LiveActivityPill({
 
       {/* Live Timer Counter (Sleek Numeric Font) */}
       <div className="flex items-center gap-2">
-        <span className="text-xs sm:text-sm font-numeric font-bold tracking-tight text-white tabular-nums">
+        <span className={`text-xs sm:text-sm font-numeric font-bold tracking-tight tabular-nums ${isLight ? 'text-slate-900' : 'text-white'}`}>
           {formatSeconds(timeElapsed)}
         </span>
 
         {/* Quick Micro Play/Pause Button */}
         <button
           onClick={handleTogglePlayPause}
-          className="p-1 rounded-full bg-white/10 hover:bg-white/20 active:scale-90 text-white transition-all cursor-pointer"
+          className={`p-1 rounded-full active:scale-90 transition-all cursor-pointer ${
+            isLight
+              ? 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200/80'
+              : 'bg-white/10 hover:bg-white/20 text-white'
+          }`}
           title={isPaused ? 'Resume' : 'Pause'}
           aria-label={isPaused ? 'Resume timer' : 'Pause timer'}
         >
           {isPaused ? (
-            <Play className="w-3 h-3 fill-current text-emerald-400" />
+            <Play className="w-3 h-3 fill-current text-emerald-500" />
           ) : (
-            <Pause className="w-3 h-3 fill-current text-white" />
+            <Pause className={`w-3 h-3 fill-current ${isLight ? 'text-indigo-700' : 'text-white'}`} />
           )}
         </button>
       </div>
-    </motion.div>
+    </div>
   );
 });
 

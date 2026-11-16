@@ -406,17 +406,17 @@ const TargetTracker = memo(function TargetTracker({ theme, cardBgClass, onTarget
   }, [targets]);
 
   // Theme accents
-  const activeTabAccent = 
-    theme === 'cyber' ? 'bg-emerald-500 text-black font-extrabold shadow-sm' :
-    theme === 'light' ? 'bg-rose-500 text-white font-bold shadow-sm' :
-    theme === 'slate' ? 'bg-cyan-500 text-slate-950 font-bold shadow-sm' :
-    'bg-indigo-600 text-white font-bold shadow-sm';
+  const activeTabAccent =
+    theme === 'cyber' ? 'bg-emerald-500 text-black font-extrabold shadow-[0_0_18px_rgba(16,185,129,0.55),inset_0_1px_0_rgba(255,255,255,0.4)]' :
+    theme === 'light' ? 'bg-indigo-600 text-white font-bold shadow-[0_0_16px_rgba(79,70,229,0.38),inset_0_1px_0_rgba(255,255,255,0.28)]' :
+    theme === 'slate' ? 'bg-cyan-500 text-slate-950 font-bold shadow-[0_0_18px_rgba(6,182,212,0.55),inset_0_1px_0_rgba(255,255,255,0.4)]' :
+    'bg-indigo-500 text-white font-bold shadow-[0_0_18px_rgba(129,140,248,0.55),inset_0_1px_0_rgba(255,255,255,0.3)]';
 
-  const outlineBorder = 
-    theme === 'cyber' ? 'border-emerald-500/25' :
-    theme === 'light' ? 'border-rose-500/25' :
-    theme === 'slate' ? 'border-cyan-500/25' :
-    'border-border/80';
+  const outlineBorder =
+    theme === 'cyber' ? 'border-emerald-500/35' :
+    theme === 'light' ? 'border-indigo-200/90' :
+    theme === 'slate' ? 'border-cyan-500/35' :
+    'border-indigo-400/30';
 
   const categoryBadgeColors: Record<TargetCategory, string> = {
     general: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
@@ -428,24 +428,35 @@ const TargetTracker = memo(function TargetTracker({ theme, cardBgClass, onTarget
   };
 
   return (
-    <div id="target-tracker-section" className={`rounded-3xl p-6 sm:p-7.5 shadow-sm border ${outlineBorder} ${cardBgClass} dashboard-card-gpu relative overflow-hidden`}>
+    <div id="target-tracker-section" className={`bg-card rounded-3xl p-6 sm:p-7.5 shadow-sm border ${outlineBorder} ${cardBgClass} dashboard-card-gpu relative overflow-hidden`}>
       
-      {/* Decorative ambient background aura */}
-      <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
+      {/* Pre-diffused Ambient Corner Bloom */}
+      <div
+        aria-hidden="true"
+        className="absolute -top-24 -right-24 w-80 h-80 rounded-full pointer-events-none"
+        style={{
+          background:
+            theme === 'cyber'
+              ? 'radial-gradient(circle, rgba(16, 185, 129, 0.16) 0%, transparent 70%)'
+              : theme === 'slate'
+              ? 'radial-gradient(circle, rgba(6, 182, 212, 0.16) 0%, transparent 70%)'
+              : 'radial-gradient(circle, rgba(129, 140, 248, 0.16) 0%, transparent 70%)'
+        }}
+      />
 
       {/* HEADER WITH COMMITMENT BADGE & TABS */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-white/5 pb-5 mb-6 select-none relative z-10">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-white/10 pb-5 mb-6 select-none relative z-10">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-indigo-500/10 border border-indigo-500/25 text-indigo-400 shrink-0">
-              <Target className="w-5 h-5 text-indigo-400 animate-pulse" />
+            <div className="p-2 rounded-xl bg-indigo-500/15 border border-indigo-400/35 text-indigo-300 shrink-0 shadow-[0_0_14px_rgba(129,140,248,0.28)]">
+              <Target className="w-5 h-5 text-indigo-300 animate-pulse" />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-lg font-bold font-display tracking-tight text-foreground">
                   Target & Deadline Tracker
                 </h3>
-                <span className="inline-flex items-center gap-1 text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/25">
+                <span className="inline-flex items-center gap-1 text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-400/35 shadow-[0_0_12px_rgba(16,185,129,0.2)]">
                   <Lock className="w-2.5 h-2.5" /> Locked Accountability
                 </span>
               </div>
@@ -457,11 +468,11 @@ const TargetTracker = memo(function TargetTracker({ theme, cardBgClass, onTarget
         </div>
 
         {/* TABS */}
-        <div className="flex items-center max-w-full overflow-x-auto no-scrollbar bg-accent/15 dark:bg-black/40 p-1 rounded-2xl border border-white/10 shrink-0 gap-1">
+        <div className="flex items-center max-w-full overflow-x-auto no-scrollbar glass-panel p-1.5 rounded-2xl shrink-0 gap-1">
           <button
             onClick={() => setActiveTab('active')}
             className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-xl transition-all font-sans cursor-pointer whitespace-nowrap shrink-0 ${
-              activeTab === 'active' ? activeTabAccent : 'text-muted-foreground hover:text-foreground'
+              activeTab === 'active' ? activeTabAccent : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.06]'
             }`}
           >
             <Zap className="w-3.5 h-3.5" />
@@ -470,7 +481,7 @@ const TargetTracker = memo(function TargetTracker({ theme, cardBgClass, onTarget
           <button
             onClick={() => setActiveTab('achieved')}
             className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-xl transition-all font-sans cursor-pointer whitespace-nowrap shrink-0 ${
-              activeTab === 'achieved' ? activeTabAccent : 'text-muted-foreground hover:text-foreground'
+              activeTab === 'achieved' ? activeTabAccent : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.06]'
             }`}
           >
             <Trophy className="w-3.5 h-3.5" />
@@ -479,7 +490,7 @@ const TargetTracker = memo(function TargetTracker({ theme, cardBgClass, onTarget
           <button
             onClick={() => setActiveTab('scratchpad')}
             className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-xl transition-all font-sans cursor-pointer whitespace-nowrap shrink-0 ${
-              activeTab === 'scratchpad' ? activeTabAccent : 'text-muted-foreground hover:text-foreground'
+              activeTab === 'scratchpad' ? activeTabAccent : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.06]'
             }`}
           >
             <FileText className="w-3.5 h-3.5" />
@@ -497,8 +508,8 @@ const TargetTracker = memo(function TargetTracker({ theme, cardBgClass, onTarget
             exit={{ opacity: 0, y: -10, scale: 0.98 }}
             className={`mb-5 p-4 rounded-2xl border flex items-start gap-3 shadow-md ${
               toastMessage.type === 'success'
-                ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
-                : 'bg-amber-500/10 border-amber-500/30 text-amber-300'
+                ? 'bg-emerald-500/15 border-emerald-400/40 text-emerald-300'
+                : 'bg-amber-500/15 border-amber-400/40 text-amber-300'
             }`}
           >
             <Sparkles className="w-5 h-5 shrink-0 mt-0.5 animate-bounce" />
@@ -521,7 +532,7 @@ const TargetTracker = memo(function TargetTracker({ theme, cardBgClass, onTarget
         <div className="space-y-5 animate-fade-in">
           
           {/* QUICK TARGET CREATOR */}
-          <div className="p-4.5 rounded-2xl bg-accent/10 border border-white/10 space-y-3.5">
+          <div className="p-4.5 rounded-2xl glass-panel space-y-3.5">
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
               <input
                 type="text"
@@ -529,12 +540,12 @@ const TargetTracker = memo(function TargetTracker({ theme, cardBgClass, onTarget
                 onChange={(e) => setInputTitle(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleAddTarget()}
                 placeholder="Lock in a target (e.g. 50 Optics PYQs, HC Verma Ch 3, Organic Revision)..."
-                className="flex-1 text-xs px-3.5 py-3 rounded-xl bg-card border border-border/80 text-foreground placeholder:text-muted-foreground/50 outline-none focus:border-indigo-500/60 transition-all font-medium"
+                className="flex-1 text-xs px-3.5 py-3 rounded-xl bg-card border border-border/80 text-foreground placeholder:text-muted-foreground/50 outline-none transition-all font-medium"
               />
               <button
                 onClick={handleAddTarget}
                 disabled={!inputTitle.trim()}
-                className="px-5 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-all shadow-sm active:scale-95 shrink-0"
+                className="cta-radiant px-5 py-3 rounded-xl bg-gradient-to-r from-indigo-500 via-violet-500 to-cyan-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-all active:scale-95 shrink-0"
               >
                 <Plus className="w-4 h-4" /> Set Target
               </button>

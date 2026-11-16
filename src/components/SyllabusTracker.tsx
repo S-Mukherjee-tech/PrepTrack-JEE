@@ -52,24 +52,19 @@ const SyllabusChapterItem = memo(function SyllabusChapterItem({
   return (
     <button
       onClick={() => onToggleChapter(ch.id, !isCompleted)}
-      className={`p-3.5 rounded-xl border text-left cursor-pointer flex items-start gap-3 select-none transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 active:scale-[0.98] ${
+      className={`p-3.5 rounded-xl border text-left cursor-pointer flex items-start gap-3 select-none transition-all duration-150 active:scale-[0.985] ${
         isCompleted
-          ? 'bg-emerald-500/[0.04] dark:bg-emerald-500/10 border-emerald-500/30 hover:border-emerald-500/60 hover:shadow-[0_8px_20px_-4px_rgba(16,185,129,0.2)]'
-          : 'bg-card border-border/80 hover:bg-accent/15 hover:border-primary/40 hover:shadow-[0_8px_20px_-4px_rgba(129,140,248,0.18)]'
+          ? 'bg-emerald-500/[0.08] dark:bg-emerald-500/15 border-emerald-400/50 hover:border-emerald-300/80 shadow-[0_0_16px_-4px_rgba(16,185,129,0.28)]'
+          : 'bg-card border-border/80 hover:bg-accent/20 hover:border-primary/60'
       }`}
     >
-      <motion.div 
-        whileTap={{ scale: 0.8 }} 
-        animate={isCompleted ? { scale: [0.8, 1.2, 1] } : { scale: 1 }}
-        transition={{ duration: 0.2 }}
-        className="shrink-0 mt-0.5"
-      >
+      <div className="shrink-0 mt-0.5 transition-transform duration-150">
         {isCompleted ? (
           <CheckSquare className="w-4 h-4 text-emerald-500 fill-emerald-500/20" />
         ) : (
           <Square className="w-4 h-4 text-muted-foreground/60" />
         )}
-      </motion.div>
+      </div>
 
       <div className="space-y-1.5 flex-1 min-w-0">
         <span className={`text-xs font-semibold block leading-snug break-words transition-colors ${isCompleted ? 'text-emerald-400 line-through opacity-75' : 'text-foreground'}`}>
@@ -83,16 +78,16 @@ const SyllabusChapterItem = memo(function SyllabusChapterItem({
           <span className="text-[9px] font-numeric text-muted-foreground">Class {ch.classLevel}</span>
           
           {ch.mainsWeightage && (
-            <span className="text-[9px] font-numeric font-bold bg-indigo-500/15 text-indigo-200 border border-indigo-500/30 px-1.5 py-0.5 rounded flex items-center gap-1 shadow-2xs">
+            <span className="text-[9px] font-numeric font-bold bg-indigo-500/15 text-indigo-400 border border-indigo-500/30 px-1.5 py-0.5 rounded flex items-center gap-1 shadow-2xs">
               <span className="text-[8px] font-sans uppercase font-bold text-indigo-400">Main:</span>
-              <span className="text-white font-mono">{ch.mainsWeightage}</span>
+              <span className="text-foreground font-mono font-extrabold">{ch.mainsWeightage}</span>
             </span>
           )}
 
           {ch.advWeightage && (
-            <span className="text-[9px] font-numeric font-bold bg-purple-500/15 text-purple-200 border border-purple-500/30 px-1.5 py-0.5 rounded flex items-center gap-1 shadow-2xs">
+            <span className="text-[9px] font-numeric font-bold bg-purple-500/15 text-purple-400 border border-purple-500/30 px-1.5 py-0.5 rounded flex items-center gap-1 shadow-2xs">
               <span className="text-[8px] font-sans uppercase font-bold text-purple-400">Adv:</span>
-              <span className="text-white font-mono">{ch.advWeightage}</span>
+              <span className="text-foreground font-mono font-extrabold">{ch.advWeightage}</span>
             </span>
           )}
 

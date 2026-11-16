@@ -4,24 +4,24 @@ import { useReducedMotion } from 'motion/react';
 interface ScrollRevealProps {
   children: React.ReactNode;
   className?: string;
-  delay?: number; // Delay in seconds (e.g. 0.04, 0.08)
+  delay?: number;
   direction?: 'up' | 'down' | 'left' | 'right' | 'none';
-  distance?: number; // Distance in pixels
+  distance?: number;
   threshold?: number;
 }
 
 /**
- * Hyper-smooth, GPU-accelerated Scroll Reveal component.
- * Uses native IntersectionObserver with zero continuous overhead.
- * Automatically clears will-change and compositor textures after transition to maximize 120Hz scroll fluidity on mobile.
+ * Lightweight, zero-jank Scroll Reveal component.
+ * Pre-reveals generously ahead of the viewport (rootMargin: 120px) with fast 200ms settling
+ * and immediately clears compositor properties after reveal.
  */
 export const ScrollReveal = memo(function ScrollReveal({
   children,
   className = '',
   delay = 0,
   direction = 'up',
-  distance = 14,
-  threshold = 0.05
+  distance = 8,
+  threshold = 0.01
 }: ScrollRevealProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -48,28 +48,24 @@ export const ScrollReveal = memo(function ScrollReveal({
       },
       {
         threshold,
-        rootMargin: '20px 0px 0px 0px'
+        rootMargin: '120px 0px 80px 0px'
       }
     );
 
     observer.observe(element);
-
-    return () => {
-      observer.disconnect();
-    };
+    return () => observer.disconnect();
   }, [threshold, shouldReduceMotion]);
 
-  // Clean up GPU compositor layer after animation finishes to prevent mobile memory thrashing
   useEffect(() => {
     if (isVisible && !animationCompleted) {
       const timer = setTimeout(() => {
         setAnimationCompleted(true);
-      }, (delay + 0.45) * 1000);
+      }, (delay + 0.25) * 1000);
       return () => clearTimeout(timer);
     }
   }, [isVisible, animationCompleted, delay]);
 
-  if (shouldReduceMotion) {
+  if (shouldReduceMotion || animationCompleted) {
     return <div className={className}>{children}</div>;
   }
 
@@ -93,14 +89,14 @@ export const ScrollReveal = memo(function ScrollReveal({
   return (
     <div
       ref={ref}
-      className={`scroll-reveal-container ${animationCompleted ? '' : 'will-change-[opacity,transform]'} ${className}`}
+      className={className}
       style={{
         opacity: isVisible ? 1 : 0,
         transform: getTransform(),
-        transitionProperty: animationCompleted ? 'none' : 'opacity, transform',
-        transitionDuration: '400ms',
-        transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
-        transitionDelay: `${delay}s`,
+        transitionProperty: 'opacity, transform',
+        transitionDuration: '200ms',
+        transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
+        transitionDelay: `${Math.min(delay, 0.05)}s`,
       }}
     >
       {children}

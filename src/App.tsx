@@ -32,6 +32,7 @@ import LiveActivityPill from './components/LiveActivityPill';
 import NavigationProgressBar from './components/NavigationProgressBar';
 import ScrollReveal from './components/ScrollReveal';
 import CosmicBackground from './components/CosmicBackground';
+import LegalFooter from './components/LegalFooter';
 import { secureStorage } from './utils/security';
 
 // Lazy loaded workspace features with preloaders for zero-latency navigation
@@ -291,7 +292,7 @@ export default function App() {
     }
   }, []);
 
-  // Set active tab with smooth, direction-aware, non-blocking transitions
+  // Set active tab immediately with instant scroll reset (zero transition stutter)
   const handleTabChange = useCallback((nextTab: typeof activeTab) => {
     const preloader = TAB_PRELOADERS[nextTab];
     if (preloader) {
@@ -302,8 +303,8 @@ export default function App() {
       const prevOrder = TAB_ORDER[currentTab] ?? 0;
       const nextOrder = TAB_ORDER[nextTab] ?? 0;
       setTabDirection(nextOrder >= prevOrder ? 1 : -1);
-      if (typeof window !== 'undefined' && window.scrollY > 60) {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (typeof window !== 'undefined' && window.scrollY > 40) {
+        window.scrollTo(0, 0);
       }
       return nextTab;
     });
@@ -311,18 +312,13 @@ export default function App() {
 
   // --- SAVE CALLBACKS UNIFYING DB AND REACT STATE ---
   const handleSaveSettings = useCallback(async (nextSettings: UserSettings) => {
+    setSettings(nextSettings); // Optimistic instant UI update (0ms click response)
     try {
-      const result = await saveSettingsLimiter.throttle(async () => {
-        await PrepTrackDB.saveSettings(nextSettings);
-        setSettings(nextSettings);
-      });
-      if (result === null) {
-        addToast('⚠️ Rate Limited', 'Please wait before saving again', 'info');
-      }
+      await PrepTrackDB.saveSettings(nextSettings);
     } catch (e) {
       console.error(e);
     }
-  }, [saveSettingsLimiter, addToast]);
+  }, []);
 
   const handleSaveStudySession = useCallback(async (session: StudySession) => {
     try {
@@ -586,9 +582,9 @@ export default function App() {
   }, [addToast]);
 
   const handleToggleChapter = useCallback(async (id: string, completed: boolean) => {
+    setChapterCompletions((prev) => ({ ...prev, [id]: completed })); // Instant optimistic toggle
     try {
       await PrepTrackDB.saveChapterCompletion(id, completed);
-      setChapterCompletions((prev) => ({ ...prev, [id]: completed }));
     } catch (e) {
       console.error(e);
     }
@@ -650,14 +646,6 @@ export default function App() {
     return Math.floor(sec / 60);
   }, [sessions]);
 
-  // Accurate syllabus completion stats
-  const syllabusStats = useMemo(() => {
-    const total = CLASS_11_SYLLABUS.length + CLASS_12_SYLLABUS.length;
-    const completed = Object.values(chapterCompletions).filter(Boolean).length;
-    const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
-    return { completed, total, percentage };
-  }, [chapterCompletions]);
-
   // Questions solved today
   const questionsSolvedToday = useMemo(() => {
     const d = new Date();
@@ -714,156 +702,6 @@ export default function App() {
     prevQuestionCount.current = questionsSolvedToday;
   }, [questionsSolvedToday, settings.dailyQuestionsSolvedGoal, dbLoading]);
 
-  // Aggregate questions metrics
-  const questionAggregatess = useMemo(() => {
-    let totQuestions = 0;
-    let totPYQs = 0;
-
-    questions.forEach((q) => {
-      totQuestions += (q.physics || 0) + (q.chemistry || 0) + (q.math || 0);
-      totPYQs += (q.physics_pyq_main || 0) + (q.physics_pyq_adv || 0) +
-                 (q.chemistry_pyq_main || 0) + (q.chemistry_pyq_adv || 0) +
-                 (q.math_pyq_main || 0) + (q.math_pyq_adv || 0);
-    });
-
-    return { totalMath: totQuestions + totPYQs, totalSolved: totQuestions + totPYQs, pyqs: totPYQs, normal: totQuestions };
-  }, [questions]);
-
-  // Dynamic daily study streak metric calculations
-  const streakStats = useMemo(() => {
-    const studyGoalMins = settings.dailyStudyMinutesGoal ?? 180;
-    const questionGoalCount = settings.dailyQuestionsSolvedGoal ?? 30;
-
-    const getLocalDateKey = (d: Date) => {
-      const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      return `${y}-${m}-${day}`;
-    };
-
-    // Date keys map with respective aggregated scores
-    const dayRecords: Record<string, { studyMins: number; questionsSolved: number; met: boolean }> = {};
-
-    // 1. Process all historical study sessions
-    sessions.forEach((s) => {
-      const dKey = getLocalDateKey(new Date(s.startTime));
-      if (!dayRecords[dKey]) {
-        dayRecords[dKey] = { studyMins: 0, questionsSolved: 0, met: false };
-      }
-      dayRecords[dKey].studyMins += Math.floor(s.duration / 60);
-    });
-
-    // 2. Process all dynamic questions entries
-    questions.forEach((q) => {
-      const dKey = q.date; // already YYYY-MM-DD
-      if (!dayRecords[dKey]) {
-        dayRecords[dKey] = { studyMins: 0, questionsSolved: 0, met: false };
-      }
-      const questionsCount = (q.physics || 0) + (q.chemistry || 0) + (q.math || 0);
-      const pyqsCount = (q.physics_pyq_main || 0) + (q.physics_pyq_adv || 0) +
-                        (q.chemistry_pyq_main || 0) + (q.chemistry_pyq_adv || 0) +
-                        (q.math_pyq_main || 0) + (q.math_pyq_adv || 0);
-      dayRecords[dKey].questionsSolved += (questionsCount + pyqsCount);
-    });
-
-    // 3. Mark days that crossed either of the targets
-    Object.keys(dayRecords).forEach((dStr) => {
-      const record = dayRecords[dStr];
-      record.met = (record.studyMins >= studyGoalMins) || (record.questionsSolved >= questionGoalCount);
-    });
-
-    // 4. Trace backwards to calculate current active streak
-    let currentStreak = 0;
-    const today = new Date();
-    const todayStr = getLocalDateKey(today);
-    const metToday = dayRecords[todayStr]?.met || false;
-
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayStr = getLocalDateKey(yesterday);
-    const metYesterday = dayRecords[yesterdayStr]?.met || false;
-
-    let traceDate = new Date();
-    // If today is study-completed, trace starting from today.
-    // Otherwise, if yesterday is completed, start tracing from yesterday so the streak stays alive in-day.
-    if (!metToday && metYesterday) {
-      traceDate.setDate(traceDate.getDate() - 1);
-    }
-
-    if (metToday || metYesterday) {
-      while (true) {
-        const traceStr = getLocalDateKey(traceDate);
-        if (dayRecords[traceStr]?.met) {
-          currentStreak++;
-          traceDate.setDate(traceDate.getDate() - 1);
-        } else {
-          break; // broke
-        }
-      }
-    }
-
-    // 5. Calculate all-time longest streak
-    const uniqueDates = Object.keys(dayRecords).filter(k => dayRecords[k].met).sort();
-    let maxStreak = 0;
-    let runStreak = 0;
-    let lastDate: Date | null = null;
-
-    uniqueDates.forEach((dStr) => {
-      const cur = new Date(dStr);
-      if (lastDate === null) {
-        runStreak = 1;
-      } else {
-        const timeDiff = Math.abs(cur.getTime() - lastDate.getTime());
-        const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-        if (daysDiff <= 1) {
-          runStreak++;
-        } else {
-          runStreak = 1;
-        }
-      }
-      lastDate = cur;
-      if (runStreak > maxStreak) {
-        maxStreak = runStreak;
-      }
-    });
-
-    if (currentStreak > maxStreak) {
-      maxStreak = currentStreak;
-    }
-
-    // 6. Assemble status of the past 7 days for the visual tracker grid
-    const weeklyGrid = [];
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      const dStr = getLocalDateKey(d);
-      const r = dayRecords[dStr] || { studyMins: 0, questionsSolved: 0, met: false };
-      
-      const dayAbbrev = d.toLocaleDateString('en-US', { weekday: 'short' });
-      const dayNum = d.getDate();
-
-      weeklyGrid.push({
-        dateStr: dStr,
-        dayAbbrev,
-        dayNum,
-        isToday: i === 0,
-        studyMins: r.studyMins,
-        questionsSolved: r.questionsSolved,
-        met: r.met,
-        activeAtAll: r.studyMins > 0 || r.questionsSolved > 0
-      });
-    }
-
-    return {
-      currentStreak,
-      maxStreak,
-      metToday,
-      metYesterday,
-      weeklyGrid,
-      dayRecords
-    };
-  }, [sessions, questions, settings]);
-
   useEffect(() => {
     // Sync the HTML/Body background and classes with current theme
     const themes = ['theme-glass', 'theme-slate', 'theme-cyber', 'theme-light'];
@@ -879,7 +717,7 @@ export default function App() {
     let bgColor = '#030510'; // Deep cosmic space
     if (settings.theme === 'glass') bgColor = '#040614';
     else if (settings.theme === 'cyber') bgColor = '#010704';
-    else if (settings.theme === 'light') bgColor = '#f8fafc';
+    else if (settings.theme === 'light') bgColor = '#f1f5f9';
     else if (settings.theme === 'slate') bgColor = '#030611';
     
     document.body.style.backgroundColor = bgColor;
@@ -893,11 +731,11 @@ export default function App() {
       case 'glass':
         return {
           bg: 'bg-[#040614]/90 text-slate-100 selection:bg-indigo-500/30 selection:text-indigo-200',
-          container: 'max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-36 xl:pb-14 xl:pt-8 space-y-8 sm:space-y-10 md:space-y-12 relative z-10',
-          headerBg: 'bg-[#040614]/85 backdrop-blur-xl border-b border-white/[0.08] sticky top-0 z-50',
+          container: 'max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-10 xl:pt-8 space-y-8 sm:space-y-10 md:space-y-12 relative z-10',
+          headerBg: 'bg-[#040614]/88 backdrop-blur-md border-b border-white/[0.08] sticky top-0 z-50',
           accentColor: 'text-indigo-400',
           borderStyle: 'border-white/[0.08]',
-          cardBg: 'bg-[#0e1322]/85 backdrop-blur-xl border border-white/[0.08] text-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.4)]',
+          cardBg: 'bg-[#0e1322]/90 border border-white/[0.08] text-slate-100 shadow-[0_8px_24px_rgb(0,0,0,0.38)]',
           navActive: 'bg-white/10 text-white font-semibold',
           navInactive: 'text-slate-400 hover:text-white hover:bg-white/[0.04] font-medium',
           bannerGradient: 'from-slate-900 via-indigo-950 to-slate-900 border border-white/10 shadow-xl',
@@ -906,11 +744,11 @@ export default function App() {
       case 'cyber':
         return {
           bg: 'bg-[#010704]/90 text-emerald-100 selection:bg-emerald-500/30 selection:text-emerald-300',
-          container: 'max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-36 xl:pb-14 xl:pt-8 space-y-8 sm:space-y-10 md:space-y-12 relative z-10',
-          headerBg: 'bg-[#010704]/85 backdrop-blur-xl border-b border-emerald-500/20 sticky top-0 z-50',
+          container: 'max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-10 xl:pt-8 space-y-8 sm:space-y-10 md:space-y-12 relative z-10',
+          headerBg: 'bg-[#010704]/88 backdrop-blur-md border-b border-emerald-500/20 sticky top-0 z-50',
           accentColor: 'text-emerald-400',
           borderStyle: 'border-emerald-500/20',
-          cardBg: 'bg-[#06140b] border border-emerald-500/20 text-emerald-50 shadow-[0_8px_30px_rgb(0,0,0,0.5)]',
+          cardBg: 'bg-[#06140b]/92 border border-emerald-500/20 text-emerald-50 shadow-[0_8px_24px_rgb(0,0,0,0.45)]',
           navActive: 'bg-emerald-500/15 text-emerald-300 font-semibold',
           navInactive: 'text-emerald-400/70 hover:text-emerald-200 hover:bg-emerald-500/5 font-medium',
           bannerGradient: 'from-slate-950 via-emerald-950 to-slate-950 border border-emerald-500/25 shadow-xl',
@@ -918,26 +756,26 @@ export default function App() {
         };
       case 'light':
         return {
-          bg: 'bg-[#f8fafc]/95 text-slate-900 selection:bg-indigo-100 selection:text-indigo-900',
-          container: 'max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-36 xl:pb-14 xl:pt-8 space-y-8 sm:space-y-10 md:space-y-12 relative z-10',
-          headerBg: 'bg-white/85 backdrop-blur-xl border-b border-slate-200/80 sticky top-0 z-50',
+          bg: 'bg-[#f1f5f9]/95 text-slate-900 selection:bg-indigo-100 selection:text-indigo-900',
+          container: 'max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-10 xl:pt-8 space-y-8 sm:space-y-10 md:space-y-12 relative z-10',
+          headerBg: 'bg-white/92 backdrop-blur-md border-b border-slate-200/90 sticky top-0 z-50 shadow-[0_1px_12px_rgba(15,23,42,0.05)]',
           accentColor: 'text-indigo-600',
-          borderStyle: 'border-slate-200/80',
-          cardBg: 'bg-white border border-slate-200/80 text-slate-950 shadow-[0_1px_3px_0_rgba(0,0,0,0.05),0_10px_25px_-5px_rgba(0,0,0,0.04)]',
-          navActive: 'bg-slate-100 text-indigo-600 font-semibold shadow-xs',
-          navInactive: 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/60 font-medium',
-          bannerGradient: 'from-slate-900 via-indigo-950 to-slate-900 border border-slate-800 shadow-xl',
+          borderStyle: 'border-slate-200/90',
+          cardBg: 'bg-white border border-slate-200/90 text-slate-900 shadow-[0_1px_3px_0_rgba(15,23,42,0.05),0_10px_25px_-5px_rgba(79,70,229,0.08)]',
+          navActive: 'bg-indigo-50 text-indigo-700 font-semibold shadow-xs',
+          navInactive: 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 font-medium',
+          bannerGradient: 'from-white via-indigo-50/95 to-sky-50/90 border border-indigo-200/90 shadow-[0_18px_45px_-12px_rgba(79,70,229,0.16)]',
           themeBrand: 'Starlight Classic'
         };
       case 'slate':
       default:
         return {
           bg: 'bg-[#030611]/90 text-slate-100 selection:bg-cyan-500/30 selection:text-cyan-200',
-          container: 'max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-36 xl:pb-14 xl:pt-8 space-y-8 sm:space-y-10 md:space-y-12 relative z-10',
-          headerBg: 'bg-[#030611]/85 backdrop-blur-xl border-b border-white/[0.07] sticky top-0 z-50',
+          container: 'max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-10 xl:pt-8 space-y-8 sm:space-y-10 md:space-y-12 relative z-10',
+          headerBg: 'bg-[#030611]/88 backdrop-blur-md border-b border-white/[0.07] sticky top-0 z-50',
           accentColor: 'text-cyan-400',
           borderStyle: 'border-white/[0.07]',
-          cardBg: 'bg-[#0c1224] border border-white/[0.07] text-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.45)]',
+          cardBg: 'bg-[#0c1224]/92 border border-white/[0.07] text-slate-100 shadow-[0_8px_24px_rgb(0,0,0,0.42)]',
           navActive: 'bg-cyan-500/15 text-cyan-300 font-semibold',
           navInactive: 'text-slate-400 hover:text-cyan-200 hover:bg-cyan-500/5 font-medium',
           bannerGradient: 'from-slate-950 via-cyan-950 to-slate-950 border border-cyan-500/20 shadow-xl',
@@ -971,7 +809,7 @@ export default function App() {
           ? '#030611'
           : settings.theme === 'cyber'
           ? '#010704'
-          : '#f8fafc'
+          : '#f1f5f9'
       }}
     >
       {/* Top Route Progress Bar for Smooth Page Transitions */}
@@ -981,26 +819,57 @@ export default function App() {
       <CosmicBackground theme={settings.theme} />
 
       {/* GLOBAL NAVBAR HEADER */}
-      <header className={`${themeStyles.headerBg} border-b border-white/[0.08] backdrop-blur-2xl`}>
+      <header className={themeStyles.headerBg}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3 sm:gap-4">
-          <div className="flex items-center gap-3 select-none shrink-0">
-            {/* Minimal, crisp branding logo container */}
-            <div className="relative group shrink-0 select-none">
-              <div className="relative p-1.5 rounded-xl bg-slate-900/90 dark:bg-slate-950 border border-white/10 dark:border-white/10 text-white shadow-xs overflow-hidden flex items-center justify-center transition-transform group-hover:scale-105 duration-200 tactile-press">
-                <BrandingLogo size={22} className="shrink-0 relative z-10" />
+          <button
+            type="button"
+            onClick={() => handleTabChange('dashboard')}
+            className="flex items-center gap-3.5 select-none shrink-0 group cursor-pointer text-left"
+            aria-label="PrepTrack Home"
+          >
+            {/* Luminous Ambient Halo Surrounding the Logo */}
+            <div className="relative shrink-0 flex items-center justify-center">
+              <div
+                aria-hidden="true"
+                className="absolute -inset-2.5 rounded-2xl opacity-90 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
+                style={{
+                  background:
+                    settings.theme === 'cyber'
+                      ? 'radial-gradient(circle, rgba(16, 185, 129, 0.56) 0%, rgba(56, 189, 248, 0.22) 50%, transparent 74%)'
+                      : 'radial-gradient(circle, rgba(56, 189, 248, 0.56) 0%, rgba(34, 197, 94, 0.28) 48%, transparent 74%)',
+                }}
+              />
+              <div
+                className="relative p-1.5 rounded-xl bg-slate-950 border border-sky-400/50 text-white flex items-center justify-center transition-transform duration-150 group-hover:scale-105"
+                style={{
+                  boxShadow:
+                    settings.theme === 'cyber'
+                      ? '0 0 22px rgba(16, 185, 129, 0.6), 0 0 8px rgba(52, 211, 153, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.28)'
+                      : '0 0 22px rgba(56, 189, 248, 0.6), 0 0 10px rgba(34, 197, 94, 0.36), inset 0 1px 0 rgba(255, 255, 255, 0.28)',
+                }}
+              >
+                <BrandingLogo size={23} className="shrink-0 relative z-10" />
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <h1 className="text-base font-extrabold font-display tracking-tight text-foreground leading-none">
-                PrepTrack
-              </h1>
-              <span className="hidden md:inline-flex items-center gap-1 text-[9px] font-numeric font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 select-none">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                JEE 2026
+            {/* Executive Stylish Brand Wordmark (Syne) */}
+            <h1 className="font-brand text-lg sm:text-[20px] font-extrabold tracking-[-0.035em] leading-none whitespace-nowrap">
+              <span className={settings.theme === 'light' ? 'text-slate-900' : 'text-white'}>
+                Prep
               </span>
-            </div>
-          </div>
+              <span
+                className={
+                  settings.theme === 'cyber'
+                    ? 'bg-gradient-to-r from-emerald-300 via-teal-200 to-cyan-300 bg-clip-text text-transparent'
+                    : settings.theme === 'light'
+                    ? 'bg-gradient-to-r from-sky-600 via-indigo-600 to-emerald-600 bg-clip-text text-transparent'
+                    : 'bg-gradient-to-r from-sky-300 via-cyan-200 to-emerald-300 bg-clip-text text-transparent'
+                }
+              >
+                Track
+              </span>
+            </h1>
+          </button>
 
           {/* Live Activity Focus Tracker */}
           <div className="flex items-center justify-center">
@@ -1011,7 +880,7 @@ export default function App() {
           </div>
 
           {/* Nav Segmented Control for PC */}
-          <nav className="hidden xl:flex items-center p-1 rounded-2xl glass-panel gap-0.5 shadow-sm">
+          <nav className="hidden xl:flex items-center p-1 rounded-2xl glass-panel gap-1 shadow-sm">
             {[
               { id: 'dashboard', label: 'Dashboard', icon: Timer },
               { id: 'analytics', label: 'Analytics', icon: BarChart },
@@ -1026,26 +895,39 @@ export default function App() {
               return (
                 <motion.button
                   key={tab.id}
+                  whileHover={isActive ? undefined : { y: -1 }}
                   whileTap={{ scale: 0.94 }}
                   transition={{ type: 'spring', stiffness: 500, damping: 28 }}
                   onMouseEnter={() => handlePreloadTab(tab.id)}
                   onFocus={() => handlePreloadTab(tab.id)}
                   onClick={() => handleTabChange(tab.id as any)}
-                  className={`px-3 py-1.5 flex items-center gap-1.5 text-xs font-semibold relative transition-colors duration-150 cursor-pointer outline-none rounded-xl select-none whitespace-nowrap shrink-0 ${
-                    isActive 
-                      ? 'text-foreground font-bold shadow-xs' 
+                  className={`px-3 py-1.5 flex items-center gap-1.5 text-xs font-semibold relative transition-colors duration-150 cursor-pointer outline-none rounded-xl select-none whitespace-nowrap shrink-0 group ${
+                    isActive
+                      ? settings.theme === 'light'
+                        ? 'text-indigo-700 font-bold'
+                        : 'text-white font-bold'
+                      : settings.theme === 'light'
+                      ? 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
                       : 'text-muted-foreground hover:text-foreground hover:bg-white/[0.08]'
                   }`}
                 >
                   {isActive && (
                     <motion.div
                       layoutId="activeDesktopSegment"
-                      className="absolute inset-0 bg-card/90 border border-border/80 rounded-xl -z-0 shadow-sm"
+                      className="absolute inset-0 bg-primary/20 border border-primary/55 rounded-xl -z-0"
+                      style={{
+                        boxShadow: '0 0 18px -2px rgba(var(--glow-rgb, 129, 140, 248), 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.22)'
+                      }}
                       transition={{ type: 'spring', stiffness: 500, damping: 35, mass: 0.6 }}
                     />
                   )}
-                  <Icon className={`w-3.5 h-3.5 shrink-0 z-10 transition-transform duration-200 ${isActive ? 'text-primary scale-110' : 'opacity-70 group-hover:opacity-100'}`} />
-                  <span className="z-10">{tab.label}</span>
+                  <Icon
+                    className={`w-3.5 h-3.5 shrink-0 z-10 transition-transform duration-200 ${
+                      isActive ? 'text-primary scale-110' : 'opacity-75 group-hover:opacity-100'
+                    }`}
+                    style={isActive ? { filter: 'drop-shadow(0 0 6px var(--glow-color))' } : undefined}
+                  />
+                  <span className={`z-10 ${settings.theme === 'light' && isActive ? 'text-indigo-700' : ''}`}>{tab.label}</span>
                 </motion.button>
               );
             })}
@@ -1053,10 +935,10 @@ export default function App() {
 
           {/* Header Utilities: Live Clock & Theme Toggler */}
           <div className="flex items-center gap-2">
-            <HeaderClock 
-              clockFormat={settings.clockFormat} 
+            <HeaderClock
+              clockFormat={settings.clockFormat}
               timezone={settings.timezone}
-              visible={activeTab !== 'dashboard' || isBannerClockScrolledOut || isNarrowScreen} 
+              visible={activeTab !== 'dashboard' || isBannerClockScrolledOut || isNarrowScreen}
             />
             <motion.button
               whileTap={{ scale: 0.88, rotate: -30 }}
@@ -1068,7 +950,10 @@ export default function App() {
                 const nextTheme = themes[(currentIdx + 1) % themes.length];
                 handleSaveSettings({ ...settings, theme: nextTheme });
               }}
-              className="p-2 border border-border/50 rounded-2xl glass-panel text-muted-foreground hover:text-foreground cursor-pointer shadow-xs hover:border-primary/40 touch-target-expand select-none"
+              className="p-2 border border-primary/30 rounded-2xl glass-panel text-muted-foreground hover:text-foreground cursor-pointer hover:border-primary/65 touch-target-expand select-none"
+              style={{
+                boxShadow: '0 0 16px -4px rgba(var(--glow-rgb, 129, 140, 248), 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.14)'
+              }}
               title={`Switch Theme (Current: ${settings.theme})`}
               aria-label={`Switch Theme (Current: ${settings.theme})`}
             >
@@ -1079,9 +964,9 @@ export default function App() {
                 transition={{ type: 'spring', stiffness: 450, damping: 22 }}
               >
                 {settings.theme === 'light' ? (
-                  <Moon className="w-4 h-4 text-indigo-500" />
+                  <Moon className="w-4 h-4 text-indigo-500 drop-shadow-[0_0_6px_rgba(99,102,241,0.5)]" />
                 ) : (
-                  <Sun className="w-4 h-4 text-amber-400" />
+                  <Sun className="w-4 h-4 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.65)]" />
                 )}
               </motion.div>
             </motion.button>
@@ -1090,9 +975,9 @@ export default function App() {
       </header>
 
       {/* MOBILE CONSOLE NAVIGATION DOCK */}
-      <nav 
+      <nav
         aria-label="Mobile Navigation"
-        className="xl:hidden fixed bottom-[calc(0.875rem+env(safe-area-inset-bottom,0px))] inset-x-2.5 sm:inset-x-6 max-w-md sm:max-w-xl md:max-w-2xl mx-auto z-40 floating-dock rounded-[28px] flex items-center justify-around px-1 sm:px-3 py-1.5 shadow-[0_16px_40px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.18)]"
+        className="xl:hidden fixed bottom-[calc(0.875rem+env(safe-area-inset-bottom,0px))] inset-x-2.5 sm:inset-x-6 max-w-md sm:max-w-xl md:max-w-2xl mx-auto z-40 floating-dock rounded-[28px] flex items-center justify-around px-1.5 sm:px-3 py-1.5"
       >
         {[
           { id: 'dashboard', label: 'Home', icon: Timer },
@@ -1108,32 +993,41 @@ export default function App() {
           return (
             <motion.button
               key={tab.id}
+              whileHover={isActive ? undefined : { y: -1.5 }}
               whileTap={{ scale: 0.88 }}
               transition={{ type: 'spring', stiffness: 520, damping: 28 }}
               onTouchStart={() => handlePreloadTab(tab.id)}
               onMouseEnter={() => handlePreloadTab(tab.id)}
               onClick={() => handleTabChange(tab.id as any)}
-              className={`flex-1 py-1 sm:py-1.5 flex flex-col items-center justify-center gap-0.5 sm:gap-1 relative transition-all duration-150 outline-none select-none cursor-pointer touch-target-expand min-w-0 ${
+              className={`flex-1 py-1.5 sm:py-2 flex flex-col items-center justify-center gap-0.5 sm:gap-1 relative transition-all duration-150 outline-none select-none cursor-pointer touch-target-expand min-w-0 rounded-2xl ${
                 isActive
-                  ? 'text-primary font-bold'
+                  ? settings.theme === 'light'
+                    ? 'text-indigo-700 font-bold'
+                    : 'text-primary font-bold'
                   : 'text-muted-foreground hover:text-foreground font-medium'
               }`}
             >
               {isActive && (
                 <motion.div
-                   layoutId="activeMobileTabPill"
-                   className="absolute inset-x-0.5 sm:inset-x-1 inset-y-0.5 rounded-2xl -z-0 bg-primary/15 border border-primary/25 shadow-xs"
-                   transition={{ type: 'spring', stiffness: 500, damping: 34, mass: 0.65 }}
+                  layoutId="activeMobileTabPill"
+                  className="absolute inset-x-0.5 sm:inset-x-1 inset-y-0.5 rounded-2xl -z-0 bg-primary/22 border border-primary/55"
+                  style={{
+                    boxShadow: '0 0 20px -2px rgba(var(--glow-rgb, 129, 140, 248), 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.24)'
+                  }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 34, mass: 0.65 }}
                 />
               )}
               <motion.div
-                animate={{ scale: isActive ? 1.12 : 1 }}
+                animate={{ scale: isActive ? 1.14 : 1 }}
                 transition={{ type: 'spring', stiffness: 480, damping: 22 }}
                 className="z-10 shrink-0"
               >
-                <Icon className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+                <Icon
+                  className="w-4 h-4 sm:w-4.5 sm:h-4.5"
+                  style={isActive ? { filter: 'drop-shadow(0 0 7px var(--glow-color))' } : undefined}
+                />
               </motion.div>
-              <span className="z-10 text-[8px] sm:text-[10px] font-bold leading-none tracking-tight truncate max-w-full text-center px-0.5">{tab.label}</span>
+              <span className="z-10 text-[8.5px] sm:text-[10px] font-bold leading-none tracking-tight truncate max-w-full text-center px-0.5">{tab.label}</span>
             </motion.button>
           );
         })}
@@ -1315,13 +1209,8 @@ export default function App() {
           <ToastContainer toasts={toasts} onClose={handleCloseToast} theme={settings.theme} />
         </main>
 
-      {/* FOOTER & RIGHTS */}
-      <footer className="border-t border-border mt-16 py-8 bg-card/65 text-center text-xs text-muted-foreground">
-        <div className="max-w-7xl mx-auto px-4 space-y-2 select-none">
-          <p className="font-semibold text-foreground">PrepTrack — Engineered for Excellence</p>
-          <p>© All Rights Reserved 2026. Localized Database Storage Active.</p>
-        </div>
-      </footer>
+      {/* FOOTER & WEBSITE LEGALITY */}
+      <LegalFooter theme={settings.theme} onNavigateTab={handleTabChange} />
 
       {/* High-Performance Decoupled Scroll Progress & Top Handler */}
       <ScrollProgressAndTop theme={settings.theme} />

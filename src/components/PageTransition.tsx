@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { motion, AnimatePresence, useReducedMotion, Variants } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 
 export const TAB_ORDER: Record<string, number> = {
   dashboard: 0,
@@ -25,17 +25,15 @@ export const NOTES_SUBTAB_ORDER: Record<string, number> = {
 interface PageTransitionProps {
   children: React.ReactNode;
   activeKey: string;
-  direction?: number; // 1 for forward, -1 for backward
+  direction?: number;
   variant?: 'page' | 'subview';
   className?: string;
-  onExitComplete?: () => void;
 }
 
 /**
- * High-velocity, subtle, and fluid page transition wrapper.
- * Calibrated with Apple/Stripe-grade settling physics [0.16, 1, 0.3, 1].
- * Animates GPU compositor properties (opacity and transform) with mode="wait"
- * to completely eliminate layout jumping, scroll glitches, and visual disruption.
+ * Zero-blocking instant page transition wrapper.
+ * Immediately mounts the incoming tab without waiting for an exit animation,
+ * eliminating click-to-render lag on desktop and mobile.
  */
 export const PageTransition = memo(function PageTransition({
   children,
@@ -43,92 +41,25 @@ export const PageTransition = memo(function PageTransition({
   direction = 1,
   variant = 'page',
   className = '',
-  onExitComplete
 }: PageTransitionProps) {
   const shouldReduceMotion = useReducedMotion();
   const isSubview = variant === 'subview';
-  const xOffset = isSubview ? 10 : 14;
-  const yOffset = isSubview ? 4 : 6;
-
-  const variants: Variants = {
-    initial: (dir: number) => {
-      if (shouldReduceMotion) {
-        return {
-          opacity: 0,
-        };
-      }
-      return {
-        opacity: 0,
-        x: dir * xOffset,
-        y: yOffset,
-        scale: 0.996,
-      };
-    },
-    animate: {
-      opacity: 1,
-      x: 0,
-      y: 0,
-      scale: 1,
-      pointerEvents: 'auto' as const,
-      transition: {
-        type: 'spring',
-        stiffness: isSubview ? 460 : 440,
-        damping: isSubview ? 36 : 34,
-        mass: 0.65,
-        opacity: {
-          duration: shouldReduceMotion ? 0.06 : 0.14,
-          ease: [0.22, 1, 0.36, 1] as const,
-        },
-      },
-    },
-    exit: (dir: number) => {
-      if (shouldReduceMotion) {
-        return {
-          opacity: 0,
-          pointerEvents: 'none' as const,
-          transition: {
-            duration: 0.04,
-          },
-        };
-      }
-      return {
-        opacity: 0,
-        x: -dir * Math.round(xOffset * 0.35),
-        y: -2,
-        scale: 0.997,
-        pointerEvents: 'none' as const,
-        transition: {
-          duration: isSubview ? 0.05 : 0.06,
-          ease: [0.32, 0, 0.67, 0] as const,
-          opacity: {
-            duration: 0.05,
-            ease: 'easeOut',
-          },
-        },
-      };
-    },
-  };
+  const xOffset = isSubview ? 6 : 8;
 
   return (
-    <div className={`relative w-full overflow-x-clip page-transition-wrapper ${className}`}>
-      <AnimatePresence
-        mode="wait"
-        initial={false}
-        custom={direction}
-        onExitComplete={onExitComplete}
+    <div className={`relative w-full page-transition-wrapper ${className}`}>
+      <motion.div
+        key={activeKey}
+        initial={shouldReduceMotion ? { opacity: 0.9 } : { opacity: 0, x: direction * xOffset }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{
+          duration: shouldReduceMotion ? 0.05 : 0.14,
+          ease: [0.16, 1, 0.3, 1],
+        }}
+        className="w-full"
       >
-        <motion.div
-          key={activeKey}
-          custom={direction}
-          variants={variants}
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          className="w-full page-transition-layer transform-gpu"
-        >
-          {children}
-        </motion.div>
-      </AnimatePresence>
+        {children}
+      </motion.div>
     </div>
   );
 });

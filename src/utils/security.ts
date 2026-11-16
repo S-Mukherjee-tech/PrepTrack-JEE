@@ -11,30 +11,44 @@ if (import.meta.env.PROD && !import.meta.env.VITE_ENCRYPTION_KEY) {
  * Mirror of localStorage that transparently encrypts saved values and decrypts them,
  * mitigating local data exposure, XSS reading attacks, and unauthorized visual inspection.
  */
+const storageCache = new Map<string, string | null>();
+const pendingEncryptTimers = new Map<string, ReturnType<typeof setTimeout>>();
+const HIGH_FREQ_KEYS = new Set(['preptrack_timer_timeElapsed', 'preptrack_timer_lastTS']);
+
 export const secureStorage = {
   getItem(key: string): string | null {
+    if (storageCache.has(key)) {
+      return storageCache.get(key) ?? null;
+    }
+
     try {
       const rawVal = localStorage.getItem(key);
-      if (rawVal === null || rawVal === undefined) return null;
+      if (rawVal === null || rawVal === undefined) {
+        storageCache.set(key, null);
+        return null;
+      }
       const val = rawVal.trim();
 
       // Check if value is encrypted (CryptoJS AES format starts with or contains 'U2FsdGVkX1')
       if (val.includes('U2FsdGVkX1')) {
         try {
-          // Extract ciphertext substring if wrapped in quotes or whitespace
           const cipherMatch = val.match(/U2FsdGVkX1[A-Za-z0-9+/=]+/);
           const cipherText = cipherMatch ? cipherMatch[0] : val;
           const bytes = CryptoJS.AES.decrypt(cipherText, ENCRYPTION_KEY);
           const decrypted = bytes.toString(CryptoJS.enc.Utf8);
           if (typeof decrypted === 'string' && decrypted.length > 0 && !decrypted.includes('U2FsdGVkX1')) {
+            storageCache.set(key, decrypted);
             return decrypted;
           }
+          storageCache.set(key, '');
           return ''; // Safe empty fallback, never leak ciphertext
         } catch (err) {
           console.warn(`Decryption failed for key "${key}":`, err);
+          storageCache.set(key, '');
           return ''; // NEVER leak raw ciphertext to caller or inputs
         }
       }
+      storageCache.set(key, val);
       return val; // Fallback to plain text if not encrypted
     } catch {
       return null;
@@ -43,12 +57,39 @@ export const secureStorage = {
 
   setItem(key: string, value: string): void {
     try {
-      if (!value || value.includes('U2FsdGVkX1')) {
+      const normalized = !value || value.includes('U2FsdGVkX1') ? '' : value;
+      if (storageCache.get(key) === normalized) {
+        return; // Skip duplicate write + encryption when value is unchanged
+      }
+      storageCache.set(key, normalized);
+
+      if (!normalized) {
         localStorage.setItem(key, '');
         return;
       }
-      const encrypted = CryptoJS.AES.encrypt(value, ENCRYPTION_KEY).toString();
-      localStorage.setItem(key, encrypted);
+
+      // For high-frequency 1s timer ticks, write immediately without blocking main thread with AES,
+      // and schedule background encryption only when idle/debounced.
+      if (HIGH_FREQ_KEYS.has(key)) {
+        localStorage.setItem(key, normalized);
+        return;
+      }
+
+      const existingTimer = pendingEncryptTimers.get(key);
+      if (existingTimer) clearTimeout(existingTimer);
+
+      const timer = setTimeout(() => {
+        pendingEncryptTimers.delete(key);
+        try {
+          const encrypted = CryptoJS.AES.encrypt(normalized, ENCRYPTION_KEY).toString();
+          localStorage.setItem(key, encrypted);
+        } catch {
+          try {
+            localStorage.setItem(key, normalized);
+          } catch {}
+        }
+      }, 0);
+      pendingEncryptTimers.set(key, timer);
     } catch (e) {
       console.error(`Failed to securely save item "${key}":`, e);
       try {
@@ -60,6 +101,12 @@ export const secureStorage = {
   },
 
   removeItem(key: string): void {
+    storageCache.delete(key);
+    const existingTimer = pendingEncryptTimers.get(key);
+    if (existingTimer) {
+      clearTimeout(existingTimer);
+      pendingEncryptTimers.delete(key);
+    }
     try {
       localStorage.removeItem(key);
     } catch (e) {
@@ -68,6 +115,9 @@ export const secureStorage = {
   },
 
   clear(): void {
+    storageCache.clear();
+    pendingEncryptTimers.forEach((t) => clearTimeout(t));
+    pendingEncryptTimers.clear();
     try {
       localStorage.clear();
     } catch (e) {

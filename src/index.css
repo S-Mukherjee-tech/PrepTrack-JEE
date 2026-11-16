@@ -17,40 +17,49 @@ button, a, input, select, textarea, [role="button"], label {
 }
 
 @theme {
-  --font-sans: "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "SF Pro Text", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Outfit", "Plus Jakarta Sans", sans-serif;
-  --font-numeric: "Outfit", "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
-  --font-mono: "Outfit", "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+  --font-brand: "Syne", "Outfit", "Plus Jakarta Sans", sans-serif;
+  --font-numeric: "Outfit", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+  --font-mono: "Outfit", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
   --color-primary: var(--primary);
   --color-primary-foreground: #ffffff;
+  --color-background: var(--bg-surface);
+  --color-foreground: var(--fg-primary);
+  --color-muted-foreground: var(--fg-muted);
+  --color-border: var(--border-subtle);
+  --color-accent: var(--accent-surface);
+  --color-card: var(--card-surface);
+}
+
+.font-brand {
+  font-family: var(--font-brand);
 }
 
 /* High-Contrast, Vibrant Theme Selection Overrides */
 .theme-glass {
   --primary: #818cf8;
-  --glow-color: rgba(129, 140, 248, 0.55);
-  --glow-ambient: rgba(99, 102, 241, 0.38);
-  --glow-border: rgba(165, 180, 252, 0.55);
-  --glow-bright: rgba(165, 180, 252, 0.75);
+  --bg-surface: #040614;
+  --card-surface: #0c1022;
+  --fg-primary: #ffffff;
+  --fg-muted: #94a3b8;
+  --border-subtle: rgba(148, 163, 184, 0.22);
+  --accent-surface: #818cf8;
+  --glow-rgb: 129, 140, 248;
+  --glow-secondary-rgb: 168, 85, 247;
+  --glow-color: rgba(129, 140, 248, 0.72);
+  --glow-ambient: rgba(99, 102, 241, 0.46);
+  --glow-border: rgba(165, 180, 252, 0.72);
+  --glow-bright: rgba(199, 210, 254, 0.92);
 }
 
 .theme-glass .bg-card {
-  background: rgba(13, 17, 32, 0.74) !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  background: rgba(12, 16, 34, 0.89) !important;
+  border-color: rgba(129, 140, 248, 0.2) !important;
   color: #f8fafc !important;
-  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.55), inset 0 1px 0 0 rgba(255, 255, 255, 0.1) !important;
-}
-
-/* Optimized Mobile Compatibility */
-@media (max-width: 768px) {
-  .theme-glass .bg-card {
-    background: rgba(12, 16, 30, 0.95) !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
-  }
+  box-shadow: 0 12px 32px -10px rgba(0, 0, 0, 0.58),
+              0 0 24px -8px rgba(129, 140, 248, 0.24),
+              inset 0 1px 0 0 rgba(255, 255, 255, 0.12) !important;
 }
 
 .theme-glass .text-muted-foreground,
@@ -80,19 +89,27 @@ button, a, input, select, textarea, [role="button"], label {
 /* Deep Slate Dark Theme Overrides */
 .theme-slate {
   --primary: #06b6d4;
-  --glow-color: rgba(6, 182, 212, 0.55);
-  --glow-ambient: rgba(14, 165, 233, 0.38);
-  --glow-border: rgba(56, 189, 248, 0.55);
-  --glow-bright: rgba(56, 189, 248, 0.8);
+  --bg-surface: #030611;
+  --card-surface: #090f1e;
+  --fg-primary: #f8fafc;
+  --fg-muted: #94a3b8;
+  --border-subtle: rgba(56, 189, 248, 0.2);
+  --accent-surface: #06b6d4;
+  --glow-rgb: 6, 182, 212;
+  --glow-secondary-rgb: 59, 130, 246;
+  --glow-color: rgba(6, 182, 212, 0.72);
+  --glow-ambient: rgba(14, 165, 233, 0.48);
+  --glow-border: rgba(56, 189, 248, 0.74);
+  --glow-bright: rgba(103, 232, 249, 0.94);
 }
 
 .theme-slate .bg-card {
-  background: rgba(10, 16, 30, 0.8) !important;
-  border-color: rgba(56, 189, 248, 0.12) !important;
-  backdrop-filter: blur(24px) saturate(160%);
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  background: rgba(9, 15, 30, 0.91) !important;
+  border-color: rgba(56, 189, 248, 0.22) !important;
   color: #f8fafc !important;
-  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.6), inset 0 1px 0 0 rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 12px 32px -10px rgba(0, 0, 0, 0.6),
+              0 0 24px -8px rgba(6, 182, 212, 0.26),
+              inset 0 1px 0 0 rgba(125, 211, 252, 0.14) !important;
 }
 
 .theme-slate .text-muted-foreground,
@@ -122,19 +139,27 @@ button, a, input, select, textarea, [role="button"], label {
 /* Emerald Studio Theme Overrides */
 .theme-cyber {
   --primary: #10b981;
-  --glow-color: rgba(16, 185, 129, 0.6);
-  --glow-ambient: rgba(52, 211, 153, 0.42);
-  --glow-border: rgba(52, 211, 153, 0.65);
-  --glow-bright: rgba(52, 211, 153, 0.85);
+  --bg-surface: #010704;
+  --card-surface: #05100c;
+  --fg-primary: #f0fdf4;
+  --fg-muted: #86efac;
+  --border-subtle: rgba(16, 185, 129, 0.24);
+  --accent-surface: #10b981;
+  --glow-rgb: 16, 185, 129;
+  --glow-secondary-rgb: 20, 184, 166;
+  --glow-color: rgba(16, 185, 129, 0.76);
+  --glow-ambient: rgba(52, 211, 153, 0.5);
+  --glow-border: rgba(52, 211, 153, 0.78);
+  --glow-bright: rgba(110, 231, 183, 0.95);
 }
 
 .theme-cyber .bg-card {
-  background: rgba(5, 16, 11, 0.82) !important;
-  border-color: rgba(16, 185, 129, 0.16) !important;
-  backdrop-filter: blur(24px) saturate(175%);
-  -webkit-backdrop-filter: blur(24px) saturate(175%);
+  background: rgba(5, 16, 12, 0.91) !important;
+  border-color: rgba(16, 185, 129, 0.26) !important;
   color: #ecfdf5 !important;
-  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.6), inset 0 1px 0 0 rgba(16, 185, 129, 0.12) !important;
+  box-shadow: 0 12px 32px -10px rgba(0, 0, 0, 0.6),
+              0 0 26px -8px rgba(16, 185, 129, 0.28),
+              inset 0 1px 0 0 rgba(52, 211, 153, 0.16) !important;
 }
 
 .theme-cyber .text-muted-foreground,
@@ -162,40 +187,53 @@ button, a, input, select, textarea, [role="button"], label {
 .theme-cyber h4,
 .theme-cyber h5 {
   color: #10b981 !important;
-  text-shadow: 0 0 16px rgba(16, 185, 129, 0.35);
+  text-shadow: 0 0 18px rgba(16, 185, 129, 0.42);
 }
 
-/* Classic Light Theme Overrides */
+/* Classic Light Theme Overrides (Calibrated Daylight Hierarchy & WCAG AA Contrast) */
 .theme-light {
   --primary: #4f46e5;
-  --glow-color: rgba(79, 70, 229, 0.45);
-  --glow-ambient: rgba(99, 102, 241, 0.32);
-  --glow-border: rgba(129, 140, 248, 0.65);
-  --glow-bright: rgba(99, 102, 241, 0.8);
+  --bg-surface: #f1f5f9;
+  --card-surface: #ffffff;
+  --fg-primary: #0f172a;
+  --fg-muted: #475569;
+  --border-subtle: rgba(148, 163, 184, 0.45);
+  --accent-surface: #6366f1;
+  --glow-rgb: 79, 70, 229;
+  --glow-secondary-rgb: 14, 165, 233;
+  --glow-color: rgba(79, 70, 229, 0.38);
+  --glow-ambient: rgba(99, 102, 241, 0.26);
+  --glow-border: rgba(79, 70, 229, 0.62);
+  --glow-bright: rgba(79, 70, 229, 0.85);
 }
 
 .theme-light .bg-card {
-  background: rgba(255, 255, 255, 0.9) !important;
-  border-color: rgba(226, 232, 240, 0.9) !important;
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  background: rgba(255, 255, 255, 0.98) !important;
+  border-color: rgba(203, 213, 225, 0.9) !important;
   color: #0f172a !important;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.03), 0 14px 34px -8px rgba(15, 23, 42, 0.05), inset 0 1px 0 0 rgba(255, 255, 255, 0.95) !important;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05),
+              0 10px 26px -8px rgba(79, 70, 229, 0.1),
+              inset 0 1px 0 0 rgba(255, 255, 255, 1) !important;
 }
 
 .theme-light .text-muted-foreground,
-.theme-light .text-slate-400,
-.theme-light .text-gray-400 {
+.theme-light .text-slate-400:not(.dark-tooltip *),
+.theme-light .text-gray-400:not(.dark-tooltip *) {
+  color: #475569 !important;
+}
+
+.theme-light .text-slate-500:not(.dark-tooltip *),
+.theme-light .text-gray-500:not(.dark-tooltip *) {
   color: #64748b !important;
 }
 
-.theme-light .text-slate-500,
-.theme-light .text-gray-500 {
-  color: #94a3b8 !important;
+.theme-light .text-slate-300:not(.dark-tooltip *),
+.theme-light .text-slate-200:not(.dark-tooltip *) {
+  color: #1e293b !important;
 }
 
-.theme-light .text-slate-300 {
-  color: #334155 !important;
+.theme-light .dark-tooltip .text-slate-400 {
+  color: #94a3b8 !important;
 }
 
 .theme-light .text-foreground,
@@ -207,23 +245,85 @@ button, a, input, select, textarea, [role="button"], label {
   color: #0f172a;
 }
 
-/* Sleek, Classic Glass Surface & Tactile Tokens */
+/* Escalate dark-mode pastel accents into high-contrast daylight inks (skipping solid white-text buttons, hover-white CTAs & dark tooltips) */
+.theme-light .text-indigo-300:not(.text-white):not(.hover\:text-white:hover):not(.dark-tooltip *),
+.theme-light .text-indigo-400:not(.text-white):not(.hover\:text-white:hover):not(.dark-tooltip *) {
+  color: #4338ca !important;
+}
+
+.theme-light .text-emerald-300:not(.text-white):not(.hover\:text-white:hover):not(.dark-tooltip *),
+.theme-light .text-emerald-400:not(.text-white):not(.hover\:text-white:hover):not(.dark-tooltip *) {
+  color: #047857 !important;
+}
+
+.theme-light .text-amber-300:not(.text-white):not(.hover\:text-white:hover):not(.dark-tooltip *),
+.theme-light .text-amber-400:not(.text-white):not(.hover\:text-white:hover):not(.dark-tooltip *),
+.theme-light .text-orange-300:not(.text-white):not(.hover\:text-white:hover):not(.dark-tooltip *),
+.theme-light .text-orange-400:not(.text-white):not(.hover\:text-white:hover):not(.dark-tooltip *) {
+  color: #b45309 !important;
+}
+
+.theme-light .text-cyan-300:not(.text-white):not(.hover\:text-white:hover):not(.dark-tooltip *),
+.theme-light .text-cyan-400:not(.text-white):not(.hover\:text-white:hover):not(.dark-tooltip *) {
+  color: #0e7490 !important;
+}
+
+.theme-light .text-sky-300:not(.text-white):not(.hover\:text-white:hover):not(.dark-tooltip *),
+.theme-light .text-sky-400:not(.text-white):not(.hover\:text-white:hover):not(.dark-tooltip *) {
+  color: #0369a1 !important;
+}
+
+.theme-light .text-purple-300:not(.text-white):not(.hover\:text-white:hover):not(.dark-tooltip *),
+.theme-light .text-purple-400:not(.text-white):not(.hover\:text-white:hover):not(.dark-tooltip *),
+.theme-light .text-violet-300:not(.text-white):not(.hover\:text-white:hover):not(.dark-tooltip *),
+.theme-light .text-violet-400:not(.text-white):not(.hover\:text-white:hover):not(.dark-tooltip *) {
+  color: #6d28d9 !important;
+}
+
+.theme-light .text-rose-300:not(.text-white):not(.hover\:text-white:hover):not(.dark-tooltip *),
+.theme-light .text-rose-400:not(.text-white):not(.hover\:text-white:hover):not(.dark-tooltip *) {
+  color: #be123c !important;
+}
+
+/* Fix invisible dark-mode white borders & translucent white rows on bright light surfaces */
+.theme-light .border-white\/5,
+.theme-light .border-white\/10,
+.theme-light .border-white\/15,
+.theme-light .border-white\/20 {
+  border-color: rgba(148, 163, 184, 0.38) !important;
+}
+
+.theme-light .bg-white\/\[0\.01\],
+.theme-light .bg-white\/\[0\.02\],
+.theme-light .bg-white\/\[0\.03\],
+.theme-light .bg-white\/\[0\.04\],
+.theme-light .bg-white\/\[0\.05\],
+.theme-light .bg-white\/\[0\.06\] {
+  background-color: rgba(241, 245, 249, 0.85) !important;
+}
+
+.theme-light .bg-white\/\[0\.08\],
+.theme-light .bg-white\/\[0\.1\] {
+  background-color: rgba(226, 232, 240, 0.72) !important;
+}
+
+/* Sleek, Lightweight Glass Surface & Tactile Tokens */
 .glass-panel,
 .apple-glass {
-  background: rgba(14, 18, 32, 0.72) !important;
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.1), 0 8px 32px 0 rgba(0, 0, 0, 0.35) !important;
+  background: rgba(14, 18, 34, 0.86) !important;
+  border: 1px solid rgba(var(--glow-rgb, 129, 140, 248), 0.2) !important;
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.12),
+              0 8px 24px -4px rgba(0, 0, 0, 0.38),
+              0 0 18px -6px rgba(var(--glow-rgb, 129, 140, 248), 0.22) !important;
 }
 
 .theme-light .glass-panel,
 .theme-light .apple-glass {
-  background: rgba(255, 255, 255, 0.85) !important;
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(0, 0, 0, 0.06) !important;
-  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.95), 0 8px 30px rgba(0, 0, 0, 0.05) !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+  border: 1px solid rgba(203, 213, 225, 0.9) !important;
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 1),
+              0 6px 20px -6px rgba(15, 23, 42, 0.08),
+              0 0 14px -6px rgba(79, 70, 229, 0.12) !important;
 }
 
 /* Squircle & Continuous Geometry */
@@ -243,76 +343,114 @@ button, a, input, select, textarea, [role="button"], label {
 }
 
 /* ==========================================================================
-   HYPER-TACTILE BUTTON & INTERACTIVE COMPONENT DYNAMICS (APPLE/STRIPE GRADE)
-   Instant 40ms press-in with mechanical spring recoil on release
+   INSTANT TACTILE BUTTON & INTERACTIVE RESPONSE (ZERO CLICK LAG)
+   Fast 90-140ms compositor transitions without conflicting !important transforms
    ========================================================================== */
 
-/* Default State: Smooth elastic spring recoil when released or hovered */
 button:not(:disabled),
 a:not(:disabled),
 [role="button"]:not([aria-disabled="true"]),
 .tactile-press,
 .apple-press,
 .btn-tactile {
-  touch-action: manipulation !important;
+  touch-action: manipulation;
   user-select: none;
   -webkit-user-select: none;
-  transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1),
-              box-shadow 0.22s cubic-bezier(0.22, 1, 0.36, 1),
-              background-color 0.18s ease,
-              border-color 0.18s ease,
+  transition: background-color 0.16s ease,
+              border-color 0.16s ease,
               color 0.16s ease,
-              filter 0.16s ease,
-              opacity 0.16s ease;
-  transform: translateZ(0);
+              opacity 0.16s ease,
+              box-shadow 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+              filter 0.18s ease,
+              transform 0.15s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* Active Down-stroke: Instant 40ms mechanical yield under finger or cursor */
 button:not(:disabled):active,
 a:not(:disabled):active,
 [role="button"]:not([aria-disabled="true"]):active,
 .tactile-press:active,
 .apple-press:active,
 .btn-tactile:active {
-  transform: scale(0.952) translateZ(0) !important;
-  transition: transform 0.04s cubic-bezier(0.1, 0.9, 0.2, 1) !important;
-  filter: brightness(0.94);
+  transform: scale(0.96);
 }
 
 /* Specific scale utilities */
 .active-scale-98:active {
-  transform: scale(0.98) translateZ(0) !important;
-  transition: transform 0.04s ease-out !important;
+  transform: scale(0.98);
 }
 
 .active-scale-95:active {
-  transform: scale(0.95) translateZ(0) !important;
-  transition: transform 0.04s ease-out !important;
+  transform: scale(0.95);
 }
 
 .active-scale-90:active {
-  transform: scale(0.90) translateZ(0) !important;
-  transition: transform 0.04s ease-out !important;
+  transform: scale(0.90);
+}
+
+/* Radiant Primary CTA Button with Compositor-Only Light Sheen & Bloom */
+.cta-radiant {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow: 0 10px 28px -4px rgba(var(--glow-rgb, 6, 182, 212), 0.56),
+              0 0 22px 0 rgba(var(--glow-rgb, 6, 182, 212), 0.36),
+              inset 0 1px 0 0 rgba(255, 255, 255, 0.38);
+}
+
+.cta-radiant::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 55%;
+  background: linear-gradient(
+    110deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 32%,
+    rgba(255, 255, 255, 0.36) 50%,
+    rgba(255, 255, 255, 0.08) 68%,
+    transparent 100%
+  );
+  transform: translateX(-165%) skewX(-18deg);
+  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .cta-radiant:hover {
+    filter: brightness(1.09) saturate(1.12);
+    border-color: rgba(255, 255, 255, 0.48);
+    box-shadow: 0 16px 36px -4px rgba(var(--glow-rgb, 6, 182, 212), 0.72),
+                0 0 34px 4px rgba(var(--glow-rgb, 6, 182, 212), 0.48),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.5);
+  }
+
+  .cta-radiant:hover::after {
+    transform: translateX(270%) skewX(-18deg);
+  }
 }
 
 /* Floating Navigation Dock */
 .floating-dock,
 .apple-dock {
-  background: rgba(10, 14, 26, 0.85) !important;
-  backdrop-filter: blur(28px) saturate(200%);
-  -webkit-backdrop-filter: blur(28px) saturate(200%);
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  box-shadow: 0 16px 48px -8px rgba(0, 0, 0, 0.6), inset 0 1px 0 0 rgba(255, 255, 255, 0.15) !important;
+  background: rgba(9, 13, 26, 0.92) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(var(--glow-rgb, 129, 140, 248), 0.28) !important;
+  box-shadow: 0 14px 36px -6px rgba(0, 0, 0, 0.62),
+              0 0 26px -6px rgba(var(--glow-rgb, 129, 140, 248), 0.28),
+              inset 0 1px 0 0 rgba(255, 255, 255, 0.18) !important;
 }
 
 .theme-light .floating-dock,
 .theme-light .apple-dock {
-  background: rgba(255, 255, 255, 0.9) !important;
-  border: 1px solid rgba(0, 0, 0, 0.08) !important;
-  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.1), inset 0 1px 0 0 rgba(255, 255, 255, 0.95) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(79, 70, 229, 0.2) !important;
+  box-shadow: 0 14px 32px -6px rgba(15, 23, 42, 0.14),
+              0 0 22px -6px rgba(79, 70, 229, 0.18),
+              inset 0 1px 0 0 rgba(255, 255, 255, 0.98) !important;
 }
 
-/* Global Smooth Element Polish (Harmonious FAANG curves) */
+/* Global Smooth Element Polish */
 .bg-card, .rounded-3xl {
   border-radius: 20px !important;
 }
@@ -325,171 +463,93 @@ a:not(:disabled):active,
   border-radius: 12px !important;
 }
 
-/* Ensure ultra-crisp fonts globally across all elements during transitions and instant touch response */
 * {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
   -webkit-tap-highlight-color: transparent !important;
-  outline: none !important;
 }
 
-/* Eliminate native mobile click delay on interactive components and provide smooth tactile transitions */
+*:focus-visible {
+  outline: 2px solid var(--primary) !important;
+  outline-offset: 2px;
+}
+
 button, a, select, input, textarea, [role="button"], .clickable-item {
   touch-action: manipulation !important;
 }
 
-/* Scroll reveal GPU hardware acceleration */
-.scroll-reveal-container {
-  backface-visibility: hidden !important;
-  -webkit-backface-visibility: hidden !important;
-  transform: translateZ(0);
-}
-
-/* Base card transition for smooth entry & gradual relaxation when cursor departs */
-main .bg-card:not(header):not(footer):not(.sticky):not(nav),
-main .rounded-2xl:not(header):not(footer):not(.sticky):not(nav),
-main .rounded-3xl:not(header):not(footer):not(.sticky):not(nav),
-.interactive-card {
-  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), 
-              box-shadow 0.32s cubic-bezier(0.22, 1, 0.36, 1), 
-              border-color 0.28s ease, 
-              background-color 0.28s ease !important;
-  backface-visibility: hidden !important;
-  -webkit-backface-visibility: hidden !important;
-}
-
-/* GRADUAL, HYPER-SMOOTH HOVER REACTIONS (Desktop/Fine Pointers Only)
-   Provides gentle elevation motion and rich ambient glow that builds gradually */
 @media (hover: hover) and (pointer: fine) {
-  main .bg-card:not(header):not(footer):not(.sticky):not(nav):hover,
-  main .rounded-2xl:not(header):not(footer):not(.sticky):not(nav):hover,
-  main .rounded-3xl:not(header):not(footer):not(.sticky):not(nav):hover,
+  .bg-card:not(header):not(footer):not(.sticky):not(nav),
+  .interactive-card {
+    transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+                border-color 0.18s ease,
+                background-color 0.18s ease;
+  }
+
+  .bg-card:not(header):not(footer):not(.sticky):not(nav):hover,
   .interactive-card:hover {
-    transform: translate3d(0, -3px, 0) !important;
-  }
-}
-
-
-/* GRADUAL AMBIENT GLOW REFLECTIONS (Desktop/Fine Pointers Only) */
-@media (hover: hover) and (pointer: fine) {
-  .theme-glass main .bg-card:not(header):not(footer):not(.sticky):not(nav):hover,
-  .theme-glass main .rounded-2xl:not(header):not(footer):not(.sticky):not(nav):hover,
-  .theme-glass main .rounded-3xl:not(header):not(footer):not(.sticky):not(nav):hover {
-    border-color: rgba(165, 180, 252, 0.48) !important;
-    box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.65), 
-                0 0 0 1px rgba(165, 180, 252, 0.32),
-                0 0 12px 2px rgba(129, 140, 248, 0.38),
-                0 0 24px 2px rgba(129, 140, 248, 0.22),
-                inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
+    transform: translate3d(0, -3px, 0);
+    border-color: var(--glow-border, rgba(165, 180, 252, 0.72)) !important;
+    box-shadow: 0 18px 40px -10px rgba(0, 0, 0, 0.55),
+                0 0 0 1px rgba(var(--glow-rgb, 129, 140, 248), 0.42),
+                0 0 26px 2px rgba(var(--glow-rgb, 129, 140, 248), 0.34),
+                0 0 48px -6px rgba(var(--glow-secondary-rgb, 168, 85, 247), 0.24),
+                inset 0 1px 0 0 rgba(255, 255, 255, 0.2) !important;
   }
 
-  .theme-slate main .bg-card:not(header):not(footer):not(.sticky):not(nav):hover,
-  .theme-slate main .rounded-2xl:not(header):not(footer):not(.sticky):not(nav):hover,
-  .theme-slate main .rounded-3xl:not(header):not(footer):not(.sticky):not(nav):hover {
-    border-color: rgba(56, 189, 248, 0.52) !important;
-    box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.7), 
-                0 0 0 1px rgba(56, 189, 248, 0.36),
-                0 0 12px 2px rgba(6, 182, 212, 0.4),
-                0 0 24px 2px rgba(6, 182, 212, 0.24),
-                inset 0 1px 0 rgba(56, 189, 248, 0.25) !important;
-  }
-
-  .theme-cyber main .bg-card:not(header):not(footer):not(.sticky):not(nav):hover,
-  .theme-cyber main .rounded-2xl:not(header):not(footer):not(.sticky):not(nav):hover,
-  .theme-cyber main .rounded-3xl:not(header):not(footer):not(.sticky):not(nav):hover {
-    border-color: rgba(52, 211, 153, 0.58) !important;
-    box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.75), 
-                0 0 0 1px rgba(52, 211, 153, 0.4),
-                0 0 14px 2px rgba(16, 185, 129, 0.42),
-                0 0 26px 2px rgba(16, 185, 129, 0.26),
-                inset 0 1px 0 rgba(52, 211, 153, 0.28) !important;
-  }
-
-  .theme-light main .bg-card:not(header):not(footer):not(.sticky):not(nav):hover,
-  .theme-light main .rounded-2xl:not(header):not(footer):not(.sticky):not(nav):hover,
-  .theme-light main .rounded-3xl:not(header):not(footer):not(.sticky):not(nav):hover {
-    border-color: rgba(99, 102, 241, 0.6) !important;
-    box-shadow: 0 14px 32px -8px rgba(15, 23, 42, 0.12), 
-                0 0 0 1px rgba(99, 102, 241, 0.3),
-                0 0 10px 1px rgba(79, 70, 229, 0.3),
-                0 0 20px 2px rgba(99, 102, 241, 0.18),
-                inset 0 1px 0 rgba(255, 255, 255, 1) !important;
-  }
-}
-
-/* Modern inputs, buttons & interactable controls response */
-/* Interactive Buttons, Action Links, and Clickable Controls (Fine pointer devices) */
-@media (hover: hover) and (pointer: fine) {
-  main button:not([disabled]):not(.cursor-default):not(.react-calendar__tile), 
+  main button:not(:disabled):not(.cursor-default):not(.scroll-top-glow-btn):not(.cta-radiant),
   main a:not(.cursor-default),
-  main .clickable-item,
-  .interactive-btn {
-    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
-                box-shadow 0.28s cubic-bezier(0.22, 1, 0.36, 1),
-                background-color 0.24s ease,
-                border-color 0.24s ease,
-                filter 0.24s ease !important;
+  header button:not(:disabled) {
+    transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+                border-color 0.16s ease,
+                background-color 0.16s ease,
+                filter 0.16s ease,
+                color 0.16s ease;
   }
 
-  main button:not([disabled]):not(.cursor-default):not(.react-calendar__tile):hover, 
+  main button:not(:disabled):not(.cursor-default):not(.scroll-top-glow-btn):not(.cta-radiant):hover,
   main a:not(.cursor-default):hover,
-  main .clickable-item:hover,
-  .interactive-btn:hover {
-    transform: translate3d(0, -2px, 0) !important;
-    box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.35), 
-                0 0 0 1px var(--glow-border, rgba(165, 180, 252, 0.4)),
-                0 0 8px 1.5px var(--glow-ambient, rgba(129, 140, 248, 0.35)),
-                0 0 16px 2px var(--glow-color, rgba(129, 140, 248, 0.22)) !important;
+  header button:not(:disabled):hover {
+    transform: translate3d(0, -2px, 0);
+    filter: brightness(1.07);
+    border-color: rgba(var(--glow-rgb, 129, 140, 248), 0.6) !important;
+    box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.38),
+                0 0 0 1px rgba(var(--glow-rgb, 129, 140, 248), 0.42),
+                0 0 18px 1px rgba(var(--glow-rgb, 129, 140, 248), 0.38);
   }
 
-  /* High-emphasis buttons (Primary action buttons) get a brilliant uniform radiant neon aura */
-  button.bg-primary:not(:disabled):hover,
-  a.bg-primary:hover,
-  [class*="bg-primary"]:is(button, a):not(:disabled):hover,
-  [class*="from-indigo-"]:is(button, a):not(:disabled):hover,
-  [class*="bg-indigo-"]:is(button, a):not(:disabled):hover {
-    transform: translate3d(0, -2.5px, 0) !important;
-    box-shadow: 0 6px 18px -2px rgba(0, 0, 0, 0.35),
-                0 0 0 1.5px var(--glow-bright, rgba(165, 180, 252, 0.6)),
-                0 0 10px 2px var(--glow-color, rgba(129, 140, 248, 0.5)),
-                0 0 20px 2.5px var(--glow-ambient, rgba(129, 140, 248, 0.35)) !important;
-    filter: brightness(1.08);
+  /* Refined Daylight Hover Shadows (no brightness washout on crisp light buttons/cards) */
+  .theme-light .bg-card:not(header):not(footer):not(.sticky):not(nav):hover,
+  .theme-light .interactive-card:hover {
+    box-shadow: 0 16px 34px -10px rgba(79, 70, 229, 0.18),
+                0 4px 12px -2px rgba(15, 23, 42, 0.08),
+                0 0 0 1px rgba(79, 70, 229, 0.45),
+                0 0 22px -2px rgba(99, 102, 241, 0.22) !important;
   }
 
-  /* Form input uniform luminous hover glow - equal radiance on all 4 sides */
-  main input:not(:disabled):hover:not(:focus),
-  main select:not(:disabled):hover:not(:focus),
-  main textarea:not(:disabled):hover:not(:focus) {
-    border-color: var(--glow-border, rgba(165, 180, 252, 0.6)) !important;
-    box-shadow: 0 0 0 1.5px var(--glow-border, rgba(165, 180, 252, 0.5)),
-                0 0 8px 1px var(--glow-ambient, rgba(129, 140, 248, 0.35)),
-                0 0 14px 1.5px var(--glow-color, rgba(129, 140, 248, 0.22)) !important;
-    transition: border-color 0.26s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.26s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.26s ease !important;
+  .theme-light main button:not(:disabled):not(.cursor-default):not(.scroll-top-glow-btn):not(.cta-radiant):hover,
+  .theme-light main a:not(.cursor-default):hover,
+  .theme-light header button:not(:disabled):hover {
+    filter: none;
+    border-color: rgba(79, 70, 229, 0.55) !important;
+    box-shadow: 0 8px 18px -4px rgba(79, 70, 229, 0.22),
+                0 2px 6px -1px rgba(15, 23, 42, 0.07),
+                0 0 14px -2px rgba(99, 102, 241, 0.24);
   }
 }
 
-/* MOBILE USER PROTECTION: Eliminate sticky hover transforms & glowing shadows on touch devices */
+/* MOBILE USER PROTECTION: Eliminate sticky hover transforms on touch devices */
 @media (hover: none), (pointer: coarse) {
-  main .bg-card:hover,
-  main .rounded-2xl:hover,
-  main .rounded-3xl:hover,
+  .bg-card:hover,
+  .interactive-card:hover,
   main button:hover,
   main a:hover,
-  main .clickable-item:hover,
-  .interactive-card:hover,
-  .interactive-btn:hover,
-  input:hover,
-  select:hover,
-  textarea:hover {
+  header button:hover {
     transform: none !important;
     box-shadow: none !important;
-  }
-
-  /* Clean, instantaneous tap response on touch devices with zero persistent hover artifacts */
-  button:not(:disabled):active, a:not(:disabled):active {
-    transform: scale(0.97) !important;
-    transition: transform 0.08s ease !important;
+    filter: none !important;
   }
 }
 
@@ -508,47 +568,69 @@ input, select, textarea {
 }
 
 .theme-glass input, .theme-glass select, .theme-glass textarea {
-  background-color: rgba(255, 255, 255, 0.04) !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(129, 140, 248, 0.22) !important;
   color: #ffffff !important;
+}
+.theme-glass input:hover:not(:disabled), .theme-glass select:hover:not(:disabled), .theme-glass textarea:hover:not(:disabled) {
+  border-color: rgba(165, 180, 252, 0.48) !important;
+  box-shadow: 0 0 14px -2px rgba(129, 140, 248, 0.28) !important;
 }
 .theme-glass input:focus, .theme-glass select:focus, .theme-glass textarea:focus {
   border-color: #818cf8 !important;
-  box-shadow: 0 0 0 2px rgba(129, 140, 248, 0.45), 0 0 8px 1px rgba(99, 102, 241, 0.3) !important;
-  background-color: rgba(255, 255, 255, 0.06) !important;
+  box-shadow: 0 0 0 2px rgba(129, 140, 248, 0.55), 0 0 16px 2px rgba(99, 102, 241, 0.42) !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 .theme-slate input, .theme-slate select, .theme-slate textarea {
-  background-color: rgba(15, 23, 42, 0.5) !important;
-  border-color: rgba(255, 255, 255, 0.09) !important;
+  background-color: rgba(15, 23, 42, 0.65) !important;
+  border-color: rgba(56, 189, 248, 0.22) !important;
   color: #f8fafc !important;
+}
+.theme-slate input:hover:not(:disabled), .theme-slate select:hover:not(:disabled), .theme-slate textarea:hover:not(:disabled) {
+  border-color: rgba(56, 189, 248, 0.52) !important;
+  box-shadow: 0 0 14px -2px rgba(6, 182, 212, 0.3) !important;
 }
 .theme-slate input:focus, .theme-slate select:focus, .theme-slate textarea:focus {
   border-color: #06b6d4 !important;
-  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.45), 0 0 8px 1px rgba(6, 182, 212, 0.3) !important;
-  background-color: rgba(15, 23, 42, 0.7) !important;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.55), 0 0 16px 2px rgba(6, 182, 212, 0.42) !important;
+  background-color: rgba(15, 23, 42, 0.85) !important;
 }
 
 .theme-cyber input, .theme-cyber select, .theme-cyber textarea {
-  background-color: rgba(4, 22, 12, 0.6) !important;
-  border-color: rgba(16, 185, 129, 0.22) !important;
+  background-color: rgba(4, 22, 12, 0.68) !important;
+  border-color: rgba(16, 185, 129, 0.28) !important;
   color: #ecfdf5 !important;
   font-family: var(--font-mono) !important;
 }
+.theme-cyber input:hover:not(:disabled), .theme-cyber select:hover:not(:disabled), .theme-cyber textarea:hover:not(:disabled) {
+  border-color: rgba(52, 211, 153, 0.56) !important;
+  box-shadow: 0 0 14px -2px rgba(16, 185, 129, 0.32) !important;
+}
 .theme-cyber input:focus, .theme-cyber select:focus, .theme-cyber textarea:focus {
   border-color: #10b981 !important;
-  box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.45), 0 0 8px 1px rgba(16, 185, 129, 0.3) !important;
-  background-color: rgba(4, 22, 12, 0.8) !important;
+  box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.55), 0 0 16px 2px rgba(16, 185, 129, 0.42) !important;
+  background-color: rgba(4, 22, 12, 0.88) !important;
 }
 
-.theme-light input, .theme-light select, .theme-light textarea {
+.theme-light input:not(.bg-transparent), .theme-light select:not(.bg-transparent), .theme-light textarea:not(.bg-transparent) {
   background-color: #ffffff !important;
   border-color: #cbd5e1 !important;
   color: #0f172a !important;
 }
-.theme-light input:focus, .theme-light select:focus, .theme-light textarea:focus {
+.theme-light input.bg-transparent {
+  background-color: transparent !important;
+  border-color: transparent !important;
+  color: #0f172a !important;
+  box-shadow: none !important;
+}
+.theme-light input:not(.bg-transparent):hover:not(:disabled), .theme-light select:not(.bg-transparent):hover:not(:disabled), .theme-light textarea:not(.bg-transparent):hover:not(:disabled) {
+  border-color: rgba(99, 102, 241, 0.55) !important;
+  box-shadow: 0 0 12px -2px rgba(79, 70, 229, 0.2) !important;
+}
+.theme-light input:not(.bg-transparent):focus, .theme-light select:not(.bg-transparent):focus, .theme-light textarea:not(.bg-transparent):focus {
   border-color: #4f46e5 !important;
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.4), 0 0 8px 1px rgba(79, 70, 229, 0.22) !important;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.45), 0 0 14px 1px rgba(79, 70, 229, 0.28) !important;
   background-color: #ffffff !important;
 }
 
@@ -566,8 +648,12 @@ input, select, textarea {
   border-color: rgba(16, 185, 129, 0.15) !important;
 }
 .theme-light .bg-accent\/5, .theme-light .bg-accent\/10, .theme-light .bg-accent\/15 {
-  background-color: #f8fafc !important;
-  border-color: #f1f5f9 !important;
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+}
+.theme-light .bg-accent\/20 {
+  background-color: #e2e8f0 !important;
+  border-color: #cbd5e1 !important;
 }
 
 /* Custom fade & spatial glide integrations (Compositor-only for 120Hz fluidity) */

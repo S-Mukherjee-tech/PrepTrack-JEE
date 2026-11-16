@@ -407,7 +407,7 @@ const AnalyticsCharts = memo(function AnalyticsCharts({ sessions, questions, err
             return (
               <div key={index} className="flex-1 flex flex-col items-center h-full group relative">
                 {/* Tooltip */}
-                <div className="absolute bottom-full mb-2 bg-slate-900/95 backdrop-blur-md border border-slate-800 text-slate-100 text-[10px] px-3 py-1.5 rounded-xl shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none flex flex-col items-center z-20 whitespace-nowrap">
+                <div className="dark-tooltip absolute bottom-full mb-2 bg-slate-900/95 backdrop-blur-md border border-slate-800 text-slate-100 text-[10px] px-3 py-1.5 rounded-xl shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none flex flex-col items-center z-20 whitespace-nowrap">
                   <span className="font-bold font-mono text-white">{d.value.toFixed(2)} hr</span>
                   <span className="text-slate-400 font-mono text-[9px]">{(d.value * 60).toFixed(0)} min</span>
                 </div>
@@ -505,7 +505,7 @@ const AnalyticsCharts = memo(function AnalyticsCharts({ sessions, questions, err
             return (
               <div key={index} className="flex-1 flex flex-col items-center h-full group relative">
                 {/* Tooltip */}
-                <div className="absolute bottom-full mb-2 bg-slate-900/95 backdrop-blur-md border border-slate-800 text-slate-100 text-[10px] px-3 py-2 rounded-xl shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none flex flex-col items-start gap-1 z-20 whitespace-nowrap">
+                <div className="dark-tooltip absolute bottom-full mb-2 bg-slate-900/95 backdrop-blur-md border border-slate-800 text-slate-100 text-[10px] px-3 py-2 rounded-xl shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none flex flex-col items-start gap-1 z-20 whitespace-nowrap">
                   <span className="font-bold border-b border-slate-700/60 pb-1 mb-0.5 w-full font-mono text-white">Total: {total} Qs</span>
                   <span className="text-emerald-400 flex items-center gap-1.5 font-medium">
                     <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block shrink-0 shadow-xs shadow-emerald-500/50"></span>

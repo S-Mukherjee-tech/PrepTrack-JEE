@@ -1,4 +1,4 @@
-import { useState, useEffect, memo } from 'react';
+import { useState, useEffect, useRef, memo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowUp } from 'lucide-react';
 import { ThemeType } from '../types';
@@ -8,26 +8,42 @@ interface ScrollProgressAndTopProps {
 }
 
 export const ScrollProgressAndTop = memo(function ScrollProgressAndTop({ theme }: ScrollProgressAndTopProps) {
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const barRef = useRef<HTMLDivElement>(null);
+  const progressPathRef = useRef<SVGPathElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
+    const updateScrollUI = () => {
       const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
-      if (totalHeight > 0) {
-        const current = Math.min(100, Math.max(0, (window.scrollY / totalHeight) * 100));
-        setScrollProgress(current);
-      } else {
-        setScrollProgress(0);
+      const ratio = totalHeight > 0
+        ? Math.min(1, Math.max(0, window.scrollY / totalHeight))
+        : 0;
+      const pct = ratio * 100;
+
+      // Update top bar directly on DOM node — zero React re-renders during scroll
+      if (barRef.current) {
+        barRef.current.style.transform = `scaleX(${ratio})`;
       }
-      setShowScrollTop(window.scrollY > 280);
+
+      // Update circular progress ring directly on SVG path — zero React re-renders during scroll
+      if (progressPathRef.current) {
+        progressPathRef.current.style.strokeDashoffset = `${100 - pct}`;
+      }
+
+      if (buttonRef.current) {
+        buttonRef.current.title = `Back to top (${Math.round(pct)}%)`;
+      }
+
+      const shouldShow = window.scrollY > 240;
+      setShowScrollTop((prev) => (prev !== shouldShow ? shouldShow : prev));
     };
 
     let ticking = false;
     const scrollListener = () => {
       if (!ticking) {
         requestAnimationFrame(() => {
-          handleScroll();
+          updateScrollUI();
           ticking = false;
         });
         ticking = true;
@@ -35,91 +51,119 @@ export const ScrollProgressAndTop = memo(function ScrollProgressAndTop({ theme }
     };
 
     window.addEventListener('scroll', scrollListener, { passive: true });
-    handleScroll();
+    updateScrollUI();
 
     return () => {
       window.removeEventListener('scroll', scrollListener);
     };
-  }, []);
+  }, [showScrollTop]);
 
-  const accentColor = 
+  const accentColor =
     theme === 'cyber' ? '#10b981' :
     theme === 'light' ? '#4f46e5' :
     theme === 'slate' ? '#06b6d4' :
     '#818cf8';
 
-  const strokeDashoffset = 100 - scrollProgress;
+  const glowRgb =
+    theme === 'cyber' ? '16, 185, 129' :
+    theme === 'light' ? '79, 70, 229' :
+    theme === 'slate' ? '6, 182, 212' :
+    '129, 140, 248';
 
   return (
     <>
-      {/* High-Performance Fixed Top Scroll Progress Bar */}
-      <div 
-        className="fixed top-0 left-0 w-full h-[2.5px] z-50 origin-left will-change-transform transition-transform duration-100 ease-out pointer-events-none"
-        style={{ 
-          transform: `scaleX(${scrollProgress / 100})`,
+      {/* Zero-rerender Fixed Top Scroll Progress Bar with Crisp Glow */}
+      <div
+        ref={barRef}
+        className="fixed top-0 left-0 w-full h-[2.5px] z-50 origin-left pointer-events-none"
+        style={{
+          transform: 'scaleX(0)',
           background: accentColor,
-          boxShadow: `0 1px 8px ${
-            theme === 'cyber' ? 'rgba(16,185,129,0.5)' :
-            theme === 'light' ? 'rgba(79,70,229,0.5)' :
-            theme === 'slate' ? 'rgba(6,182,212,0.5)' :
-            'rgba(129,140,248,0.5)'
-          }`
+          boxShadow: `0 1px 10px rgba(${glowRgb}, 0.55)`,
+          willChange: 'transform',
         }}
         aria-hidden="true"
       />
 
-      {/* Floating Interactive Scroll-to-Top Capsule with Circular Progress */}
+      {/* Floating Interactive Scroll-to-Top Capsule with Circular Progress & Radiant Hover Glow */}
       <AnimatePresence>
         {showScrollTop && (
           <motion.button
+            ref={buttonRef}
             key="scroll-to-top"
-            initial={{ opacity: 0, y: 16, scale: 0.88 }}
+            type="button"
+            initial={{ opacity: 0, y: 18, scale: 0.85 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 12, scale: 0.88 }}
-            transition={{ type: 'spring', stiffness: 420, damping: 26 }}
-            whileHover={{ y: -3, scale: 1.05 }}
-            whileTap={{ scale: 0.92 }}
+            exit={{ opacity: 0, y: 14, scale: 0.85 }}
+            transition={{ type: 'spring', stiffness: 420, damping: 24 }}
+            whileHover={{ y: -4, scale: 1.08 }}
+            whileTap={{ scale: 0.90 }}
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="fixed bottom-20 md:bottom-8 right-6 p-2.5 rounded-full border z-40 shadow-xl cursor-pointer flex items-center justify-center group"
+            className="fixed bottom-24 xl:bottom-8 right-5 sm:right-6 p-2.5 rounded-full border z-40 cursor-pointer flex items-center justify-center group scroll-top-glow-btn"
             style={{
-              background: theme === 'cyber' ? 'rgba(5,26,16,0.92)' :
-                          theme === 'light' ? 'rgba(255,255,255,0.95)' :
-                          theme === 'slate' ? 'rgba(13,18,46,0.92)' :
-                          'rgba(14,18,34,0.92)',
-              borderColor: theme === 'cyber' ? 'rgba(16,185,129,0.3)' :
-                           theme === 'light' ? 'rgba(226,232,240,0.9)' :
-                           theme === 'slate' ? 'rgba(6,182,212,0.3)' :
-                           'rgba(255,255,255,0.14)',
-              boxShadow: '0 12px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15)',
-              backdropFilter: 'blur(20px)'
+              background:
+                theme === 'cyber' ? 'rgba(5, 24, 15, 0.94)' :
+                theme === 'light' ? 'rgba(255, 255, 255, 0.96)' :
+                theme === 'slate' ? 'rgba(11, 18, 42, 0.94)' :
+                'rgba(14, 18, 36, 0.94)',
+              borderColor: `rgba(${glowRgb}, 0.42)`,
+              boxShadow: `0 10px 28px rgba(0, 0, 0, 0.45), 0 0 18px rgba(${glowRgb}, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.16)`,
             }}
-            title={`Back to top (${Math.round(scrollProgress)}%)`}
+            title="Back to top"
             aria-label="Scroll back to top"
           >
+            {/* Pre-diffused Radiant Hover Halo */}
+            <span
+              aria-hidden="true"
+              className="absolute -inset-2.5 rounded-full opacity-45 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
+              style={{
+                background: `radial-gradient(circle, rgba(${glowRgb}, 0.42) 0%, rgba(${glowRgb}, 0.12) 48%, transparent 72%)`,
+              }}
+            />
+
+            {/* Crisp Outer Luminous Ring on Hover */}
+            <span
+              aria-hidden="true"
+              className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
+              style={{
+                boxShadow: `0 0 0 1.5px rgba(${glowRgb}, 0.7), 0 0 22px 2px rgba(${glowRgb}, 0.55)`,
+              }}
+            />
+
             {/* SVG Circular Progress Track */}
             <div className="relative w-8 h-8 flex items-center justify-center">
               <svg className="w-8 h-8 transform -rotate-90 pointer-events-none" viewBox="0 0 36 36">
                 <path
-                  className="text-white/10 dark:text-white/10 stroke-current"
-                  strokeWidth="2.5"
+                  className={theme === 'light' ? 'text-slate-200 stroke-current' : 'text-white/10 stroke-current'}
+                  strokeWidth="2.6"
                   fill="none"
                   d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                 />
                 <path
+                  ref={progressPathRef}
                   stroke={accentColor}
-                  strokeWidth="2.5"
+                  strokeWidth="2.8"
                   strokeDasharray="100, 100"
-                  strokeDashoffset={strokeDashoffset}
+                  strokeDashoffset="100"
                   strokeLinecap="round"
                   fill="none"
-                  className="transition-[stroke-dashoffset] duration-150 ease-out"
+                  style={{
+                    filter: `drop-shadow(0 0 4px rgba(${glowRgb}, 0.7))`,
+                  }}
                   d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                 />
               </svg>
-              <ArrowUp 
-                className="w-3.5 h-3.5 absolute transition-transform duration-200 group-hover:-translate-y-0.5" 
-                style={{ color: accentColor }}
-              />
+
+              {/* Kinetic Hover Arrow */}
+              <div className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none">
+                <ArrowUp
+                  className="w-3.5 h-3.5 transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-0.5 group-hover:scale-110"
+                  style={{
+                    color: accentColor,
+                    filter: `drop-shadow(0 0 5px rgba(${glowRgb}, 0.65))`,
+                  }}
+                />
+              </div>
             </div>
           </motion.button>
         )}

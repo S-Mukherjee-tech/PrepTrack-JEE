@@ -45,7 +45,7 @@ interface DashboardTabProps {
   onTabChange: (tab: 'dashboard' | 'analytics' | 'questions' | 'syllabus' | 'notes' | 'mock_tests' | 'settings') => void;
 }
 
-const BannerClock = memo(function BannerClock({ clockFormat = '12', timezone }: { clockFormat?: '12' | '24'; timezone?: string }) {
+const BannerClock = memo(function BannerClock({ clockFormat = '12', timezone, isLight = false }: { clockFormat?: '12' | '24'; timezone?: string; isLight?: boolean }) {
   const [time, setTime] = useState(new Date());
 
   useEffect(() => {
@@ -98,22 +98,22 @@ const BannerClock = memo(function BannerClock({ clockFormat = '12', timezone }: 
   return (
     <div id="banner-clock-widget" className="flex flex-col items-center sm:items-end select-none">
       <div className="flex items-baseline font-numeric">
-        <span className="text-3xl sm:text-4xl lg:text-5xl font-extrabold font-numeric tracking-tight text-white leading-none">
+        <span className={`text-3xl sm:text-4xl lg:text-5xl font-extrabold font-numeric tracking-tight leading-none ${isLight ? 'text-slate-900' : 'text-white'}`}>
           {formattedHours}
-          <span className={`mx-0.5 transition-opacity duration-300 ${seconds % 2 === 0 ? 'opacity-100 text-indigo-400' : 'opacity-30'}`}>:</span>
+          <span className={`mx-0.5 transition-opacity duration-300 ${seconds % 2 === 0 ? (isLight ? 'opacity-100 text-indigo-600' : 'opacity-100 text-indigo-400') : 'opacity-30'}`}>:</span>
           {formattedMinutes}
         </span>
         {clockFormat === '12' ? (
-          <span className="text-[11px] font-bold font-sans tracking-widest text-indigo-300/80 ml-2 uppercase select-none self-start">
+          <span className={`text-[11px] font-bold font-sans tracking-widest ml-2 uppercase select-none self-start ${isLight ? 'text-indigo-700' : 'text-indigo-300/80'}`}>
             {ampm}
           </span>
         ) : (
-          <span className="text-[9px] font-bold font-sans tracking-wider text-indigo-300/60 ml-2 uppercase select-none self-start bg-white/10 px-1.5 py-0.5 rounded-sm">
+          <span className={`text-[9px] font-bold font-sans tracking-wider ml-2 uppercase select-none self-start px-1.5 py-0.5 rounded-sm ${isLight ? 'text-indigo-700 bg-indigo-100 border border-indigo-200/80' : 'text-indigo-300/60 bg-white/10'}`}>
             24H
           </span>
         )}
       </div>
-      <span className="text-[10px] font-sans font-medium text-slate-300/80 mt-1 hidden sm:block">
+      <span className={`text-[10px] font-sans font-medium mt-1 hidden sm:block ${isLight ? 'text-slate-600' : 'text-slate-300/80'}`}>
         {time.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
       </span>
     </div>
@@ -124,20 +124,16 @@ const dashboardContainerVariants = {
   hidden: { opacity: 1 },
   visible: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.025,
-      delayChildren: 0
-    }
   }
 } as const;
 
 const dashboardItemVariants = {
-  hidden: { opacity: 0, y: 8 },
+  hidden: { opacity: 0, y: 4 },
   visible: {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.18,
+      duration: 0.14,
       ease: [0.16, 1, 0.3, 1] as const
     }
   }
@@ -364,6 +360,8 @@ const DashboardTab = memo(function DashboardTab({
     };
   }, [sessions, questions, settings]);
 
+  const isLight = settings.theme === 'light';
+
   return (
     <motion.div
       variants={dashboardContainerVariants}
@@ -374,75 +372,107 @@ const DashboardTab = memo(function DashboardTab({
       {/* Dynamic header welcome banner */}
       <motion.div 
         variants={dashboardItemVariants}
-        className={`p-6 sm:p-8 rounded-3xl bg-gradient-to-br ${themeStyles.bannerGradient} text-white shadow-2xl relative overflow-hidden border border-white/15`}
+        className={`p-6 sm:p-8 rounded-3xl bg-gradient-to-br ${themeStyles.bannerGradient} ${
+          isLight
+            ? 'text-slate-900 shadow-[0_18px_42px_-12px_rgba(79,70,229,0.16)]'
+            : 'text-white shadow-2xl border border-white/15'
+        } relative overflow-hidden`}
       >
         {/* Subtle architectural dot matrix backdrop */}
-        <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.06)_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
+        <div
+          className={`absolute inset-0 pointer-events-none [background-size:16px_16px] ${
+            isLight
+              ? 'bg-[radial-gradient(rgba(79,70,229,0.09)_1px,transparent_1px)]'
+              : 'bg-[radial-gradient(rgba(255,255,255,0.06)_1px,transparent_1px)]'
+          }`}
+        />
         
         {/* Watermark branding logo */}
-        <div className="absolute right-0 bottom-0 opacity-8 translate-x-10 translate-y-10 select-none pointer-events-none">
+        <div className={`absolute right-0 bottom-0 translate-x-10 translate-y-10 select-none pointer-events-none ${isLight ? 'opacity-[0.06]' : 'opacity-8'}`}>
           <BrandingLogo size={260} />
         </div>
 
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 relative z-10">
           <div className="space-y-4 flex-1">
             <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.08] border border-white/[0.12] backdrop-blur-md">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span className="text-[10px] uppercase font-mono font-bold tracking-wider text-slate-200">
-                  JEE Command Center • Live Engine
+              <div
+                className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border ${
+                  isLight
+                    ? 'bg-indigo-100/90 border-indigo-200/90'
+                    : 'bg-white/[0.08] border-white/[0.12]'
+                }`}
+              >
+                <span className={`w-2 h-2 rounded-full ${isLight ? 'bg-emerald-600' : 'bg-emerald-400'}`}></span>
+                <span className={`text-[10px] uppercase font-mono font-bold tracking-wider ${isLight ? 'text-indigo-800' : 'text-slate-200'}`}>
+                  JEE Command Center
                 </span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-display font-black leading-tight tracking-tight text-white">
+              <h2 className={`text-2xl sm:text-3xl font-display font-black leading-tight tracking-tight ${isLight ? 'text-slate-900' : 'text-white'}`}>
                 Focus. Consistency. Rank.
               </h2>
-              <p className="text-xs sm:text-sm text-slate-300 max-w-xl font-normal leading-relaxed">
+              <p className={`text-xs sm:text-sm max-w-xl font-normal leading-relaxed ${isLight ? 'text-slate-600' : 'text-slate-300'}`}>
                 Systematic daily tracking for JEE Main & Advanced: track deep study intervals, practice questions, and verify chapter mastery.
               </p>
             </div>
 
             {/* Focused Daily Metrics */}
             <div className="pt-2 grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 max-w-xl">
-              <div 
-                className="glass-panel p-3.5 squircle-card-sm border border-white/15 hover:border-white/50 hover:-translate-y-1 hover:shadow-[0_12px_28px_-6px_rgba(255,255,255,0.22),0_0_24px_2px_rgba(129,140,248,0.38)] active:scale-95 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] cursor-default select-none shadow-sm group" 
+              <div
+                className={`interactive-card p-3.5 squircle-card-sm border cursor-default select-none group ${
+                  isLight
+                    ? 'bg-white/95 border-indigo-200/90 hover:border-indigo-400 shadow-sm hover:shadow-[0_12px_26px_-8px_rgba(79,70,229,0.25)]'
+                    : 'glass-panel border-indigo-400/25 hover:border-indigo-400/75 hover:shadow-[0_12px_28px_-6px_rgba(99,102,241,0.48),0_0_20px_rgba(129,140,248,0.28)]'
+                }`}
                 title="Today's focused study minutes"
               >
-                <span className="block text-[9px] uppercase font-numeric font-bold tracking-wider text-slate-300 group-hover:text-white transition-colors">Study Time</span>
-                <span className="text-base sm:text-lg font-bold font-numeric tracking-tight text-white mt-1 block tabular-nums">
+                <span className={`block text-[9px] uppercase font-numeric font-bold tracking-wider transition-colors ${isLight ? 'text-indigo-700' : 'text-indigo-300/90 group-hover:text-white'}`}>Study Time</span>
+                <span className={`text-base sm:text-lg font-bold font-numeric tracking-tight mt-1 block tabular-nums ${isLight ? 'text-slate-900' : 'text-white drop-shadow-[0_0_10px_rgba(129,140,248,0.35)]'}`}>
                   <AnimatedCounter value={studyMinutesToday / 60} decimals={1} />
-                  <span className="text-xs font-normal text-slate-300 ml-0.5">hrs</span>
+                  <span className={`text-xs font-normal ml-0.5 ${isLight ? 'text-slate-500' : 'text-slate-300'}`}>hrs</span>
                 </span>
               </div>
 
-              <div 
-                className="glass-panel p-3.5 squircle-card-sm border border-white/15 hover:border-white/50 hover:-translate-y-1 hover:shadow-[0_12px_28px_-6px_rgba(255,255,255,0.22),0_0_24px_2px_rgba(129,140,248,0.38)] active:scale-95 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] cursor-default select-none shadow-sm group" 
+              <div
+                className={`interactive-card p-3.5 squircle-card-sm border cursor-default select-none group ${
+                  isLight
+                    ? 'bg-white/95 border-emerald-200/90 hover:border-emerald-400 shadow-sm hover:shadow-[0_12px_26px_-8px_rgba(16,185,129,0.22)]'
+                    : 'glass-panel border-emerald-400/25 hover:border-emerald-400/75 hover:shadow-[0_12px_28px_-6px_rgba(16,185,129,0.48),0_0_20px_rgba(52,211,153,0.28)]'
+                }`}
                 title="Today's total questions solved"
               >
-                <span className="block text-[9px] uppercase font-numeric font-bold tracking-wider text-slate-300 group-hover:text-white transition-colors">Questions</span>
-                <span className="text-base sm:text-lg font-bold font-numeric tracking-tight text-white mt-1 block tabular-nums">
+                <span className={`block text-[9px] uppercase font-numeric font-bold tracking-wider transition-colors ${isLight ? 'text-emerald-700' : 'text-emerald-300/90 group-hover:text-white'}`}>Questions</span>
+                <span className={`text-base sm:text-lg font-bold font-numeric tracking-tight mt-1 block tabular-nums ${isLight ? 'text-slate-900' : 'text-white drop-shadow-[0_0_10px_rgba(16,185,129,0.35)]'}`}>
                   <AnimatedCounter value={questionsSolvedToday} />
-                  <span className="text-xs font-normal text-slate-300 ml-0.5">solved</span>
+                  <span className={`text-xs font-normal ml-0.5 ${isLight ? 'text-slate-500' : 'text-slate-300'}`}>solved</span>
                 </span>
               </div>
 
-              <div 
-                className="glass-panel p-3.5 squircle-card-sm border border-white/15 hover:border-white/50 hover:-translate-y-1 hover:shadow-[0_12px_28px_-6px_rgba(255,255,255,0.22),0_0_24px_2px_rgba(129,140,248,0.38)] active:scale-95 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] cursor-default select-none shadow-sm group" 
+              <div
+                className={`interactive-card p-3.5 squircle-card-sm border cursor-default select-none group ${
+                  isLight
+                    ? 'bg-white/95 border-sky-200/90 hover:border-sky-400 shadow-sm hover:shadow-[0_12px_26px_-8px_rgba(14,165,233,0.22)]'
+                    : 'glass-panel border-sky-400/25 hover:border-sky-400/75 hover:shadow-[0_12px_28px_-6px_rgba(56,189,248,0.48),0_0_20px_rgba(56,189,248,0.28)]'
+                }`}
                 title="JEE syllabus completed"
               >
-                <span className="block text-[9px] uppercase font-numeric font-bold tracking-wider text-slate-300 group-hover:text-white transition-colors">Syllabus Mastery</span>
-                <span className="text-base sm:text-lg font-bold font-numeric tracking-tight text-white mt-1 block tabular-nums">
+                <span className={`block text-[9px] uppercase font-numeric font-bold tracking-wider transition-colors ${isLight ? 'text-sky-700' : 'text-sky-300/90 group-hover:text-white'}`}>Syllabus Mastery</span>
+                <span className={`text-base sm:text-lg font-bold font-numeric tracking-tight mt-1 block tabular-nums ${isLight ? 'text-slate-900' : 'text-white drop-shadow-[0_0_10px_rgba(56,189,248,0.35)]'}`}>
                   <AnimatedCounter value={syllabusStats.percentage} suffix="%" />
                 </span>
               </div>
 
-              <div 
-                className="glass-panel p-3.5 squircle-card-sm border border-white/15 hover:border-white/50 hover:-translate-y-1 hover:shadow-[0_12px_28px_-6px_rgba(255,255,255,0.22),0_0_24px_2px_rgba(129,140,248,0.38)] active:scale-95 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] cursor-default select-none shadow-sm group" 
+              <div
+                className={`interactive-card p-3.5 squircle-card-sm border cursor-default select-none group ${
+                  isLight
+                    ? 'bg-white/95 border-amber-200/90 hover:border-amber-400 shadow-sm hover:shadow-[0_12px_26px_-8px_rgba(245,158,11,0.22)]'
+                    : 'glass-panel border-amber-400/25 hover:border-amber-400/75 hover:shadow-[0_12px_28px_-6px_rgba(245,158,11,0.48),0_0_20px_rgba(251,191,36,0.28)]'
+                }`}
                 title="Consecutive day study streak"
               >
-                <span className="block text-[9px] uppercase font-numeric font-bold tracking-wider text-slate-300 group-hover:text-white transition-colors">Daily Streak</span>
-                <span className="text-base sm:text-lg font-bold font-numeric tracking-tight text-white mt-1 flex items-center gap-1 tabular-nums">
+                <span className={`block text-[9px] uppercase font-numeric font-bold tracking-wider transition-colors ${isLight ? 'text-amber-700' : 'text-amber-300/90 group-hover:text-white'}`}>Daily Streak</span>
+                <span className={`text-base sm:text-lg font-bold font-numeric tracking-tight mt-1 flex items-center gap-1 tabular-nums ${isLight ? 'text-slate-900' : 'text-white drop-shadow-[0_0_10px_rgba(245,158,11,0.35)]'}`}>
                   <AnimatedCounter value={streakStats.currentStreak} />
-                  <span className="text-xs font-normal text-slate-300">days</span>
+                  <span className={`text-xs font-normal ${isLight ? 'text-slate-500' : 'text-slate-300'}`}>days</span>
                   {streakStats.currentStreak > 0 && <span className="text-sm">🔥</span>}
                 </span>
               </div>
@@ -455,29 +485,37 @@ const DashboardTab = memo(function DashboardTab({
                   const el = document.getElementById('target-tracker-section');
                   if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }}
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.15] text-white text-xs font-semibold cursor-pointer transition-all hover:scale-[1.02] active:scale-95 group shadow-sm"
+                className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border text-xs font-semibold cursor-pointer transition-all hover:scale-[1.02] active:scale-95 group ${
+                  isLight
+                    ? 'bg-white/95 hover:bg-indigo-50 border-indigo-200/90 hover:border-indigo-400 text-slate-900 shadow-sm'
+                    : 'bg-white/[0.1] hover:bg-white/[0.18] border-white/25 hover:border-indigo-400/70 text-white shadow-[0_6px_18px_rgba(0,0,0,0.28)]'
+                }`}
                 title="Jump directly to Target & Deadline Tracker"
               >
-                <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
-                <span className="font-mono font-bold text-indigo-300">🎯 Targets:</span>
-                <span className="text-white font-numeric">{activeTargetsCount} Active</span>
-                <ArrowUpRight className="w-3.5 h-3.5 text-slate-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                <span className={`w-2 h-2 rounded-full animate-pulse ${isLight ? 'bg-indigo-600' : 'bg-indigo-400 shadow-[0_0_8px_rgba(129,140,248,0.85)]'}`} />
+                <span className={`font-mono font-bold ${isLight ? 'text-indigo-700' : 'text-indigo-300'}`}>🎯 Targets:</span>
+                <span className={`font-numeric ${isLight ? 'text-slate-900' : 'text-white'}`}>{activeTargetsCount} Active</span>
+                <ArrowUpRight className={`w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform ${isLight ? 'text-indigo-600' : 'text-slate-300'}`} />
               </button>
 
               <button
                 onClick={() => setShowReminderModal(true)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/35 border border-indigo-500/30 text-indigo-200 text-xs font-bold cursor-pointer transition-all hover:scale-[1.02] active:scale-95 shadow-sm"
+                className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border text-xs font-bold cursor-pointer transition-all hover:scale-[1.02] active:scale-95 ${
+                  isLight
+                    ? 'bg-indigo-600 hover:bg-indigo-700 border-indigo-600 text-white shadow-[0_8px_20px_-4px_rgba(79,70,229,0.4)]'
+                    : 'bg-indigo-500/25 hover:bg-indigo-500/40 border-indigo-400/45 hover:border-indigo-300/75 text-indigo-100 shadow-[0_6px_20px_rgba(99,102,241,0.28)]'
+                }`}
                 title="View Daily Mission Briefing & Target Deadlines"
               >
-                <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+                <Sparkles className={`w-3.5 h-3.5 ${isLight ? 'text-indigo-100' : 'text-indigo-300 drop-shadow-[0_0_6px_rgba(165,180,252,0.8)]'}`} />
                 <span>Mission Briefing</span>
               </button>
             </div>
           </div>
 
           {/* Clock Widget on the Right (Desktop / Tablet) */}
-          <div className="hidden lg:flex flex-col items-end justify-center shrink-0 pl-6 border-l border-white/10">
-            <BannerClock clockFormat={settings.clockFormat} timezone={settings.timezone} />
+          <div className={`hidden lg:flex flex-col items-end justify-center shrink-0 pl-6 border-l ${isLight ? 'border-indigo-200/80' : 'border-white/10'}`}>
+            <BannerClock clockFormat={settings.clockFormat} timezone={settings.timezone} isLight={isLight} />
           </div>
         </div>
       </motion.div>                  
@@ -518,14 +556,13 @@ const DashboardTab = memo(function DashboardTab({
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3.5 sm:gap-4.5">
               <div className={`relative shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex flex-col items-center justify-center border transition-all duration-300 ${
                 streakStats.currentStreak > 0
-                  ? 'bg-gradient-to-br from-amber-500/20 to-orange-500/20 border-orange-500/40 text-orange-400 shadow-sm'
+                  ? 'bg-gradient-to-br from-amber-500/25 to-orange-500/25 border-orange-400/60 text-orange-300 shadow-[0_0_24px_rgba(249,115,22,0.35)]'
                   : 'bg-accent/10 border-border/70 text-muted-foreground/50'
               }`}>
-                {streakStats.currentStreak > 0 && (
-                  <div className="absolute inset-0 bg-orange-500/10 rounded-2xl blur-md pointer-events-none" />
-                )}
-                
-                <Flame className={`w-7 h-7 sm:w-8 sm:h-8 ${streakStats.currentStreak > 0 ? 'text-orange-500 animate-pulse' : 'text-muted-foreground/40'}`} fill={streakStats.currentStreak > 0 ? 'currentColor' : 'none'} />
+                <Flame
+                  className={`w-7 h-7 sm:w-8 sm:h-8 ${streakStats.currentStreak > 0 ? 'text-orange-400 animate-pulse drop-shadow-[0_0_10px_rgba(249,115,22,0.75)]' : 'text-muted-foreground/40'}`}
+                  fill={streakStats.currentStreak > 0 ? 'currentColor' : 'none'}
+                />
               </div>
 
               <div className="space-y-1">
@@ -534,7 +571,7 @@ const DashboardTab = memo(function DashboardTab({
                     <AnimatedCounter value={streakStats.currentStreak} /> Day Study Streak
                   </h3>
                   {streakStats.currentStreak > 0 && (
-                    <span className="text-[9px] uppercase tracking-wider font-mono font-bold text-orange-400 bg-orange-500/15 border border-orange-500/25 px-2 py-0.5 rounded-full select-none">
+                    <span className="text-[9px] uppercase tracking-wider font-mono font-bold text-orange-300 bg-orange-500/20 border border-orange-400/40 px-2 py-0.5 rounded-full select-none shadow-[0_0_12px_rgba(249,115,22,0.25)]">
                       Active Momentum
                     </span>
                   )}
@@ -565,7 +602,7 @@ const DashboardTab = memo(function DashboardTab({
           </div>
 
           {/* Right Block: Visual 7-Day Calendar Checklist */}
-          <div className="bg-accent/[0.04] border border-border/60 rounded-xl p-3.5 lg:w-[440px] shrink-0 w-full">
+          <div className="glass-panel rounded-xl p-3.5 lg:w-[440px] shrink-0 w-full">
             <div className="flex items-center justify-between mb-2.5 px-1">
               <span className="text-[10px] uppercase font-mono font-bold tracking-wider text-muted-foreground select-none">
                 Past 7 Days History
@@ -581,9 +618,9 @@ const DashboardTab = memo(function DashboardTab({
                   <div
                     key={day.dateStr}
                     className={`flex flex-col items-center gap-1 p-1 rounded-xl transition-all relative ${
-                      day.isToday 
-                        ? 'bg-primary/10 border border-primary/30' 
-                        : 'border border-transparent'
+                      day.isToday
+                        ? 'bg-primary/15 border border-primary/45 shadow-[0_0_16px_-4px_var(--glow-color)]'
+                        : 'border border-transparent hover:bg-white/[0.04]'
                     }`}
                   >
                     <span className={`text-[8.5px] font-mono font-bold ${
@@ -592,12 +629,12 @@ const DashboardTab = memo(function DashboardTab({
                       {day.dayAbbrev}
                     </span>
                     
-                    <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-all border cursor-default select-none ${
+                    <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-all border cursor-default select-none hover:scale-110 ${
                       day.met
-                        ? 'bg-gradient-to-tr from-amber-500 to-orange-500 text-white border-orange-400/50 shadow-xs'
+                        ? 'bg-gradient-to-tr from-amber-500 to-orange-500 text-white border-orange-300/70 shadow-[0_0_16px_rgba(249,115,22,0.5)]'
                         : day.activeAtAll
-                          ? 'bg-primary/15 text-primary border-primary/30'
-                          : 'bg-card border-border/60 text-muted-foreground/40'
+                          ? 'bg-primary/20 text-primary border-primary/45 shadow-[0_0_12px_rgba(var(--glow-rgb,129,140,248),0.28)]'
+                          : 'bg-card border-border/60 text-muted-foreground/50'
                     }`}
                     title={`${day.studyMins} mins studied, ${day.questionsSolved} questions solved`}>
                       {day.met ? (
@@ -619,13 +656,12 @@ const DashboardTab = memo(function DashboardTab({
       <div className={`border-t ${themeStyles.borderStyle} my-8 opacity-65`} />
 
       {/* STUDY PROGRESS AND PROBLEM SOLVED MILESTONES */}
-      <ScrollReveal delay={0.06}>
+      <ScrollReveal delay={0.04}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* HOURS TARGETS */}
-          <div className="flex flex-col sm:flex-row items-center gap-5 p-5.5 rounded-2xl bg-slate-500/5 border border-slate-500/10 dark:bg-white/[0.02] dark:border-white/[0.05] hover:bg-slate-500/10 dark:hover:bg-white/[0.04] hover:border-indigo-500/40 hover:-translate-y-1 hover:shadow-[0_16px_36px_-6px_rgba(99,102,241,0.38),0_0_28px_2px_rgba(99,102,241,0.28)] transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]">
+          <div className="interactive-card bg-card flex flex-col sm:flex-row items-center gap-5 p-5.5 rounded-2xl border border-indigo-500/25 hover:border-indigo-400/70 hover:shadow-[0_16px_36px_-8px_rgba(99,102,241,0.45),0_0_26px_rgba(129,140,248,0.28)] group">
             <div className="relative w-32 h-32 flex-shrink-0 flex items-center justify-center">
-              <div className="absolute inset-0 rounded-full bg-indigo-500/5 blur-md" />
-              <svg className="w-full h-full transform -rotate-90" viewBox="0 0 128 128">
+              <svg className="w-full h-full transform -rotate-90 overflow-visible" viewBox="0 0 128 128">
                 <circle
                   cx="64"
                   cy="64"
@@ -638,6 +674,7 @@ const DashboardTab = memo(function DashboardTab({
                   cy="64"
                   r="50"
                   className="stroke-indigo-500 dark:stroke-indigo-400 fill-transparent"
+                  style={{ filter: 'drop-shadow(0 0 8px rgba(129, 140, 248, 0.72))' }}
                   strokeWidth="8"
                   strokeLinecap="round"
                   strokeDasharray="314.16"
@@ -658,7 +695,7 @@ const DashboardTab = memo(function DashboardTab({
 
             <div className="flex-1 space-y-2.5 text-center sm:text-left w-full">
               <div className="flex items-center justify-center sm:justify-start gap-2">
-                <div className="p-1.5 bg-indigo-500/10 rounded-lg text-indigo-500 shrink-0">
+                <div className="p-1.5 bg-indigo-500/15 border border-indigo-400/30 rounded-lg text-indigo-400 shrink-0 shadow-[0_0_12px_rgba(129,140,248,0.25)]">
                   <BookOpen className="w-4 h-4" />
                 </div>
                 <span className="text-sm font-bold text-foreground">Focused Study Hours</span>
@@ -675,10 +712,9 @@ const DashboardTab = memo(function DashboardTab({
           </div>
 
           {/* PROBLEMS SOLVED GOAL */}
-          <div className="flex flex-col sm:flex-row items-center gap-5 p-5.5 rounded-2xl bg-slate-500/5 border border-slate-500/10 dark:bg-white/[0.02] dark:border-white/[0.05] hover:bg-slate-500/10 dark:hover:bg-white/[0.04] hover:border-emerald-500/40 hover:-translate-y-1 hover:shadow-[0_16px_36px_-6px_rgba(16,185,129,0.38),0_0_28px_2px_rgba(16,185,129,0.28)] transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]">
+          <div className="interactive-card bg-card flex flex-col sm:flex-row items-center gap-5 p-5.5 rounded-2xl border border-emerald-500/25 hover:border-emerald-400/70 hover:shadow-[0_16px_36px_-8px_rgba(16,185,129,0.45),0_0_26px_rgba(52,211,153,0.28)] group">
             <div className="relative w-32 h-32 flex-shrink-0 flex items-center justify-center">
-              <div className="absolute inset-0 rounded-full bg-emerald-500/5 blur-md" />
-              <svg className="w-full h-full transform -rotate-90" viewBox="0 0 128 128">
+              <svg className="w-full h-full transform -rotate-90 overflow-visible" viewBox="0 0 128 128">
                 <circle
                   cx="64"
                   cy="64"
@@ -691,6 +727,7 @@ const DashboardTab = memo(function DashboardTab({
                   cy="64"
                   r="50"
                   className="stroke-emerald-500 dark:stroke-emerald-400 fill-transparent"
+                  style={{ filter: 'drop-shadow(0 0 8px rgba(16, 185, 129, 0.72))' }}
                   strokeWidth="8"
                   strokeLinecap="round"
                   strokeDasharray="314.16"
@@ -711,7 +748,7 @@ const DashboardTab = memo(function DashboardTab({
 
             <div className="flex-1 space-y-2.5 text-center sm:text-left w-full">
               <div className="flex items-center justify-center sm:justify-start gap-2">
-                <div className="p-1.5 bg-emerald-500/10 rounded-lg text-emerald-500 shrink-0">
+                <div className="p-1.5 bg-emerald-500/15 border border-emerald-400/30 rounded-lg text-emerald-400 shrink-0 shadow-[0_0_12px_rgba(16,185,129,0.25)]">
                   <CheckCircle className="w-4 h-4" />
                 </div>
                 <span className="text-sm font-bold text-foreground">Daily Problem Solves</span>
@@ -811,20 +848,20 @@ const DashboardTab = memo(function DashboardTab({
 
 
       {/* DYNAMIC JEE LIVE TOOL LINKS & TELEGRAM GROUP */}
-      <ScrollReveal delay={0.12}>
+      <ScrollReveal delay={0.05}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 pt-2">
           
           {/* Telegram Community */}
-          <div 
-            className="bg-card border border-border rounded-2xl p-5.5 shadow-sm flex flex-col justify-between hover:border-indigo-400 hover:-translate-y-1 hover:shadow-[0_16px_40px_-6px_rgba(99,102,241,0.45),0_0_32px_2px_rgba(99,102,241,0.35)] transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group"
+          <div
+            className="bg-card interactive-card border border-border rounded-2xl p-5.5 shadow-sm flex flex-col justify-between hover:border-indigo-400/70 transition-all duration-200 group"
           >
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase font-mono font-bold text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-0.5 rounded-full">
+                <span className="text-[10px] uppercase font-mono font-bold text-indigo-400">
                   Community Sync
                 </span>
               </div>
-              <h4 className="text-base font-bold font-display tracking-tight text-foreground group-hover:text-primary transition-colors">
+              <h4 className="text-base font-bold font-display tracking-tight text-foreground group-hover:text-indigo-300 transition-colors">
                 JEE CIRCLES Telegram
               </h4>
               <p className="text-xs text-muted-foreground leading-relaxed">
@@ -836,23 +873,23 @@ const DashboardTab = memo(function DashboardTab({
               href="https://t.me/JEECIRCLES"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-5 bg-indigo-500/10 hover:bg-indigo-600 text-indigo-400 hover:text-white text-xs font-mono font-semibold py-2.5 px-4 rounded-xl text-center border border-indigo-500/25 flex items-center justify-center gap-1.5 transition-all outline-none hover:shadow-[0_4px_20px_rgba(99,102,241,0.4)] active:scale-95"
+              className="mt-5 bg-indigo-500/15 hover:bg-indigo-600 text-indigo-300 hover:text-white text-xs font-mono font-semibold py-2.5 px-4 rounded-xl text-center border border-indigo-400/40 hover:border-indigo-400 hover:shadow-[0_0_20px_rgba(99,102,241,0.5)] flex items-center justify-center gap-1.5 transition-all duration-200 outline-none"
             >
-              Join JEE CIRCLES <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+              Join JEE CIRCLES <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </a>
           </div>
 
           {/* Exam Countdown timer link */}
-          <div 
-            className="bg-card border border-border rounded-2xl p-5.5 shadow-sm flex flex-col justify-between hover:border-amber-400 hover:-translate-y-1 hover:shadow-[0_16px_40px_-6px_rgba(245,158,11,0.45),0_0_32px_2px_rgba(245,158,11,0.35)] transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group"
+          <div
+            className="bg-card interactive-card border border-border rounded-2xl p-5.5 shadow-sm flex flex-col justify-between hover:border-amber-400/70 transition-all duration-200 group"
           >
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase font-mono font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 rounded-full">
+                <span className="text-[10px] uppercase font-mono font-bold text-amber-400">
                   Live Countdown
                 </span>
               </div>
-              <h4 className="text-base font-bold font-display tracking-tight text-foreground group-hover:text-amber-400 transition-colors">
+              <h4 className="text-base font-bold font-display tracking-tight text-foreground group-hover:text-amber-600 dark:group-hover:text-amber-300 transition-colors">
                 JEE & NEET Exam Clock
               </h4>
               <p className="text-xs text-muted-foreground leading-relaxed">
@@ -864,23 +901,23 @@ const DashboardTab = memo(function DashboardTab({
               href="https://examclock-jee-neet-aspirants.vercel.app/"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-5 bg-amber-500/10 hover:bg-amber-600 text-amber-400 hover:text-white text-xs font-mono font-semibold py-2.5 px-4 rounded-xl text-center border border-amber-500/25 flex items-center justify-center gap-1.5 transition-all outline-none hover:shadow-[0_4px_20px_rgba(245,158,11,0.4)] active:scale-95"
+              className="mt-5 bg-amber-500/15 hover:bg-amber-600 text-amber-300 hover:text-white text-xs font-mono font-semibold py-2.5 px-4 rounded-xl text-center border border-amber-400/40 hover:border-amber-400 hover:shadow-[0_0_20px_rgba(245,158,11,0.5)] flex items-center justify-center gap-1.5 transition-all duration-200 outline-none"
             >
-              Open Exam Clock <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+              Open Exam Clock <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </a>
           </div>
 
           {/* IIT JEE Guide link */}
-          <div 
-            className="bg-card border border-border rounded-2xl p-5.5 shadow-sm flex flex-col justify-between hover:border-emerald-400 hover:-translate-y-1 hover:shadow-[0_16px_40px_-6px_rgba(16,185,129,0.45),0_0_32px_2px_rgba(16,185,129,0.35)] transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group"
+          <div
+            className="bg-card interactive-card border border-border rounded-2xl p-5.5 shadow-sm flex flex-col justify-between hover:border-emerald-400/70 transition-all duration-200 group"
           >
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] uppercase font-mono font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full">
+                <span className="text-[10px] uppercase font-mono font-bold text-emerald-400">
                   Strategy & Pyqs
                 </span>
               </div>
-              <h4 className="text-base font-bold font-display tracking-tight text-foreground group-hover:text-emerald-400 transition-colors">
+              <h4 className="text-base font-bold font-display tracking-tight text-foreground group-hover:text-emerald-600 dark:group-hover:text-emerald-300 transition-colors">
                 IIT JEE Guide Hub
               </h4>
               <p className="text-xs text-muted-foreground leading-relaxed">
@@ -892,9 +929,9 @@ const DashboardTab = memo(function DashboardTab({
               href="https://iit-jee-guide.vercel.app/"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-5 bg-emerald-500/10 hover:bg-emerald-600 text-emerald-400 hover:text-white text-xs font-mono font-semibold py-2.5 px-4 rounded-xl text-center border border-emerald-500/25 flex items-center justify-center gap-1.5 transition-all outline-none hover:shadow-[0_4px_20px_rgba(16,185,129,0.4)] active:scale-95"
+              className="mt-5 bg-emerald-500/15 hover:bg-emerald-600 text-emerald-300 hover:text-white text-xs font-mono font-semibold py-2.5 px-4 rounded-xl text-center border border-emerald-400/40 hover:border-emerald-400 hover:shadow-[0_0_20px_rgba(16,185,129,0.5)] flex items-center justify-center gap-1.5 transition-all duration-200 outline-none"
             >
-              View Study Guides <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+              View Study Guides <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </a>
           </div>
 
