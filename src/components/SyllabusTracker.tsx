@@ -163,7 +163,7 @@ const SyllabusTracker = memo(function SyllabusTracker({ completions, onToggleCha
     // Trigger download
     const link = document.createElement('a');
     link.href = path;
-    link.download = type === 'main' ? 'JEE_Main_Syllabus_2026.pdf' : 'JEE_Advanced_Syllabus_2026.pdf';
+    link.download = type === 'main' ? 'JEE_Main_Syllabus_2027.pdf' : 'JEE_Advanced_Syllabus_2026.pdf';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
