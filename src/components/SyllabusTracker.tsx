@@ -158,7 +158,7 @@ const SyllabusTracker = memo(function SyllabusTracker({ completions, onToggleCha
   const handleDownloadSyllabus = (type: 'main' | 'advanced') => {
     const path = type === 'main'
       ? 'syllabus/JEE_Main_Syllabus_2026.pdf'
-      : 'syllabus/JEE_Advanced_Syllabus_2026.pdf';
+      : 'syllabus/JEE_Advanced_Syllabus_2027.pdf';
     
     // Trigger download
     const link = document.createElement('a');
